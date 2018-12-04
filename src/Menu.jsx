@@ -25,7 +25,8 @@ class Menu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      toggleLogin: true
+      toggleLogin: true,
+      toggleSettings: true
     };
   }
   //methods go here
@@ -40,6 +41,9 @@ class Menu extends Component {
               className={classes.menuButton}
               color="inherit"
               aria-label="Menu"
+              onClick={() =>
+                this.setState({ toggleSettings: !this.state.toggleSettings })
+              }
             >
               <MenuIcon />
             </IconButton>
