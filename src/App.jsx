@@ -6,16 +6,24 @@ import HomePage from "./HomePage";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      toggleHomePage: true
+    };
   }
-
+  toggleState(stateToToggle) {
+    if (stateToToggle === "HomePage") {
+      this.setState({ toggleHomePage: !this.state.toggleHomePage });
+    }
+  }
   render() {
     return (
       <div className="App">
         <header className="App-header">
           <div className="Wrapper">
             <Menu />
-            <HomePage />
+            {this.state.toggleHomePage ? (
+              <HomePage toggleState={this.toggleState.bind(this)} />
+            ) : null}
           </div>
         </header>
       </div>
