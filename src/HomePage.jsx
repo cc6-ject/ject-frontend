@@ -39,7 +39,7 @@ class HomePage extends Component {
           <Grid item xs={4}>
             <Paper
               className={classes.paper}
-              onClick={this.props.toggleState.bind(this, "HomePage")}
+              onClick={this.props.toggleState.bind(this, "HomePage", false)}
             >
               Tounge Twisters
             </Paper>

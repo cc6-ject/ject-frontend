@@ -10,9 +10,9 @@ class App extends React.Component {
       toggleHomePage: true
     };
   }
-  toggleState(stateToToggle) {
+  toggleState(stateToToggle, toggleBoolean) {
     if (stateToToggle === "HomePage") {
-      this.setState({ toggleHomePage: !this.state.toggleHomePage });
+      this.setState({ toggleHomePage: toggleBoolean });
     }
   }
   render() {

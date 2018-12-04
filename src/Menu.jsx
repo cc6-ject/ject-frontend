@@ -47,7 +47,7 @@ class Menu extends Component {
               <Settings />
             </IconButton>
             <Typography
-              onClick={this.props.toggleState.bind(this, "HomePage")}
+              onClick={this.props.toggleState.bind(this, "HomePage", true)}
               variant="h6"
               color="inherit"
               className={classes.grow}
