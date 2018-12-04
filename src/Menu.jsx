@@ -47,12 +47,15 @@ class Menu extends Component {
               <Settings />
             </IconButton>
             <Typography
-              onClick={this.props.toggleState.bind(this, "HomePage", true)}
+              onClick={this.props.toggleHome.bind(this)}
               variant="h6"
               color="inherit"
               className={classes.grow}
             >
               Ject
+            </Typography>
+            <Typography variant="h6" color="inherit" className={classes.grow}>
+              {this.props.menuHeading}
             </Typography>
             <Button
               color="inherit"

@@ -2,17 +2,34 @@ import React, { Component } from "react";
 import "./App.css";
 import Menu from "./Menu";
 import HomePage from "./HomePage";
+import TongueTwisterMenu from "./TongueTwisterMenu";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      toggleHomePage: true
+      menuHeading: "",
+      toggleHomePage: true,
+      toggleTongueTwister: false
     };
   }
-  toggleState(stateToToggle, toggleBoolean) {
-    if (stateToToggle === "HomePage") {
-      this.setState({ toggleHomePage: toggleBoolean });
+
+  toggleHome() {
+    this.setState({ menuHeading: "" });
+    this.setState({ toggleTongueTwister: false });
+    this.setState({ toggleHomePage: true });
+  }
+
+  // togglePage(pageBoolean, stateToToggle, toggleBoolean) {
+  //   this.toggleState(stateToToggle, toggleBoolean);
+  //   this.setState({ pageBoolean: true });
+  // }
+
+  toggleState(stateToToggle, pageToRender) {
+    if (stateToToggle === "HomePage" && pageToRender === "TongueTwist") {
+      this.setState({ toggleHomePage: false });
+      this.setState({ toggleTongueTwister: true });
+      this.setState({ menuHeading: "Tongue Twisters" });
     }
   }
   render() {
@@ -20,10 +37,15 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <div className="Wrapper">
-            <Menu toggleState={this.toggleState.bind(this)} />
+            <Menu
+              menuHeading={this.state.menuHeading}
+              toggleHome={this.toggleHome.bind(this)}
+            />
             {this.state.toggleHomePage ? (
               <HomePage toggleState={this.toggleState.bind(this)} />
-            ) : null}
+            ) : // <HomePage togglePage={this.togglePage.bind(this)} />
+            null}
+            {this.state.toggleTongueTwister ? <TongueTwisterMenu /> : null}
           </div>
         </header>
       </div>
