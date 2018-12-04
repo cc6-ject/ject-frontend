@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./App.css";
-
-import Button from "@material-ui/core/Button";
+import Menu from "./Menu";
+import HomePage from "./HomePage";
 
 class App extends React.Component {
   constructor(props) {
@@ -14,12 +14,8 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <div className="Wrapper">
-            <div className="Title">*Mock Up*</div>
-            <div>
-              <Button variant="contained" color="primary">
-                test
-              </Button>
-            </div>
+            <Menu />
+            <HomePage />
           </div>
         </header>
       </div>
