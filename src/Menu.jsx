@@ -24,6 +24,9 @@ const styles = {
 class Menu extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      toggleLogin: true
+    };
   }
   //methods go here
 
@@ -41,9 +44,16 @@ class Menu extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              News
+              Ject
             </Typography>
-            <Button color="inherit">Login</Button>
+            <Button
+              color="inherit"
+              onClick={() =>
+                this.setState({ toggleLogin: !this.state.toggleLogin })
+              }
+            >
+              {this.state.toggleLogin ? "Login" : "Logout"}
+            </Button>
           </Toolbar>
         </AppBar>
       </div>
