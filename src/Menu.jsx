@@ -31,7 +31,7 @@ class Menu extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
-        <AppBar position="static">
+        <AppBar position="static" style={{ marginBottom: 50 }}>
           <Toolbar>
             <IconButton
               className={classes.menuButton}
