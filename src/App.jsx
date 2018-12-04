@@ -3,6 +3,7 @@ import "./App.css";
 import Menu from "./Menu";
 import HomePage from "./HomePage";
 import TongueTwisterMenu from "./TongueTwisterMenu";
+import ProjectionMenu from "./ProjectionMenu";
 
 class App extends React.Component {
   constructor(props) {
@@ -10,13 +11,15 @@ class App extends React.Component {
     this.state = {
       menuHeading: "",
       toggleHomePage: true,
-      toggleTongueTwister: false
+      toggleTongueTwister: false,
+      toggleProjection: false
     };
   }
 
   toggleHome() {
     this.setState({ menuHeading: "" });
     this.setState({ toggleTongueTwister: false });
+    this.setState({ toggleProjection: false });
     this.setState({ toggleHomePage: true });
   }
 
@@ -30,6 +33,11 @@ class App extends React.Component {
       this.setState({ toggleHomePage: false });
       this.setState({ toggleTongueTwister: true });
       this.setState({ menuHeading: "Tongue Twisters" });
+    }
+    if (stateToToggle === "HomePage" && pageToRender === "Projection") {
+      this.setState({ toggleHomePage: false });
+      this.setState({ toggleProjection: true });
+      this.setState({ menuHeading: "Projection Practice" });
     }
   }
   render() {
@@ -46,6 +54,7 @@ class App extends React.Component {
             ) : // <HomePage togglePage={this.togglePage.bind(this)} />
             null}
             {this.state.toggleTongueTwister ? <TongueTwisterMenu /> : null}
+            {this.state.toggleProjection ? <ProjectionMenu /> : null}
           </div>
         </header>
       </div>

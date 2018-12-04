@@ -34,7 +34,16 @@ class HomePage extends Component {
           spacing={24}
         >
           <Grid item xs={4}>
-            <Paper className={classes.paper}>Practice Projection</Paper>
+            <Paper
+              className={classes.paper}
+              onClick={this.props.toggleState.bind(
+                this,
+                "HomePage",
+                "Projection"
+              )}
+            >
+              Practice Projection
+            </Paper>
           </Grid>
           <Grid item xs={4}>
             <Paper
