@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import Settings from "./Settings";
+
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -10,7 +12,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = {
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    marginBottom: 24
   },
   grow: {
     flexGrow: 1
@@ -26,7 +29,7 @@ class Menu extends Component {
     super(props);
     this.state = {
       toggleLogin: true,
-      toggleSettings: true
+      toggleSettings: false
     };
   }
   //methods go here
@@ -35,17 +38,16 @@ class Menu extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
-        <AppBar position="static" style={{ marginBottom: 50 }}>
+        <AppBar position="static">
           <Toolbar>
             <IconButton
               className={classes.menuButton}
               color="inherit"
               aria-label="Menu"
-              onClick={() =>
-                this.setState({ toggleSettings: !this.state.toggleSettings })
-              }
             >
-              <MenuIcon />
+              {/* <MenuIcon> */}
+              <Settings />
+              {/* </MenuIcon> */}
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               Ject
@@ -60,6 +62,7 @@ class Menu extends Component {
             </Button>
           </Toolbar>
         </AppBar>
+        {/* <div>{this.state.toggleSettings ? <Settings /> : null}</div> */}
       </div>
     );
   }
