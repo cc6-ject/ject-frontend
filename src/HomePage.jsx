@@ -37,9 +37,12 @@ class HomePage extends Component {
             <Paper className={classes.paper}>Practice Projection</Paper>
           </Grid>
           <Grid item xs={4}>
-            <div onClick={this.props.toggleState.bind(this, "HomePage")}>
-              <Paper className={classes.paper}>Tounge Twisters</Paper>
-            </div>
+            <Paper
+              className={classes.paper}
+              onClick={this.props.toggleState.bind(this, "HomePage")}
+            >
+              Tounge Twisters
+            </Paper>
           </Grid>
           <Grid item xs={4}>
             <Paper className={classes.paper}>Challenge Mode</Paper>

@@ -20,7 +20,7 @@ class App extends React.Component {
       <div className="App">
         <header className="App-header">
           <div className="Wrapper">
-            <Menu />
+            <Menu toggleState={this.toggleState.bind(this)} />
             {this.state.toggleHomePage ? (
               <HomePage toggleState={this.toggleState.bind(this)} />
             ) : null}

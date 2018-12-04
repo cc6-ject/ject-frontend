@@ -44,11 +44,14 @@ class Menu extends Component {
               color="inherit"
               aria-label="Menu"
             >
-              {/* <MenuIcon> */}
               <Settings />
-              {/* </MenuIcon> */}
             </IconButton>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
+            <Typography
+              onClick={this.props.toggleState.bind(this, "HomePage")}
+              variant="h6"
+              color="inherit"
+              className={classes.grow}
+            >
               Ject
             </Typography>
             <Button
@@ -61,7 +64,6 @@ class Menu extends Component {
             </Button>
           </Toolbar>
         </AppBar>
-        {/* <div>{this.state.toggleSettings ? <Settings /> : null}</div> */}
       </div>
     );
   }
