@@ -28,12 +28,12 @@ class App extends React.Component {
 
   // react wants you to build keys, but not use them
   toggleState(pageHeading, pageToRender) {
-    let key = "toggle";
-    key = key + pageToRender;
+    const key = "toggle" + pageToRender;
     this.setState({ toggleHomePage: false });
     this.setState({ [key]: true });
     this.setState({ menuHeading: pageHeading });
   }
+
   render() {
     return (
       <div className="App">
