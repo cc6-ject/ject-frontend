@@ -38,7 +38,7 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "HomePage",
+                "Projection Practice",
                 "Projection"
               )}
             >
@@ -50,8 +50,8 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "HomePage",
-                "TongueTwist"
+                "Tongue Twisters",
+                "TongueTwister"
               )}
             >
               Tounge Twisters
@@ -62,7 +62,7 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "HomePage",
+                "Challenge Mode",
                 "Challenge"
               )}
             >

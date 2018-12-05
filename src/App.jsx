@@ -26,22 +26,13 @@ class App extends React.Component {
     this.setState({ toggleHomePage: true });
   }
 
-  toggleState(stateToToggle, pageToRender) {
-    if (stateToToggle === "HomePage" && pageToRender === "TongueTwist") {
-      this.setState({ toggleHomePage: false });
-      this.setState({ toggleTongueTwister: true });
-      this.setState({ menuHeading: "Tongue Twisters" });
-    }
-    if (stateToToggle === "HomePage" && pageToRender === "Projection") {
-      this.setState({ toggleHomePage: false });
-      this.setState({ toggleProjection: true });
-      this.setState({ menuHeading: "Projection Practice" });
-    }
-    if (stateToToggle === "HomePage" && pageToRender === "Challenge") {
-      this.setState({ toggleHomePage: false });
-      this.setState({ toggleChallenge: true });
-      this.setState({ menuHeading: "Challenge Mode" });
-    }
+  // react wants you to build keys, but not use them
+  toggleState(pageHeading, pageToRender) {
+    let key = "toggle";
+    key = key + pageToRender;
+    this.setState({ toggleHomePage: false });
+    this.setState({ [key]: true });
+    this.setState({ menuHeading: pageHeading });
   }
   render() {
     return (
@@ -53,7 +44,12 @@ class App extends React.Component {
               toggleHome={this.toggleHome.bind(this)}
             />
             {this.state.toggleHomePage ? (
-              <HomePage toggleState={this.toggleState.bind(this)} />
+              <HomePage
+                toggleState={this.toggleState.bind(this)}
+                toggleProjection={this.state.toggleProjection}
+                toggleTongueTwister={this.state.toggleTongueTwister}
+                toggleChallenge={this.state.toggleChallenge}
+              />
             ) : null}
             {this.state.toggleTongueTwister ? <TongueTwisterMenu /> : null}
             {this.state.toggleProjection ? <ProjectionMenu /> : null}
