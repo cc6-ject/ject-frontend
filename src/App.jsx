@@ -4,6 +4,7 @@ import Menu from "./Menu";
 import HomePage from "./HomePage";
 import TongueTwisterMenu from "./TongueTwisterMenu";
 import ProjectionMenu from "./ProjectionMenu";
+import ChallengeMenu from "./ChallengeMenu";
 
 class App extends React.Component {
   constructor(props) {
@@ -12,21 +13,18 @@ class App extends React.Component {
       menuHeading: "",
       toggleHomePage: true,
       toggleTongueTwister: false,
-      toggleProjection: false
+      toggleProjection: false,
+      toggleChallenge: false
     };
   }
 
   toggleHome() {
     this.setState({ menuHeading: "" });
+    this.setState({ toggleChallenge: false });
     this.setState({ toggleTongueTwister: false });
     this.setState({ toggleProjection: false });
     this.setState({ toggleHomePage: true });
   }
-
-  // togglePage(pageBoolean, stateToToggle, toggleBoolean) {
-  //   this.toggleState(stateToToggle, toggleBoolean);
-  //   this.setState({ pageBoolean: true });
-  // }
 
   toggleState(stateToToggle, pageToRender) {
     if (stateToToggle === "HomePage" && pageToRender === "TongueTwist") {
@@ -38,6 +36,11 @@ class App extends React.Component {
       this.setState({ toggleHomePage: false });
       this.setState({ toggleProjection: true });
       this.setState({ menuHeading: "Projection Practice" });
+    }
+    if (stateToToggle === "HomePage" && pageToRender === "Challenge") {
+      this.setState({ toggleHomePage: false });
+      this.setState({ toggleChallenge: true });
+      this.setState({ menuHeading: "Challenge Mode" });
     }
   }
   render() {
@@ -51,10 +54,10 @@ class App extends React.Component {
             />
             {this.state.toggleHomePage ? (
               <HomePage toggleState={this.toggleState.bind(this)} />
-            ) : // <HomePage togglePage={this.togglePage.bind(this)} />
-            null}
+            ) : null}
             {this.state.toggleTongueTwister ? <TongueTwisterMenu /> : null}
             {this.state.toggleProjection ? <ProjectionMenu /> : null}
+            {this.state.toggleChallenge ? <ChallengeMenu /> : null}
           </div>
         </header>
       </div>

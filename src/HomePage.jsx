@@ -53,18 +53,21 @@ class HomePage extends Component {
                 "HomePage",
                 "TongueTwist"
               )}
-              // onClick={this.props.togglePage.bind(
-              //   this,
-              //   "toggleTongueTwister",
-              //   "HomePage",
-              //   false
-              // )}
             >
               Tounge Twisters
             </Paper>
           </Grid>
           <Grid item xs={4}>
-            <Paper className={classes.paper}>Challenge Mode</Paper>
+            <Paper
+              className={classes.paper}
+              onClick={this.props.toggleState.bind(
+                this,
+                "HomePage",
+                "Challenge"
+              )}
+            >
+              Challenge Mode
+            </Paper>
           </Grid>
         </Grid>
       </div>
