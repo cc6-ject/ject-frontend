@@ -28,23 +28,23 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       # run tests!
       - run: yarn test
+      - persist_to_workspace:
+          root: working_directory
+          paths:
+            - /*
 
   build:
     docker:
       - image: circleci/node:10.11
     working_directory: ~/repo
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+      - attach_workspace:
+          at: working_directory
       - run: yarn build
-      - save_cache:
+      - persist_to_workspace:
+          root: working_directory
           paths:
-            - build
-          key: v1-build-{{ checksum "build/index.html" }}
+            - /*
 
   deploy-dev:
     docker:
@@ -54,11 +54,8 @@ jobs:
       - run:
           name: Install awscli
           command: sudo pip install awscli
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-build-{{ checksum "build/index.html" }}
-            - v1-build-
+      - attach_workspace:
+          at: working_directory
       - run:
           name: Deploy to S3
           command: aws s3 sync build s3://ject-frontend-dev --delete
