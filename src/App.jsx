@@ -14,7 +14,8 @@ class App extends React.Component {
       toggleHomePage: true,
       toggleTongueTwister: false,
       toggleProjection: false,
-      toggleChallenge: false
+      toggleChallenge: false,
+      isLogin: false
     };
   }
 

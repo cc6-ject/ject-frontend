@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Login from "./Login";
 
 import Settings from "./Settings";
 
@@ -8,6 +9,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
+
+import { Auth } from "aws-amplify";
 
 const styles = {
   root: {
@@ -28,10 +31,10 @@ class Menu extends Component {
     super(props);
     this.state = {
       toggleLogin: true,
-      toggleSettings: false
+      toggleSettings: false,
+      toggleSignup: false
     };
   }
-  //methods go here
 
   render() {
     const { classes } = this.props;
