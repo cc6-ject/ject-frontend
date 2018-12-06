@@ -8,47 +8,49 @@ jobs:
     docker:
       # specify the version you desire here
       - image: circleci/node:10.11
-
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/mongo:3.4.4
-
     working_directory: ~/repo
-
     steps:
       - checkout
-
       # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
-
-      - run: yarn install
-
+      - run: yarn install --production=false
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
       # run tests!
       - run: yarn test
 
-  deploy-dev:
+  build:
     docker:
       - image: circleci/node:10.11
+    working_directory: ~/repo
+    steps:
+      - run: yarn build
 
+  deploy-dev:
+    docker:
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
     steps:
       - run:
-          name: Deploy to development
-          command: echo TODO deploy to development
+          name: Install awscli
+          command: sudo pip install awscli
+      - run:
+          name: Deploy to S3
+          command: aws s3 sync build s3://ject-frontend-dev --delete
 
   deploy-prod:
     docker:
       - image: circleci/node:10.11
-
     steps:
       - run:
           name: Deploy to production
@@ -59,6 +61,7 @@ workflows:
   build-deploy:
     jobs:
       - test
+      - build
       - deploy-dev:
           requires:
             - test
