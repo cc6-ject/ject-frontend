@@ -35,12 +35,20 @@ jobs:
 
       # run tests!
       - run: yarn test
+
   deploy-dev:
+    docker:
+      - image: circleci/node:10.11
+
     steps:
       - run:
           name: Deploy to development
           command: echo TODO deploy to development
+
   deploy-prod:
+    docker:
+      - image: circleci/node:10.11
+
     steps:
       - run:
           name: Deploy to production
