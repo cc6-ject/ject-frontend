@@ -41,6 +41,10 @@ jobs:
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
       - run: yarn build
+      - save_cache:
+          paths:
+            - build
+          key: v1-build-{{ checksum "build/index.html" }}
 
   deploy-dev:
     docker:
@@ -50,6 +54,10 @@ jobs:
       - run:
           name: Install awscli
           command: sudo pip install awscli
+      - restore_cache:
+          keys:
+            - v1-build-{{ checksum "build/index.html" }}
+            - v1-build-
       - run:
           name: Deploy to S3
           command: aws s3 sync build s3://ject-frontend-dev --delete
