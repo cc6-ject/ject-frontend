@@ -17,11 +17,6 @@ const styles = theme => ({
 });
 
 class HomePage extends Component {
-  constructor(props) {
-    super(props);
-  }
-  //methods go here
-
   render() {
     const { classes } = this.props;
     return (
