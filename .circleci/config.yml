@@ -29,7 +29,7 @@ jobs:
       # run tests!
       - run: yarn test
       - persist_to_workspace:
-          root: working_directory
+          root: ~/repo
           paths:
             - ./*
 
@@ -39,10 +39,10 @@ jobs:
     working_directory: ~/repo
     steps:
       - attach_workspace:
-          at: working_directory
+          at: ~/repo
       - run: yarn build
       - persist_to_workspace:
-          root: working_directory
+          root: ~/repo
           paths:
             - /*
 
@@ -55,7 +55,7 @@ jobs:
           name: Install awscli
           command: sudo pip install awscli
       - attach_workspace:
-          at: working_directory
+          at: ~/repo
       - run:
           name: Deploy to S3
           command: aws s3 sync build s3://ject-frontend-dev --delete
