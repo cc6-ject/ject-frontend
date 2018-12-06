@@ -46,7 +46,7 @@ jobs:
           name: Set FRONTEND_STAGE
           command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_DEV` && echo $FRONTEND_STAGE
       - run:
-          name: Build a React app.
+          name: Build React app
           command: yarn build
       - persist_to_workspace:
           root: ~/repo
@@ -64,7 +64,7 @@ jobs:
           name: Set FRONTEND_STAGE
           command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_PROD` && echo $FRONTEND_STAGE
       - run:
-          name: Build a React app.
+          name: Build React app
           command: yarn build
       - persist_to_workspace:
           root: ~/repo
