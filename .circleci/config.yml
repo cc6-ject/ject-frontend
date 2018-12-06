@@ -71,9 +71,11 @@ workflows:
       - deploy-dev:
           requires:
             - test
+            - build
       - deploy-prod:
           requires:
             - test
+            - build
           filters:
             branches:
               only: master
