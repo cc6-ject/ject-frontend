@@ -57,11 +57,10 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: pwd
-      - run: ls -al repo
-      - run: ls -al repo/build
+      - run: ls -al build
       - run:
           name: Deploy to S3
-          command: aws s3 sync repo/build s3://ject-frontend-dev --delete
+          command: aws s3 sync build s3://ject-frontend-dev --delete
 
   deploy-prod:
     docker:
