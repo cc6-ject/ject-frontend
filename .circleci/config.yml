@@ -39,12 +39,12 @@ jobs:
     steps:
       - run:
           name: Deploy to development
-          command: echo TODO: deploy to development
+          command: echo TODO deploy to development
   deploy-prod:
     steps:
       - run:
           name: Deploy to production
-          command: echo TODO: deploy to production
+          command: echo TODO deploy to production
 
 workflows:
   version: 2
