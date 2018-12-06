@@ -56,10 +56,8 @@ jobs:
           command: sudo pip install awscli
       - attach_workspace:
           at: ~/repo
-      - run: pwd
-      - run: ls -al build
       - run:
-          name: Deploy to S3
+          name: Deploy to S3 (Development)
           command: aws s3 sync build s3://ject-frontend-dev --delete
 
   deploy-prod:
@@ -67,7 +65,7 @@ jobs:
       - image: circleci/node:10.11
     steps:
       - run:
-          name: Deploy to production
+          name: Deploy to S3 (Production)
           command: echo TODO deploy to production
 
 workflows:
