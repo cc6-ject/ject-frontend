@@ -15,34 +15,57 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-      - run: yarn install --production=false
+      - run:
+          name: Install NodeJS packages
+          command: yarn install --production=false
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-      # run tests!
-      - run: yarn test
-      # Store ~/repo to build for the build: job.
+      - run:
+          name: Test React app
+          command: yarn test
       - persist_to_workspace:
           root: ~/repo
           paths:
             - ./*
 
-  build:
+  build-dev:
     docker:
       - image: circleci/node:10.11
     working_directory: ~/repo
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: yarn build
-      # Store ~/repo/build to build for the deploy-*: job.
+      - run:
+          name: Set FRONTEND_STAGE
+          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_DEV` && echo $FRONTEND_STAGE
+      - run:
+          name: Build a React app.
+          command: yarn build
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - build/*
+
+  build-prod:
+    docker:
+      - image: circleci/node:10.11
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Set FRONTEND_STAGE
+          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_PROD` && echo $FRONTEND_STAGE
+      - run:
+          name: Build a React app.
+          command: yarn build
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -59,10 +82,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Set FRONTEND_STAGE (Development)
-          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_DEV` && echo $FRONTEND_STAGE
-      - run:
-          name: Deploy to S3 (Development)
+          name: Deploy to S3
           command: aws s3 sync build s3://ject-frontend-dev --delete
 
   deploy-prod:
@@ -76,10 +96,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: Set FRONTEND_STAGE (Production)
-          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_PROD` && echo $FRONTEND_STAGE
-      - run:
-          name: Deploy to S3 (Production)
+          name: Deploy to S3
           command: aws s3 sync build s3://ject-frontend-prod --delete
 
 workflows:
@@ -87,18 +104,23 @@ workflows:
   build-deploy:
     jobs:
       - test
-      - build:
+      - build-dev:
           requires:
             - test
+      - build-prod:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
       - deploy-dev:
           requires:
             - test
-            - build
+            - build-dev
       - deploy-prod:
           requires:
             - test
-            - build
-          # Only on master branch was merged, it will be deployed.
+            - build-prod
           filters:
             branches:
               only: master
