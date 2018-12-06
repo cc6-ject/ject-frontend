@@ -28,6 +28,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
       # run tests!
       - run: yarn test
+      # Store ~/repo to build for the build: job.
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -41,6 +42,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: yarn build
+      # Store ~/repo/build to build for the deploy-*: job.
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -57,16 +59,28 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
+          name: Set FRONTEND_STAGE (Development)
+          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_DEV` && echo $FRONTEND_STAGE
+      - run:
           name: Deploy to S3 (Development)
           command: aws s3 sync build s3://ject-frontend-dev --delete
 
   deploy-prod:
     docker:
-      - image: circleci/node:10.11
+      - image: circleci/python:2.7-jessie
+    working_directory: ~/repo
     steps:
       - run:
+          name: Install awscli
+          command: sudo pip install awscli
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Set FRONTEND_STAGE (Production)
+          command: export FRONTEND_STAGE=`echo $FRONTEND_STAGE_PROD` && echo $FRONTEND_STAGE
+      - run:
           name: Deploy to S3 (Production)
-          command: echo TODO deploy to production
+          command: aws s3 sync build s3://ject-frontend-prod --delete
 
 workflows:
   version: 2
@@ -84,6 +98,7 @@ workflows:
           requires:
             - test
             - build
+          # Only on master branch was merged, it will be deployed.
           filters:
             branches:
               only: master
