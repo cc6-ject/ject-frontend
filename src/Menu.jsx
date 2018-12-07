@@ -1,5 +1,4 @@
-import React, { Component } from "react";
-import Login from "./Login";
+import React, { Fragment } from "react";
 
 import Settings from "./Settings";
 
@@ -9,8 +8,6 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-
-import { Auth } from "aws-amplify";
 
 const styles = {
   root: {
@@ -26,7 +23,7 @@ const styles = {
   }
 };
 
-class Menu extends Component {
+class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -38,6 +35,7 @@ class Menu extends Component {
 
   render() {
     const { classes } = this.props;
+    const props = this.props;
     return (
       <div className={classes.root}>
         <AppBar position="static">
@@ -60,14 +58,20 @@ class Menu extends Component {
             <Typography variant="h6" color="inherit" className={classes.grow}>
               {this.props.menuHeading}
             </Typography>
-            <Button
-              color="inherit"
-              onClick={() =>
-                this.setState({ toggleLogin: !this.state.toggleLogin })
-              }
-            >
-              {this.state.toggleLogin ? "Login" : "Logout"}
-            </Button>
+            {props.isAuthenticated ? (
+              <Button color="inherit" onClick={props.handleLogout}>
+                LOGOUT
+              </Button>
+            ) : (
+              <Fragment>
+                <Button color="inherit" onClick={props.handleLogin}>
+                  SIGNUP
+                </Button>
+                <Button color="inherit" onClick={props.handleLogin}>
+                  LOGIN
+                </Button>
+              </Fragment>
+            )}
           </Toolbar>
         </AppBar>
       </div>
