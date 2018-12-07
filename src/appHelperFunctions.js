@@ -1,5 +1,5 @@
-const test = function () {
-    return 'working'
-}
+const testFunc = function() {
+  return 'working';
+};
 
-export default test;
+export default testFunc;
