@@ -12,6 +12,9 @@ const dev = {
     USER_POOL_ID: "ap-northeast-1_XQ4u2J77c",
     APP_CLIENT_ID: "24i4j0mqpgtnnklk54ri710gef",
     IDENTITY_POOL_ID: "ap-northeast-1:b48ab953-81a1-419e-a17d-decda53b2cd3"
+  },
+  social: {
+    FB: "1719505251494936"
   }
 };
 
@@ -29,6 +32,9 @@ const prod = {
     USER_POOL_ID: "YOUR_PROD_COGNITO_USER_POOL_ID",
     APP_CLIENT_ID: "YOUR_PROD_COGNITO_APP_CLIENT_ID",
     IDENTITY_POOL_ID: "YOUR_PROD_IDENTITY_POOL_ID"
+  },
+  social: {
+    FB: "1719505251494936"
   }
 };
 

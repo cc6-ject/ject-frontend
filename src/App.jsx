@@ -6,7 +6,9 @@ import TongueTwisterMenu from "./TongueTwisterMenu";
 import ProjectionMenu from "./ProjectionMenu";
 import ChallengeMenu from "./ChallengeMenu";
 import Login from "./Login";
+import Signup from "./Signup";
 import { Auth } from "aws-amplify";
+import config from "./config";
 
 class App extends React.Component {
   constructor(props) {
@@ -18,12 +20,16 @@ class App extends React.Component {
       toggleProjection: false,
       toggleChallenge: false,
       isTryLogin: false,
+      isTrySignin: false,
       isAuthenticated: false,
       isAuthenticating: true
     };
   }
 
+  // Check if user is already logined and load FB SDK
   async componentDidMount() {
+    this.loadFacebookSDK();
+
     try {
       await Auth.currentSession();
       this.userHasAuthenticated(true);
@@ -35,11 +41,44 @@ class App extends React.Component {
     this.setState({ isAuthenticating: false });
   }
 
+  loadFacebookSDK() {
+    window.fbAsyncInit = function() {
+      window.FB.init({
+        appId: config.social.FB,
+        autoLogAppEvents: true,
+        xfbml: true,
+        version: "v3.1"
+      });
+    };
+
+    (function(d, s, id) {
+      var js,
+        fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {
+        return;
+      }
+      js = d.createElement(s);
+      js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    })(document, "script", "facebook-jssdk");
+  }
+
   userHasAuthenticated = authenticated => {
     this.setState({ isAuthenticated: authenticated });
   };
+
   toggleLogin = () => {
     this.setState({ isTryLogin: !this.state.isTryLogin });
+  };
+  handleLogout = async () => {
+    this.setState({ isTryLogin: false });
+    await Auth.signOut();
+    this.userHasAuthenticated(false);
+  };
+
+  toggleSignup = () => {
+    this.setState({ isTrySignin: !this.state.isTrySignin });
   };
 
   toggleHome() {
@@ -58,18 +97,9 @@ class App extends React.Component {
     this.setState({ menuHeading: pageHeading });
   }
 
-  handleLogin = () => {
-    this.setState({ isTryLogin: true });
-  };
-  handleLogout = async () => {
-    console.log("HI logout");
-    this.setState({ isTryLogin: false });
-    await Auth.signOut();
-    this.userHasAuthenticated(false);
-  };
-
   render() {
     console.log(this.state);
+    const isAunthenticating = !this.state.isTryLogin && !this.state.isTrySignin;
     return (
       !this.state.isAuthenticating && (
         <div className="App">
@@ -79,8 +109,10 @@ class App extends React.Component {
                 menuHeading={this.state.menuHeading}
                 toggleHome={this.toggleHome.bind(this)}
                 isTryLogin={this.state.isTryLogin}
-                handleLogin={this.handleLogin}
+                isTrySignin={this.state.isTrySignin}
+                toggleLogin={this.toggleLogin}
                 handleLogout={this.handleLogout}
+                toggleSignup={this.toggleSignup}
                 isAuthenticated={this.state.isAuthenticated}
               />
               {this.state.isTryLogin ? (
@@ -90,8 +122,15 @@ class App extends React.Component {
                   toggleLogin={this.toggleLogin}
                 />
               ) : null}
+              {this.state.isTrySignin ? (
+                <Signup
+                  toggleSignup={this.toggleSignup}
+                  toggleLogin={this.toggleLogin}
+                  userHasAuthenticated={this.userHasAuthenticated}
+                />
+              ) : null}
 
-              {!this.state.isTryLogin && this.state.toggleHomePage ? (
+              {isAunthenticating && this.state.toggleHomePage ? (
                 <HomePage
                   toggleState={this.toggleState.bind(this)}
                   toggleProjection={this.state.toggleProjection}
@@ -99,13 +138,13 @@ class App extends React.Component {
                   toggleChallenge={this.state.toggleChallenge}
                 />
               ) : null}
-              {!this.state.isTryLogin && this.state.toggleTongueTwister ? (
+              {isAunthenticating && this.state.toggleTongueTwister ? (
                 <TongueTwisterMenu />
               ) : null}
-              {!this.state.isTryLogin && this.state.toggleProjection ? (
+              {isAunthenticating && this.state.toggleProjection ? (
                 <ProjectionMenu />
               ) : null}
-              {!this.state.isTryLogin && this.state.toggleChallenge ? (
+              {isAunthenticating && this.state.toggleChallenge ? (
                 <ChallengeMenu />
               ) : null}
             </div>

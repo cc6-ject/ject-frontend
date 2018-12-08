@@ -64,10 +64,10 @@ class Menu extends React.Component {
               </Button>
             ) : (
               <Fragment>
-                <Button color="inherit" onClick={props.handleLogin}>
+                <Button color="inherit" onClick={props.toggleSignup}>
                   SIGNUP
                 </Button>
-                <Button color="inherit" onClick={props.handleLogin}>
+                <Button color="inherit" onClick={props.toggleLogin}>
                   LOGIN
                 </Button>
               </Fragment>

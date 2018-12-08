@@ -1,5 +1,6 @@
 import React from "react";
 import LoaderButton from "./LoaderButton";
+import FacebookButton from "./FacebookButton";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core/styles";
 import { Auth } from "aws-amplify";
@@ -42,7 +43,6 @@ class Login extends React.Component {
   };
 
   handleSubmit = async e => {
-    console.log("HI LOGIN");
     e.preventDefault();
     this.setState({ isLoading: true });
 
@@ -58,11 +58,20 @@ class Login extends React.Component {
     this.props.toggleLogin();
   };
 
+  handleFbLogin = () => {
+    this.props.userHasAuthenticated(true);
+  };
+
   render() {
     const { classes } = this.props;
     console.log(this.state);
     return (
       <div className={classes.container}>
+        <FacebookButton
+          onLogin={this.handleFbLogin}
+          toggleLogin={this.props.toggleLogin}
+        />
+        <br />
         <form onSubmit={this.handleSubmit}>
           <TextField
             id="email"
