@@ -70,6 +70,7 @@ class App extends React.Component {
 
   toggleLogin = () => {
     this.setState({ isTryLogin: !this.state.isTryLogin });
+    this.setState({ isTrySignin: false });
   };
   handleLogout = async () => {
     this.setState({ isTryLogin: false });
@@ -79,6 +80,7 @@ class App extends React.Component {
 
   toggleSignup = () => {
     this.setState({ isTrySignin: !this.state.isTrySignin });
+    this.setState({ isTryLogin: false });
   };
 
   toggleHome() {
@@ -87,6 +89,8 @@ class App extends React.Component {
     this.setState({ toggleTongueTwister: false });
     this.setState({ toggleProjection: false });
     this.setState({ toggleHomePage: true });
+    this.setState({ isTryLogin: false });
+    this.setState({ isTrySignin: false });
   }
 
   // react wants you to build keys, but not use them
@@ -98,7 +102,6 @@ class App extends React.Component {
   }
 
   render() {
-    console.log(this.state);
     const isAunthenticating = !this.state.isTryLogin && !this.state.isTrySignin;
     return (
       !this.state.isAuthenticating && (
