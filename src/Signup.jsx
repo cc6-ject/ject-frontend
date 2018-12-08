@@ -79,39 +79,44 @@ class Signup extends React.Component {
 
   renderForm = () => {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <FacebookButton onLogin={this.handleFbLogin} />
+      <div>
+        <FacebookButton
+          onLogin={this.handleFbLogin}
+          toggleLogin={this.props.toggleSignup}
+        />
         <hr />
-        <TextField
-          id="email"
-          label="email"
-          value={this.state.email}
-          onChange={this.handleChange}
-          margin="normal"
-        />
-        <TextField
-          id="password"
-          label="password"
-          value={this.state.password}
-          onChange={this.handleChange}
-          margin="normal"
-        />
-        <TextField
-          id="confirmPassword"
-          label="confirmPassword"
-          value={this.state.confirmPassword}
-          onChange={this.handleChange}
-          margin="normal"
-        />
-        <LoaderButton
-          color="inherit"
-          type="submit"
-          disabled={!this.validataForm()}
-          isLoading={this.state.isLoading}
-          text="Signup"
-          loadingText="Signing up..."
-        />
-      </form>
+        <form onSubmit={this.handleSubmit}>
+          <TextField
+            id="email"
+            label="email"
+            value={this.state.email}
+            onChange={this.handleChange}
+            margin="normal"
+          />
+          <TextField
+            id="password"
+            label="password"
+            value={this.state.password}
+            onChange={this.handleChange}
+            margin="normal"
+          />
+          <TextField
+            id="confirmPassword"
+            label="confirmPassword"
+            value={this.state.confirmPassword}
+            onChange={this.handleChange}
+            margin="normal"
+          />
+          <LoaderButton
+            color="inherit"
+            type="submit"
+            disabled={!this.validataForm()}
+            isLoading={this.state.isLoading}
+            text="Signup"
+            loadingText="Signing up..."
+          />
+        </form>
+      </div>
     );
   };
 
@@ -139,7 +144,6 @@ class Signup extends React.Component {
   };
 
   render() {
-    console.log(this.state);
     return (
       <div className="Signup">
         {this.state.newUser === null

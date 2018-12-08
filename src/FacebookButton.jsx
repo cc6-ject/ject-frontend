@@ -43,7 +43,6 @@ export default class FacebookButton extends React.Component {
 
   handleClick = () => {
     window.FB.login(this.checkLoginState, { scope: "public_profile,email" });
-    this.props.toggleLogin();
   };
 
   handleError(error) {
@@ -51,7 +50,6 @@ export default class FacebookButton extends React.Component {
   }
 
   async handleResponse(data) {
-    console.log("HI FB RES", data);
     const { email, accessToken: token, expiresIn } = data;
     const expires_at = expiresIn * 1000 + new Date().getTime();
     const user = { email };
@@ -66,6 +64,7 @@ export default class FacebookButton extends React.Component {
       );
       this.setState({ isLoading: false });
       this.props.onLogin(response);
+      this.props.toggleLogin();
     } catch (e) {
       this.setState({ isLoading: false });
       this.handleError(e);

@@ -48,7 +48,7 @@ class Menu extends React.Component {
               <Settings />
             </IconButton>
             <Typography
-              onClick={this.props.toggleHome}
+              onClick={props.toggleHome}
               variant="h6"
               color="inherit"
               className={classes.grow}
