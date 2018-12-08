@@ -5,6 +5,27 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import Amplify from "aws-amplify";
 import config from "./config";
+import { createMuiTheme } from "@material-ui/core/styles";
+import { MuiThemeProvider } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: "#4A6572",
+      main: "#344955",
+      dark: "#344955",
+      contrastText: "#fff"
+    },
+    secondary: {
+      main: "#F9AA33",
+      contrastText: "#000"
+    }
+  },
+  typography: {
+    useNextVariants: true,
+    fontFamily: "Work Sans"
+  }
+});
 
 // AWS configuration
 Amplify.configure({
@@ -31,6 +52,11 @@ Amplify.configure({
   }
 });
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <MuiThemeProvider theme={theme}>
+    <App />
+  </MuiThemeProvider>,
+  document.getElementById("root")
+);
 
 serviceWorker.unregister();
