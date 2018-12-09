@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
+// import { API } from "aws-amplify";
 import "./ProjectionMenu.css";
 
 const styles = theme => ({
@@ -21,16 +22,19 @@ class ProjectionMenu extends Component {
     this.state = {
       volume: { transform: "rotate(0deg)" },
       isTry: false,
-      intervalID: null
+      intervalID: null,
+      wholeDecibel: [],
+      avgDecibel: null
     };
   }
 
   handleClick = () => {
     const id = setInterval(() => {
       this.setState({
-        volume: { transform: `rotate(${-180 + 3 * average}deg)` }
+        volume: { transform: `rotate(${-180 + 3 * average}deg)` },
+        wholeDecibel: [...this.state.wholeDecibel, average]
       });
-    }, 300);
+    }, 500);
     this.setState({ isTry: !this.state.isTry, intervalID: id });
 
     navigator.getUserMedia(
@@ -41,12 +45,15 @@ class ProjectionMenu extends Component {
         // Create analyser interface to get frequency and time-domain analysis
         audioContext = new AudioContext();
         analyser = audioContext.createAnalyser();
+        analyser.fftSize = 128;
+        analyser.maxDecibels = 0;
+
         // Input is microphone
         const microphone = audioContext.createMediaStreamSource(stream);
         microphone.connect(analyser);
 
         // Pass microphone data to processor
-        const processor = audioContext.createScriptProcessor(2048, 1, 1);
+        const processor = audioContext.createScriptProcessor(256, 1, 1);
         analyser.connect(processor);
         processor.connect(audioContext.destination);
 
@@ -66,17 +73,33 @@ class ProjectionMenu extends Component {
 
   handleClose = () => {
     audioContext.close();
+
+    const state = this.state;
+    let infinityCounter = 0;
+    const sum = state.wholeDecibel.reduce((total, val) => {
+      console.log(val);
+      if (val !== -Infinity) {
+        return total + val;
+      }
+      infinityCounter++;
+      return total;
+    }, 0);
+    const avgDecibel = sum / (state.wholeDecibel.length - infinityCounter);
+
     this.setState({
-      isTry: !this.state.isTry,
-      volume: { transform: `rotate(0deg)` }
+      isTry: !state.isTry,
+      volume: { transform: `rotate(0deg)` },
+      avgDecibel: avgDecibel,
+      wholeDecibel: []
     });
-    clearInterval(this.state.intervalID);
+    clearInterval(state.intervalID);
   };
   componentWillUnmount() {
     this.handleClose();
   }
   render() {
     const { classes } = this.props;
+    console.log(this.state);
     return (
       <div className="Projection">
         <svg
@@ -138,9 +161,11 @@ function getAverageVolume(array) {
   const length = array.length;
 
   for (let i = 0; i < length; i++) {
-    values += array[i];
+    if (values < array[i]) {
+      values = array[i];
+    }
   }
-  average = values / length;
+  average = 25 * Math.log10(values);
   return average;
 }
 
