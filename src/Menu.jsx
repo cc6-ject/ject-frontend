@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 
-import Settings from "./Settings";
+import SideTab from "./SideTab";
 
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,6 +8,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
+import Drawer from "@material-ui/core/Drawer";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = {
   root: {
@@ -28,10 +30,13 @@ class Menu extends React.Component {
     super(props);
     this.state = {
       toggleLogin: true,
-      toggleSettings: false,
+      toggleDrawer: false,
       toggleSignup: false
     };
   }
+  toggleDrawer = open => {
+    this.setState({ toggleDrawer: open });
+  };
 
   render() {
     const { classes } = this.props;
@@ -43,10 +48,24 @@ class Menu extends React.Component {
             <IconButton
               className={classes.menuButton}
               color="inherit"
-              aria-label="Menu"
+              onClick={() => {
+                this.toggleDrawer(true);
+              }}
             >
-              <Settings />
+              <MenuIcon
+                onClick={() => {
+                  this.toggleDrawer(true);
+                }}
+              />
             </IconButton>
+            <Drawer
+              open={this.state.toggleDrawer}
+              onClose={() => {
+                this.toggleDrawer(false);
+              }}
+            >
+              <SideTab toggleDrawer={this.toggleDrawer} />
+            </Drawer>
             <Typography
               onClick={props.toggleHome}
               variant="h6"
