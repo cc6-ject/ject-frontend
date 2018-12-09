@@ -2,7 +2,7 @@ import React from "react";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+// import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 // import Divider from "@material-ui/core/Divider";
 
@@ -20,7 +20,7 @@ class SideTab extends React.Component {
   };
 
   render() {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     const props = this.props;
 
     return (
