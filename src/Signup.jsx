@@ -1,18 +1,18 @@
-import React from "react";
-import FacebookButton from "./FacebookButton";
-import LoaderButton from "./LoaderButton";
-import TextField from "@material-ui/core/TextField";
-import { Auth } from "aws-amplify";
+import React from 'react';
+import FacebookButton from './FacebookButton';
+import LoaderButton from './LoaderButton';
+import TextField from '@material-ui/core/TextField';
+import { Auth } from 'aws-amplify';
 
 class Signup extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      email: "",
-      password: "",
-      confirmPassword: "",
-      confirmationCode: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
+      confirmationCode: '',
       newUser: null
     };
   }
@@ -40,19 +40,29 @@ class Signup extends React.Component {
     e.preventDefault();
 
     this.setState({ isLoading: true });
+    let newUser;
     try {
-      const newUser = await Auth.signUp({
+      newUser = await Auth.signUp({
         username: this.state.email,
         password: this.state.password
       });
       this.setState({ newUser });
     } catch (e) {
-      alert(e.message);
+      if (e.code === 'UsernameExistsException') {
+        try {
+          await Auth.resendSignUp(this.state.email);
+          this.setState({ newUser });
+        } catch (e) {
+          alert(e.message);
+        }
+      } else {
+        alert(e.code);
+      }
     }
     this.setState({ isLoading: false });
   };
 
-  handleConfirmationCode = async e => {
+  handleConfirmationSubmit = async e => {
     e.preventDefault();
     this.setState({ isLoading: true });
 
@@ -62,7 +72,6 @@ class Signup extends React.Component {
 
       this.props.userHasAuthenticated(true);
       this.props.toggleSignup();
-      this.props.toggleLogin();
     } catch (e) {
       alert(e.message);
       this.setState({ isLoading: false });
@@ -95,14 +104,16 @@ class Signup extends React.Component {
           />
           <TextField
             id="password"
-            label="password"
+            label="Password"
+            type="password"
             value={this.state.password}
             onChange={this.handleChange}
             margin="normal"
           />
           <TextField
             id="confirmPassword"
-            label="confirmPassword"
+            label="Confirm Password"
+            type="password"
             value={this.state.confirmPassword}
             onChange={this.handleChange}
             margin="normal"
@@ -126,7 +137,7 @@ class Signup extends React.Component {
         Please check your email for the code.
         <TextField
           id="confirmationCode"
-          label="confirmationCode"
+          label="Confirmation Code"
           value={this.state.confirmationCode}
           onChange={this.handleChange}
           margin="normal"
@@ -144,6 +155,7 @@ class Signup extends React.Component {
   };
 
   render() {
+    console.log(this.state);
     return (
       <div className="Signup">
         {this.state.newUser === null
