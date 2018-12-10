@@ -1,9 +1,48 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+    width: 500
+  }
+});
 
 class TongueTwisterMenu extends Component {
   render() {
-    return <div>Place Holder For Tongue Twisters</div>;
+    const { classes } = this.props;
+    return (
+      <div>
+        <Grid
+          container
+          direction="column"
+          justify="flex-start"
+          alignItems="center"
+          spacing={24}
+        >
+          <Grid item xs={4}>
+            <Paper
+              className={classes.paper}
+              // onClick={this.props.toggleState.bind(
+              //   this,
+              //   'Projection Practice',
+              //   'Projection'
+              // )}
+            >
+              Random Tounge Twister
+            </Paper>
+          </Grid>
+        </Grid>
+      </div>
+    );
   }
 }
-
-export default TongueTwisterMenu;
+export default withStyles(styles)(TongueTwisterMenu);
