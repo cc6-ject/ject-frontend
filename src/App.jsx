@@ -34,7 +34,7 @@ class App extends React.Component {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
-      if (e !== "No current user") {
+      if (e !== "not authenticated") {
         alert(e);
       }
       console.log(e);

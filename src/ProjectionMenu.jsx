@@ -33,9 +33,10 @@ class ProjectionMenu extends Component {
     try {
       const data = await Auth.currentAuthenticatedUser();
       this.setState({ username: data.id });
-      console.log(data);
     } catch (e) {
-      alert(e.message);
+      if (e.message !== undefined) {
+        alert(e.message);
+      }
     }
   }
 
