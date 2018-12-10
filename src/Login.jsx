@@ -1,14 +1,14 @@
-import React from "react";
-import LoaderButton from "./LoaderButton";
-import FacebookButton from "./FacebookButton";
-import TextField from "@material-ui/core/TextField";
-import { withStyles } from "@material-ui/core/styles";
-import { Auth } from "aws-amplify";
+import React from 'react';
+import LoaderButton from './LoaderButton';
+import FacebookButton from './FacebookButton';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import { Auth } from 'aws-amplify';
 
 const styles = theme => ({
   container: {
-    display: "flex",
-    flexWrap: "wrap"
+    display: 'flex',
+    flexWrap: 'wrap'
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -27,8 +27,8 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       isLoading: false
     };
   }
@@ -49,8 +49,6 @@ class Login extends React.Component {
     try {
       await Auth.signIn(this.state.email, this.state.password);
       this.props.userHasAuthenticated(true);
-
-      alert("Logged in");
     } catch (e) {
       alert(e.message);
       this.setState({ isLoading: false });
@@ -82,7 +80,8 @@ class Login extends React.Component {
           />
           <TextField
             id="password"
-            label="password"
+            label="Password"
+            type="password"
             className={classes.textField}
             value={this.state.password}
             onChange={this.handleChange}

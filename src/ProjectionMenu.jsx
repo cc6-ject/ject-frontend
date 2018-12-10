@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import Fab from "@material-ui/core/Fab";
-import { API, Auth } from "aws-amplify";
-import "./ProjectionMenu.css";
+import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import Fab from '@material-ui/core/Fab';
+import { API, Auth } from 'aws-amplify';
+import './ProjectionMenu.css';
 
 const styles = theme => ({
   fab: {
@@ -20,12 +20,12 @@ class ProjectionMenu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      volume: { transform: "rotate(0deg)" },
+      volume: { transform: 'rotate(0deg)' },
       isTry: false,
       intervalID: null,
       trainingDecibel: [],
       avgDecibels: [],
-      username: ""
+      username: ''
     };
   }
 
@@ -40,7 +40,7 @@ class ProjectionMenu extends Component {
     }
   }
 
-  handleClick = () => {
+  handleClick = e => {
     const constraint = { audio: true };
     navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
   };
@@ -73,11 +73,11 @@ class ProjectionMenu extends Component {
       const array = new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteFrequencyData(array);
       average = getAverageVolume(array);
-      console.log("VOLUME:" + average);
+      console.log('VOLUME:' + average);
     };
   };
   handleError = err => {
-    console.log("The following error occured: " + err.name);
+    console.log('The following error occured: ' + err.name);
   };
 
   handleClose = async () => {
@@ -87,10 +87,12 @@ class ProjectionMenu extends Component {
     const sum = state.trainingDecibel.reduce((total, val) => total + val, 0);
     const avgDecibel = sum / state.trainingDecibel.length;
 
-    try {
-      await this.saveToAWS(state.trainingDecibel, avgDecibel);
-    } catch (e) {
-      console.log(e.message);
+    if (this.props.isAuthenticated) {
+      try {
+        await this.saveToAWS(state.trainingDecibel, avgDecibel);
+      } catch (e) {
+        console.log(e.message);
+      }
     }
 
     this.setState({
@@ -102,8 +104,8 @@ class ProjectionMenu extends Component {
     clearInterval(state.intervalID);
   };
   saveToAWS = (trainingDecibel, avgDecibel) => {
-    console.log("HIA");
-    return API.post("ject", "/decibel", {
+    console.log('HIA');
+    return API.post('ject', '/decibel', {
       body: { decibel: trainingDecibel, avgDecibel: avgDecibel },
       requestContext: {
         identity: {
@@ -121,6 +123,7 @@ class ProjectionMenu extends Component {
 
   render() {
     const { classes } = this.props;
+    console.log(this.state);
     return (
       <div className="Projection">
         <svg
@@ -188,7 +191,6 @@ function getAverageVolume(array) {
     }
   }
   result = 25 * Math.log10(values);
-  console.log(array, result);
   return result === -Infinity ? 0 : result;
 }
 

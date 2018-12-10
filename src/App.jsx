@@ -1,20 +1,20 @@
-import React from "react";
-import "./App.css";
-import Menu from "./Menu";
-import HomePage from "./HomePage";
-import TongueTwisterMenu from "./TongueTwisterMenu";
-import ProjectionMenu from "./ProjectionMenu";
-import ChallengeMenu from "./ChallengeMenu";
-import Login from "./Login";
-import Signup from "./Signup";
-import { Auth } from "aws-amplify";
-import config from "./config";
+import React from 'react';
+import './App.css';
+import Menu from './Menu';
+import HomePage from './HomePage';
+import TongueTwisterMenu from './TongueTwisterMenu';
+import ProjectionMenu from './ProjectionMenu';
+import ChallengeMenu from './ChallengeMenu';
+import Login from './Login';
+import Signup from './Signup';
+import { Auth } from 'aws-amplify';
+import config from './config';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      menuHeading: "",
+      menuHeading: '',
       toggleHomePage: true,
       toggleTongueTwister: false,
       toggleProjection: false,
@@ -34,7 +34,7 @@ class App extends React.Component {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
-      if (e !== "not authenticated") {
+      if (e !== 'not authenticated') {
         alert(e);
       }
       console.log(e);
@@ -48,7 +48,7 @@ class App extends React.Component {
         appId: config.social.FB,
         autoLogAppEvents: true,
         xfbml: true,
-        version: "v3.1"
+        version: 'v3.1'
       });
     };
 
@@ -60,9 +60,9 @@ class App extends React.Component {
       }
       js = d.createElement(s);
       js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      js.src = 'https://connect.facebook.net/en_US/sdk.js';
       fjs.parentNode.insertBefore(js, fjs);
-    })(document, "script", "facebook-jssdk");
+    })(document, 'script', 'facebook-jssdk');
   }
 
   userHasAuthenticated = authenticated => {
@@ -85,7 +85,7 @@ class App extends React.Component {
   };
 
   toggleHome() {
-    this.setState({ menuHeading: "" });
+    this.setState({ menuHeading: '' });
     this.setState({ toggleChallenge: false });
     this.setState({ toggleTongueTwister: false });
     this.setState({ toggleProjection: false });
@@ -96,7 +96,7 @@ class App extends React.Component {
 
   // react wants you to build keys, but not use them
   toggleState(pageHeading, pageToRender) {
-    const key = "toggle" + pageToRender;
+    const key = 'toggle' + pageToRender;
     this.setState({ toggleHomePage: false });
     this.setState({ [key]: true });
     this.setState({ menuHeading: pageHeading });
@@ -146,7 +146,7 @@ class App extends React.Component {
                 <TongueTwisterMenu />
               ) : null}
               {isAunthenticating && this.state.toggleProjection ? (
-                <ProjectionMenu />
+                <ProjectionMenu isAuthenticated={this.state.isAuthenticated} />
               ) : null}
               {isAunthenticating && this.state.toggleChallenge ? (
                 <ChallengeMenu />
