@@ -1,9 +1,9 @@
 // import React from 'react';
 // import ReactDOM from 'react-dom';
-import test from './appHelperFunctions';
+import testFunc from './appHelperFunctions';
 
 describe('the tests', () => {
-    it('should be working', () => {
-        expect(test()).toBe('working')
-    })
-})
+  it('should be working', () => {
+    expect(testFunc()).toBe('working');
+  });
+});
