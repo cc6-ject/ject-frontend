@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Fragment } from "react";
 
-import Settings from "./Settings";
+import SideTab from "./SideTab";
 
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -8,6 +8,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
+import Drawer from "@material-ui/core/Drawer";
+import MenuIcon from "@material-ui/icons/Menu";
 
 const styles = {
   root: {
@@ -23,18 +25,22 @@ const styles = {
   }
 };
 
-class Menu extends Component {
+class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       toggleLogin: true,
-      toggleSettings: false
+      toggleDrawer: false,
+      toggleSignup: false
     };
   }
-  //methods go here
+  toggleDrawer = open => {
+    this.setState({ toggleDrawer: open });
+  };
 
   render() {
     const { classes } = this.props;
+    const props = this.props;
     return (
       <div className={classes.root}>
         <AppBar position="static">
@@ -42,12 +48,26 @@ class Menu extends Component {
             <IconButton
               className={classes.menuButton}
               color="inherit"
-              aria-label="Menu"
+              onClick={() => {
+                this.toggleDrawer(true);
+              }}
             >
-              <Settings />
+              <MenuIcon
+                onClick={() => {
+                  this.toggleDrawer(true);
+                }}
+              />
             </IconButton>
+            <Drawer
+              open={this.state.toggleDrawer}
+              onClose={() => {
+                this.toggleDrawer(false);
+              }}
+            >
+              <SideTab toggleDrawer={this.toggleDrawer} />
+            </Drawer>
             <Typography
-              onClick={this.props.toggleHome}
+              onClick={props.toggleHome}
               variant="h6"
               color="inherit"
               className={classes.grow}
@@ -57,14 +77,20 @@ class Menu extends Component {
             <Typography variant="h6" color="inherit" className={classes.grow}>
               {this.props.menuHeading}
             </Typography>
-            <Button
-              color="inherit"
-              onClick={() =>
-                this.setState({ toggleLogin: !this.state.toggleLogin })
-              }
-            >
-              {this.state.toggleLogin ? "Login" : "Logout"}
-            </Button>
+            {props.isAuthenticated ? (
+              <Button color="inherit" onClick={props.handleLogout}>
+                LOGOUT
+              </Button>
+            ) : (
+              <Fragment>
+                <Button color="inherit" onClick={props.toggleSignup}>
+                  SIGNUP
+                </Button>
+                <Button color="inherit" onClick={props.toggleLogin}>
+                  LOGIN
+                </Button>
+              </Fragment>
+            )}
           </Toolbar>
         </AppBar>
       </div>
