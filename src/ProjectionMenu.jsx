@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
-// import { API } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
 import "./ProjectionMenu.css";
 
 const styles = theme => ({
@@ -23,83 +23,103 @@ class ProjectionMenu extends Component {
       volume: { transform: "rotate(0deg)" },
       isTry: false,
       intervalID: null,
-      wholeDecibel: [],
-      avgDecibel: null
+      trainingDecibel: [],
+      avgDecibels: [],
+      username: ""
     };
   }
 
+  async componentDidMount() {
+    try {
+      const data = await Auth.currentAuthenticatedUser();
+      this.setState({ username: data.id });
+      console.log(data);
+    } catch (e) {
+      alert(e.message);
+    }
+  }
+
   handleClick = () => {
+    const constraint = { audio: true };
+    navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
+  };
+  handleSuccess = stream => {
     const id = setInterval(() => {
       this.setState({
         volume: { transform: `rotate(${-180 + 3 * average}deg)` },
-        wholeDecibel: [...this.state.wholeDecibel, average]
+        trainingDecibel: [...this.state.trainingDecibel, average]
       });
     }, 500);
     this.setState({ isTry: !this.state.isTry, intervalID: id });
 
-    navigator.getUserMedia(
-      {
-        audio: true
-      },
-      function(stream) {
-        // Create analyser interface to get frequency and time-domain analysis
-        audioContext = new AudioContext();
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 128;
-        analyser.maxDecibels = 0;
+    // Create analyser interface to get frequency and time-domain analysis
+    audioContext = new AudioContext();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 1024;
+    analyser.maxDecibels = 0;
 
-        // Input is microphone
-        const microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(analyser);
+    // Input is microphone
+    const microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
 
-        // Pass microphone data to processor
-        const processor = audioContext.createScriptProcessor(256, 1, 1);
-        analyser.connect(processor);
-        processor.connect(audioContext.destination);
+    // Pass microphone data to processor
+    const processor = audioContext.createScriptProcessor(8192, 1, 1);
+    analyser.connect(processor);
+    processor.connect(audioContext.destination);
 
-        // Do something with streaming PCM data
-        processor.onaudioprocess = function() {
-          const array = new Uint8Array(analyser.frequencyBinCount);
-          analyser.getByteFrequencyData(array);
-          average = getAverageVolume(array);
-          console.log("VOLUME:" + average);
-        };
-      },
-      function(err) {
-        console.log("The following error occured: " + err.name);
-      }
-    );
+    // Do something with streaming PCM data
+    processor.onaudioprocess = function() {
+      const array = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(array);
+      average = getAverageVolume(array);
+      console.log("VOLUME:" + average);
+    };
+  };
+  handleError = err => {
+    console.log("The following error occured: " + err.name);
   };
 
-  handleClose = () => {
+  handleClose = async () => {
     audioContext.close();
 
     const state = this.state;
-    let infinityCounter = 0;
-    const sum = state.wholeDecibel.reduce((total, val) => {
-      console.log(val);
-      if (val !== -Infinity) {
-        return total + val;
-      }
-      infinityCounter++;
-      return total;
-    }, 0);
-    const avgDecibel = sum / (state.wholeDecibel.length - infinityCounter);
+    const sum = state.trainingDecibel.reduce((total, val) => total + val, 0);
+    const avgDecibel = sum / state.trainingDecibel.length;
+
+    try {
+      await this.saveToAWS(state.trainingDecibel, avgDecibel);
+    } catch (e) {
+      console.log(e.message);
+    }
 
     this.setState({
       isTry: !state.isTry,
       volume: { transform: `rotate(0deg)` },
-      avgDecibel: avgDecibel,
-      wholeDecibel: []
+      avgDecibels: [...state.avgDecibels, avgDecibel],
+      trainingDecibel: []
     });
     clearInterval(state.intervalID);
   };
+  saveToAWS = (trainingDecibel, avgDecibel) => {
+    console.log("HIA");
+    return API.post("ject", "/decibel", {
+      body: { decibel: trainingDecibel, avgDecibel: avgDecibel },
+      requestContext: {
+        identity: {
+          cognitoIdentityId: this.state.username
+        }
+      }
+    });
+  };
+
   componentWillUnmount() {
-    this.handleClose();
+    if (audioContext) {
+      this.handleClose();
+    }
   }
+
   render() {
     const { classes } = this.props;
-    console.log(this.state);
     return (
       <div className="Projection">
         <svg
@@ -159,14 +179,16 @@ class ProjectionMenu extends Component {
 function getAverageVolume(array) {
   let values = 0;
   const length = array.length;
+  let result;
 
   for (let i = 0; i < length; i++) {
     if (values < array[i]) {
       values = array[i];
     }
   }
-  average = 25 * Math.log10(values);
-  return average;
+  result = 25 * Math.log10(values);
+  console.log(array, result);
+  return result === -Infinity ? 0 : result;
 }
 
 export default withStyles(styles)(ProjectionMenu);

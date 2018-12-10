@@ -31,12 +31,13 @@ class App extends React.Component {
     this.loadFacebookSDK();
 
     try {
-      await Auth.currentSession();
+      await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
       if (e !== "No current user") {
         alert(e);
       }
+      console.log(e);
     }
     this.setState({ isAuthenticating: false });
   }
