@@ -1,14 +1,21 @@
-import React from "react";
-import LoaderButton from "./LoaderButton";
-import FacebookButton from "./FacebookButton";
-import TextField from "@material-ui/core/TextField";
-import { withStyles } from "@material-ui/core/styles";
-import { Auth } from "aws-amplify";
+import React from 'react';
+import { Auth } from 'aws-amplify';
+import {
+  List,
+  ListItem,
+  TextField,
+  Card,
+  CardContent,
+  Typography
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import LoaderButton from './LoaderButton';
+import FacebookButton from './FacebookButton';
 
 const styles = theme => ({
   container: {
-    display: "flex",
-    flexWrap: "wrap"
+    display: 'flex',
+    flexWrap: 'wrap'
   },
   textField: {
     marginLeft: theme.spacing.unit,
@@ -27,76 +34,117 @@ class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: "",
-      isLoading: false
+      email: '',
+      password: '',
+      isLoading: false,
+      errorMessage: ''
     };
   }
 
   handleChange = e => {
-    const key = e.target.id;
-    const value = e.target.value;
-    this.setState({ [key]: value });
-  };
-  validataForm = () => {
-    return this.state.email.length > 0 && this.state.password.length > 0;
+    const { id, value } = e.target;
+    this.setState({ [id]: value });
   };
 
-  handleSubmit = async e => {
-    e.preventDefault();
+  validateForm = () => {
+    const { email, password } = this.state;
+    return email.length > 0 && password.length > 0;
+  };
+
+  handleSubmit = async event => {
+    event.preventDefault();
     this.setState({ isLoading: true });
 
-    try {
-      await Auth.signIn(this.state.email, this.state.password);
-      this.props.userHasAuthenticated(true);
+    const { onLogin } = this.props;
+    const { email, password } = this.state;
 
-      alert("Logged in");
-    } catch (e) {
-      alert(e.message);
-      this.setState({ isLoading: false });
+    try {
+      await Auth.signIn(email, password);
+      onLogin();
+    } catch (error) {
+      console.log(error);
+      this.setState({
+        isLoading: false,
+        errorMessage: error.message
+      });
     }
-    this.props.toggleLogin();
   };
 
-  handleFbLogin = () => {
-    this.props.userHasAuthenticated(true);
+  handleFacebookLogin = () => {
+    const { onLogin } = this.props;
+    onLogin();
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, onLogin } = this.props;
+    const { email, password, isLoading, errorMessage } = this.state;
+
     return (
       <div className={classes.container}>
-        <FacebookButton
-          onLogin={this.handleFbLogin}
-          toggleLogin={this.props.toggleLogin}
-        />
-        <br />
-        <form onSubmit={this.handleSubmit}>
-          <TextField
-            id="email"
-            label="email"
-            className={classes.textField}
-            value={this.state.email}
-            onChange={this.handleChange}
-            margin="normal"
-          />
-          <TextField
-            id="password"
-            label="password"
-            className={classes.textField}
-            value={this.state.password}
-            onChange={this.handleChange}
-            margin="normal"
-          />
-          <LoaderButton
-            color="inherit"
-            type="submit"
-            disabled={!this.validataForm()}
-            isLoading={this.state.isLoading}
-            text="Login"
-            loadingText="Loggin in..."
-          />
-        </form>
+        <List>
+          <ListItem>
+            <FacebookButton
+              onFacebookLogin={this.handleFacebookLogin}
+              onLogin={onLogin}
+            />
+          </ListItem>
+          <ListItem>
+            <Typography variant="h6" color="inherit" className={classes.grow}>
+              OR
+            </Typography>
+          </ListItem>
+          <ListItem>
+            <form onSubmit={this.handleSubmit}>
+              <Card>
+                <CardContent>
+                  <List>
+                    <ListItem>
+                      <TextField
+                        id="email"
+                        label="email"
+                        className={classes.textField}
+                        value={email}
+                        onChange={this.handleChange}
+                        margin="normal"
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <TextField
+                        id="password"
+                        label="password"
+                        className={classes.textField}
+                        value={password}
+                        onChange={this.handleChange}
+                        margin="normal"
+                        type="password"
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <LoaderButton
+                        type="submit"
+                        disabled={!this.validateForm()}
+                        isLoading={isLoading}
+                        text="Login"
+                        loadingText="Loggin in..."
+                      />
+                    </ListItem>
+                    {errorMessage && errorMessage.length > 0 ? (
+                      <ListItem>
+                        <Typography
+                          variant="overline"
+                          gutterBottom
+                          color="error"
+                        >
+                          {errorMessage}
+                        </Typography>
+                      </ListItem>
+                    ) : null}
+                  </List>
+                </CardContent>
+              </Card>
+            </form>
+          </ListItem>
+        </List>
       </div>
     );
   }

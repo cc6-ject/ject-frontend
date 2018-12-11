@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-// import { Auth } from 'aws-amplify';
-import DrawerMenu from './DrawerMenu';
+import { Auth } from 'aws-amplify';
+import Navbar from './Navbar';
 import HomePage from './HomePage';
 import TongueTwisterMenu from './TongueTwisterMenu';
 import ProjectionMenu from './ProjectionMenu';
@@ -26,17 +26,12 @@ class App extends Component {
   async componentDidMount() {
     // TODO: call from libs.
     // this.loadFacebookSDK();
-    // try {
-    //   await Auth.currentAuthenticatedUser();
-    //   this.userHasAuthenticated(true);
-    // } catch (e) {
-    //   if (e !== 'No current user') {
-    //     // alert(e);
-    //     console.log(e);
-    //   }
-    //   console.log(e);
-    // }
-    // this.setState({ isAuthenticating: false });
+    try {
+      await Auth.currentAuthenticatedUser();
+      this.userHasAuthenticated(true);
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   userHasAuthenticated = authenticated => {
@@ -44,22 +39,19 @@ class App extends Component {
   };
 
   handleLogin = async () => {
-    console.log('handleLogin');
-    // TODO: actual login and authenticating
-    // await Auth.signOut();
     this.userHasAuthenticated(true);
+    this.handleViewSwitch(views.home.TITLE);
   };
 
   handleLogout = async () => {
-    console.log('handleLogout');
-    // await Auth.signOut();
+    await Auth.signOut();
     this.userHasAuthenticated(false);
   };
 
-  handleSignUp2 = async () => {
-    console.log('handleSignUp2');
+  handleSignUp = async () => {
     // TODO:
     this.userHasAuthenticated(true);
+    this.handleViewSwitch(views.home.TITLE);
   };
 
   handleViewSwitch = viewTitle => {
@@ -98,11 +90,12 @@ class App extends Component {
       <div className="app">
         <header className="app-header">
           <div className="wrapper">
-            <DrawerMenu
+            <Navbar
               switchView={this.handleViewSwitch}
               currentView={currentView}
               isAuthenticated={isAuthenticated}
               isAuthenticating={isAuthenticating}
+              onLogout={this.handleLogout}
             />
             {/* TODO: React Router DOM */}
             {currentView === views.home.TITLE ? (
@@ -116,9 +109,9 @@ class App extends Component {
             ) : currentView === views.karaoke.TITLE ? (
               <KaraokeMenu />
             ) : currentView === views.login.TITLE ? (
-              <Login login={this.handleLogin} />
+              <Login onLogin={this.handleLogin} />
             ) : currentView === views.signUp.TITLE ? (
-              <SignUp signUp={this.handleSignUp} />
+              <SignUp onSignUp={this.handleSignUp} />
             ) : null}
           </div>
         </header>

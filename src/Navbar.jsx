@@ -39,7 +39,7 @@ const styles = theme => ({
   toolbar: theme.mixins.toolbar
 });
 
-class DrawerMenu extends React.Component {
+class Navbar extends React.Component {
   constructor(props) {
     super(props);
 
@@ -58,7 +58,7 @@ class DrawerMenu extends React.Component {
       switchView,
       currentView,
       isAuthenticated,
-      logout
+      onLogout
     } = this.props;
     const { drawerOpen } = this.state;
 
@@ -90,10 +90,10 @@ class DrawerMenu extends React.Component {
             </Typography>
             {isAuthenticated ? (
               <Fragment>
-                <IconButton>
+                <IconButton color="inherit">
                   <AccountCircle />
                 </IconButton>
-                <Button color="inherit" onClick={logout}>
+                <Button color="inherit" onClick={onLogout}>
                   LOGOUT
                 </Button>
               </Fragment>
@@ -133,4 +133,4 @@ class DrawerMenu extends React.Component {
   }
 }
 
-export default withStyles(styles)(DrawerMenu);
+export default withStyles(styles)(Navbar);
