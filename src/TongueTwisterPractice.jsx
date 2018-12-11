@@ -30,13 +30,19 @@ class TongueTwisterPractice extends Component {
     super(props);
     this.state = {
       //tongueTwisters: [twistersArray],
-      //   lastTongueTwister: -1,
-      //   currentTwister: 'Holding',
-      twisterTranscript: 'state',
+      lastTongueTwister: -1,
+      currentTwister: 'Practice Random Tongue Twister',
+      twisterTranscript: '',
       listening: false
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      currentTwister: randomTongueTwister(this.lastTongueTwister)
+    });
   }
   toggleListen() {
     this.setState(
@@ -44,6 +50,21 @@ class TongueTwisterPractice extends Component {
         listening: !this.state.listening
       },
       this.handleListen
+    );
+  }
+
+  updateTwister() {
+    console.log('enter');
+    console.log(randomTongueTwister(this.lastTongueTwister));
+    const newTT = randomTongueTwister(this.lastTongueTwister);
+    console.log('newTT..', newTT);
+    this.setState(
+      {
+        currentTwister: newTT
+      },
+      () => {
+        console.log(this.state.currentTwister, 'currentTwister');
+      }
     );
   }
 
@@ -92,24 +113,26 @@ class TongueTwisterPractice extends Component {
           <Grid item xs={4}>
             <Paper
               className={classes.paper}
-              // onClick={this.updateTwister.bind(this)}
+              onClick={this.updateTwister.bind(this)}
               // onClick={this.startTwister.bind(this)}
               //onClick={this.startTwister}
             >
-              Place Holder
+              {/* Place Holder */}
               {/* {TongueTwisterFiles.randomArrayIndex(this.lastTongueTwister)} */}
-              {/* {this.state.currentTwister} */}
+              {this.state.currentTwister}
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={classes.paper} onClick={this.toggleListen}>
+              Start
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={classes.paper}>
+              {this.state.twisterTranscript}
             </Paper>
           </Grid>
         </Grid>
-        <button
-          // id="microphone-btn"
-          // style={button}
-          onClick={this.toggleListen}
-        >
-          TEST{}
-        </button>
-        <div>{this.state.twisterTranscript}</div>
       </div>
     );
   }
