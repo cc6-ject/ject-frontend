@@ -1,6 +1,5 @@
 import React, { Fragment } from 'react';
 
-import SideTab from './SideTab';
 
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -10,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Drawer from '@material-ui/core/Drawer';
 import MenuIcon from '@material-ui/icons/Menu';
+import SideTab from './SideTab';
 
 const styles = {
   root: {
@@ -34,6 +34,7 @@ class Menu extends React.Component {
       toggleSignup: false
     };
   }
+
   toggleDrawer = open => {
     this.setState({ toggleDrawer: open });
   };
