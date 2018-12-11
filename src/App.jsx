@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Menu from './Menu';
 import HomePage from './HomePage';
-// import TongueTwisterMenu from './TongueTwisterMenu';
 import TongueTwisterPractice from './TongueTwisterPractice';
 import ProjectionMenu from './ProjectionMenu';
 import ChallengeMenu from './ChallengeMenu';
@@ -147,7 +146,7 @@ class App extends React.Component {
                 <TongueTwisterPractice />
               ) : null}
               {isAunthenticating && this.state.toggleProjection ? (
-                <ProjectionMenu />
+                <ProjectionMenu isAuthenticated={this.state.isAuthenticated} />
               ) : null}
               {isAunthenticating && this.state.toggleChallenge ? (
                 <ChallengeMenu />

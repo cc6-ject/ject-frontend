@@ -9,7 +9,11 @@ class LoaderButton extends React.Component {
         className="LoaderButton"
         disabled={props.disabled || props.isLoading}
         type="submit"
-        onClick={props.handleClick}
+        onClick={() => {
+          if (props.handleClick) {
+            props.handleClick();
+          }
+        }}
       >
         {!props.isLoading ? props.text : props.loadingText}
       </Button>
