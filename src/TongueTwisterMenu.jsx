@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -20,10 +21,7 @@ const styles = theme => ({
     width: 500
   }
 });
-// window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-// const SpeechRecognition = window.webkitSpeechRecognition;
-const SpeechRecognition =
-  global.window.SpeechRecognition || global.window.webkitSpeechRecognition;
+const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 // recognition.maxAlternatives = 10; //<- supposed to give alternatives
 // recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
@@ -31,7 +29,7 @@ const recognition = new SpeechRecognition();
 
 let transcript = '';
 
-class TongueTwisterMenu extends Component {
+class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -42,7 +40,12 @@ class TongueTwisterMenu extends Component {
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
-    this.updateTwister = this.updateTwister.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      currentTwister: randomTongueTwister(this.lastTongueTwister)
+    });
   }
 
   updateLastTwister(newTT) {
@@ -93,8 +96,8 @@ class TongueTwisterMenu extends Component {
 
   printResults() {
     const table = [];
-    for (let i = 0; i < this.state.twisterTranscript.length; i + 1) {
-      table.push(<p key={i}>{this.state.twisterTranscript[i]}</p>);
+    for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+      table.push(<p id={i}>{this.state.twisterTranscript[i]}</p>);
     }
     return table;
   }
@@ -111,7 +114,10 @@ class TongueTwisterMenu extends Component {
           spacing={24}
         >
           <Grid item xs={4}>
-            <Paper className={classes.paper} onClick={this.updateTwister}>
+            <Paper
+              className={classes.paper}
+              onClick={this.updateTwister.bind(this)}
+            >
               {this.state.currentTwister}
             </Paper>
           </Grid>
@@ -129,4 +135,4 @@ class TongueTwisterMenu extends Component {
   }
 }
 
-export default withStyles(styles)(TongueTwisterMenu);
+export default withStyles(styles)(TongueTwisterPractice);
