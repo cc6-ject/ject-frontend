@@ -63,6 +63,12 @@ class Menu extends React.Component {
               onClose={() => {
                 this.toggleDrawer(false);
               }}
+              style={{
+                contentContainer: {
+                  height: 100,
+                  backgroundColor: 'black'
+                }
+              }}
             >
               <SideTab toggleDrawer={this.toggleDrawer} />
             </Drawer>

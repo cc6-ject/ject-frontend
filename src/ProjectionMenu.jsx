@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
+import ProjectionChart from './ProjectionChart';
 import { API, Auth } from 'aws-amplify';
 import './ProjectionMenu.css';
 
@@ -24,8 +25,11 @@ class ProjectionMenu extends Component {
       isTry: false,
       intervalID: null,
       trainingDecibel: [],
+      durations: [],
       avgDecibels: [],
-      username: ''
+      username: '',
+      isFinish: false,
+      jectStartTime: 0
     };
   }
 
@@ -41,10 +45,13 @@ class ProjectionMenu extends Component {
   }
 
   handleClick = e => {
+    const startTime = performance.now();
+    this.setState({ isFinish: false, jectStartTime: startTime });
     const constraint = { audio: true };
     navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
   };
   handleSuccess = stream => {
+    this.setState({ trainingDecibel: [] });
     const id = setInterval(() => {
       this.setState({
         volume: { transform: `rotate(${-180 + 3 * average}deg)` },
@@ -64,7 +71,7 @@ class ProjectionMenu extends Component {
     microphone.connect(analyser);
 
     // Pass microphone data to processor
-    const processor = audioContext.createScriptProcessor(8192, 1, 1);
+    const processor = audioContext.createScriptProcessor(256, 1, 1);
     analyser.connect(processor);
     processor.connect(audioContext.destination);
 
@@ -85,11 +92,16 @@ class ProjectionMenu extends Component {
 
     const state = this.state;
     const sum = state.trainingDecibel.reduce((total, val) => total + val, 0);
-    const avgDecibel = sum / state.trainingDecibel.length;
+    let avgDecibel = sum / state.trainingDecibel.length;
+    avgDecibel = Math.floor(avgDecibel * 100) / 100;
+
+    // Sec
+    const endTime = performance.now();
+    const duration = Math.floor((endTime - state.jectStartTime) / 1000);
 
     if (this.props.isAuthenticated) {
       try {
-        await this.saveToAWS(state.trainingDecibel, avgDecibel);
+        await this.saveToAWS(state.trainingDecibel, avgDecibel, duration);
       } catch (e) {
         console.log(e.message);
       }
@@ -99,14 +111,19 @@ class ProjectionMenu extends Component {
       isTry: !state.isTry,
       volume: { transform: `rotate(0deg)` },
       avgDecibels: [...state.avgDecibels, avgDecibel],
-      trainingDecibel: []
+      durations: [...state.durations, duration],
+      isFinish: true
     });
     clearInterval(state.intervalID);
   };
-  saveToAWS = (trainingDecibel, avgDecibel) => {
-    console.log('HIA');
+
+  saveToAWS = (trainingDecibel, avgDecibel, duration) => {
     return API.post('ject', '/decibel', {
-      body: { decibel: trainingDecibel, avgDecibel: avgDecibel },
+      body: {
+        decibel: JSON.stringify(trainingDecibel),
+        avgDecibel: avgDecibel,
+        duration
+      },
       requestContext: {
         identity: {
           cognitoIdentityId: this.state.username
@@ -123,7 +140,7 @@ class ProjectionMenu extends Component {
 
   render() {
     const { classes } = this.props;
-    console.log(this.state);
+    const state = this.state;
     return (
       <div className="Projection">
         <svg
@@ -132,14 +149,19 @@ class ProjectionMenu extends Component {
           width="200"
           height="200"
           viewBox="0 0 24 24"
-          style={this.state.volume}
+          style={state.volume}
         >
           <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z" />
         </svg>
-        <br />
-        <br />
-        <br />
-
+        {state.isFinish ? (
+          <ProjectionChart
+            trainingDecibel={state.trainingDecibel}
+            durations={state.durations[state.durations.length - 1]}
+            avgDecibels={state.avgDecibels[state.avgDecibels.length - 1]}
+          />
+        ) : (
+          <br />
+        )}
         {!this.state.isTry ? (
           <Fab
             color="secondary"
@@ -190,7 +212,8 @@ function getAverageVolume(array) {
       values = array[i];
     }
   }
-  result = 25 * Math.log10(values);
+  result = 23 * Math.log10(values);
+  result = Math.floor(result * 100) / 100;
   return result === -Infinity ? 0 : result;
 }
 
