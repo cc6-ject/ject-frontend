@@ -1,7 +1,6 @@
 import React from 'react';
 import { Auth } from 'aws-amplify';
 import LoaderButton from './LoaderButton';
-import './FacebookButton.css';
 
 function waitForInit() {
   return new Promise((res, rej) => {
@@ -76,7 +75,6 @@ class FacebookButton extends React.Component {
     const { classes } = this.props;
     return (
       <LoaderButton
-        className={classes.loaderButton}
         color="inherit"
         disabled={this.state.isLoading}
         handleClick={this.handleClick}
