@@ -42,17 +42,18 @@ class TongueTwisterPractice extends Component {
     this.handleListen = this.handleListen.bind(this);
   }
 
+  componentDidMount() {
+    this.setState({
+      currentTwister: randomTongueTwister(this.lastTongueTwister)
+    });
+  }
+
   updateLastTwister(newTT) {
     this.setState({
       lastTongueTwister: updateLastTongueTwister(newTT)
     });
   }
 
-  componentDidMount() {
-    this.setState({
-      currentTwister: randomTongueTwister(this.lastTongueTwister)
-    });
-  }
   toggleListen() {
     this.setState(
       {
@@ -94,9 +95,9 @@ class TongueTwisterPractice extends Component {
   }
 
   printResults() {
-    let table = [];
+    const table = [];
     for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-      table.push(<p>{this.state.twisterTranscript[i]}</p>);
+      table.push(<p id={i}>{this.state.twisterTranscript[i]}</p>);
     }
     return table;
   }
