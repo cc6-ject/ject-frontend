@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+/* eslint-disable react/prefer-stateless-function */
+import React, { Component } from 'react';
 
 class ChallengeMenu extends Component {
   render() {

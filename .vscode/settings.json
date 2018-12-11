@@ -2,7 +2,7 @@
   "files.autoSave": "onFocusChange",
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
-  "eslint.autoFixOnSave": false,
+  "eslint.autoFixOnSave": true,
   "eslint.enable": true,
   "prettier.singleQuote": true
 }

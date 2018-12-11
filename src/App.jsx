@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Menu from './Menu';
 import HomePage from './HomePage';
-import TongueTwisterMenu from './TongueTwisterMenu';
+import TongueTwisterPractice from './TongueTwisterPractice';
 import ProjectionMenu from './ProjectionMenu';
 import ChallengeMenu from './ChallengeMenu';
 import Login from './Login';
@@ -34,7 +34,7 @@ class App extends React.Component {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
     } catch (e) {
-      if (e !== 'not authenticated') {
+      if (e !== 'No current user') {
         alert(e);
       }
       console.log(e);
@@ -143,7 +143,7 @@ class App extends React.Component {
                 />
               ) : null}
               {isAunthenticating && this.state.toggleTongueTwister ? (
-                <TongueTwisterMenu />
+                <TongueTwisterPractice />
               ) : null}
               {isAunthenticating && this.state.toggleProjection ? (
                 <ProjectionMenu isAuthenticated={this.state.isAuthenticated} />

@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+/* eslint-disable react/prefer-stateless-function */
+import React, { Component } from 'react';
 
-import { withStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
+import { withStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 
 const styles = theme => ({
   root: {
@@ -10,12 +11,11 @@ const styles = theme => ({
   },
   paper: {
     padding: theme.spacing.unit * 2,
-    textAlign: "center",
+    textAlign: 'center',
     color: theme.palette.text.secondary,
     width: 500
   }
 });
-
 class HomePage extends Component {
   render() {
     const { classes } = this.props;
@@ -33,8 +33,8 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "Projection Practice",
-                "Projection"
+                'Projection Practice',
+                'Projection'
               )}
             >
               Practice Projection
@@ -45,8 +45,8 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "Tongue Twisters",
-                "TongueTwister"
+                'Tongue Twisters',
+                'TongueTwister'
               )}
             >
               Tounge Twisters
@@ -57,8 +57,8 @@ class HomePage extends Component {
               className={classes.paper}
               onClick={this.props.toggleState.bind(
                 this,
-                "Challenge Mode",
-                "Challenge"
+                'Challenge Mode',
+                'Challenge'
               )}
             >
               Challenge Mode
