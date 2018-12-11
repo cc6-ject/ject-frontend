@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Menu from './Menu';
+import Menu from './DrawerMenu';
 
 it('render without crashing', () => {
   const div = document.createElement('div');

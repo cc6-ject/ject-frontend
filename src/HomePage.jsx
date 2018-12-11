@@ -6,28 +6,22 @@ import {
   GridListTile,
   GridListTileBar
 } from '@material-ui/core';
-import { menus } from './Constants';
+import { views } from './Constants';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     flexGrow: 1
-  },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    width: 500
   },
   gridRoot: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    backgroundColor: theme.palette.background.paper
+    backgroundColor: 'inherit'
   },
   gridList: {
-    width: 200,
-    hei1ght: 200
+    width: '100%'
+    // height: 600,
   },
   gridIcon: {
     color: 'rgba(255, 255, 255, 0.54)'
@@ -36,32 +30,32 @@ const styles = theme => ({
 
 const tileData = [
   {
-    img: menus.projection.IMAGE,
-    title: menus.projection.TITLE,
+    img: views.projection.IMAGE,
+    title: views.projection.TITLE,
     description: 'Description of Practice Projection...'
   },
   {
-    img: menus.tongueTwister.IMAGE,
-    title: menus.tongueTwister.TITLE,
+    img: views.tongueTwister.IMAGE,
+    title: views.tongueTwister.TITLE,
     description: 'Description of Tongue Twisters...'
   },
   {
-    img: menus.challenge.IMAGE,
-    title: menus.challenge.TITLE,
+    img: views.challenge.IMAGE,
+    title: views.challenge.TITLE,
     description: 'Description of Challenge Mode...'
   },
   {
-    img: menus.karaoke.IMAGE,
-    title: menus.karaoke.TITLE,
+    img: views.karaoke.IMAGE,
+    title: views.karaoke.TITLE,
     description: 'Description of Karaoke...'
   }
 ];
 
-const HomePage = ({ classes, switchMenu }) => (
-  <div classes={classes.gridRoot}>
+const HomePage = ({ classes, switchView }) => (
+  <div className={classes.gridRoot}>
     <GridList
       cellHeight={400}
-      classes={classes.gridList}
+      className={classes.gridList}
       style={{ paddingLeft: 20, paddingRight: 20 }}
     >
       {tileData.map((tile, index) => (
@@ -69,7 +63,7 @@ const HomePage = ({ classes, switchMenu }) => (
           <Button
             style={{ padding: 0 }}
             onClick={() => {
-              switchMenu(tile.title);
+              switchView(tile.title);
             }}
           >
             <img src={tile.img} alt={tile.title} />

@@ -1,29 +1,28 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import Amplify from "aws-amplify";
-import config from "./config";
-import { createMuiTheme } from "@material-ui/core/styles";
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Amplify from 'aws-amplify';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+import config from './config';
+import './index.css';
 
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: "#4A6572",
-      main: "#344955",
-      dark: "#344955",
-      contrastText: "#fff"
+      light: '#4A6572',
+      main: '#344955',
+      dark: '#344955',
+      contrastText: '#fff'
     },
     secondary: {
-      main: "#F9AA33",
-      contrastText: "#000"
+      main: '#F9AA33',
+      contrastText: '#000'
     }
   },
   typography: {
     useNextVariants: true,
-    fontFamily: "Work Sans"
+    fontFamily: 'Work Sans'
   }
 });
 
@@ -44,7 +43,7 @@ Amplify.configure({
   API: {
     endpoints: [
       {
-        name: "ject",
+        name: 'ject',
         endpoint: config.apiGateway.URL,
         region: config.apiGateway.REGION
       }
@@ -56,7 +55,7 @@ ReactDOM.render(
   <MuiThemeProvider theme={theme}>
     <App />
   </MuiThemeProvider>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 
 serviceWorker.unregister();
