@@ -73,12 +73,12 @@ class ProjectionMenu extends Component {
       const array = new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteFrequencyData(array);
       average = getAverageVolume(array);
-      console.log('VOLUME:' + average);
+      console.log(`VOLUME:${  average}`);
     };
   };
 
   handleError = err => {
-    console.log('The following error occured: ' + err.name);
+    console.log(`The following error occured: ${  err.name}`);
   };
 
   handleClose = async () => {
@@ -106,7 +106,7 @@ class ProjectionMenu extends Component {
   saveToAWS = (trainingDecibel, avgDecibel) => {
     console.log('HIA');
     return API.post('ject', '/decibel', {
-      body: { decibel: trainingDecibel, avgDecibel: avgDecibel },
+      body: { decibel: trainingDecibel, avgDecibel },
       requestContext: {
         identity: {
           cognitoIdentityId: this.state.username
