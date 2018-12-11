@@ -7,7 +7,7 @@ import ProjectionMenu from './ProjectionMenu';
 import ChallengeMenu from './ChallengeMenu';
 import KaraokeMenu from './KaraokeMenu';
 import Login from './Login';
-import SignUp2 from './SignUp2';
+import SignUp from './SignUp';
 // import config from './config';
 import { views } from './Constants';
 import './App.css';
@@ -118,7 +118,7 @@ class App extends Component {
             ) : currentView === views.login.TITLE ? (
               <Login login={this.handleLogin} />
             ) : currentView === views.signUp.TITLE ? (
-              <SignUp2 signUp={this.handleSignUp} />
+              <SignUp signUp={this.handleSignUp} />
             ) : null}
           </div>
         </header>
