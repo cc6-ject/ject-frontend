@@ -1,17 +1,17 @@
 const dev = {
   s3: {
     REGION: 'ap-northeast-1',
-    BUCKET: 'ject-stats'
+    BUCKET: 'ject-api-dev-attachmentsbucket-jxmku0zj86ek'
   },
   apiGateway: {
     REGION: 'ap-northeast-1',
-    URL: 'https://32wmy1b1sj.execute-api.ap-northeast-1.amazonaws.com/prod'
+    URL: 'https://vn6s57z8n5.execute-api.ap-northeast-1.amazonaws.com/dev'
   },
   cognito: {
     REGION: 'ap-northeast-1',
-    USER_POOL_ID: 'ap-northeast-1_XQ4u2J77c',
-    APP_CLIENT_ID: '24i4j0mqpgtnnklk54ri710gef',
-    IDENTITY_POOL_ID: 'ap-northeast-1:b48ab953-81a1-419e-a17d-decda53b2cd3'
+    USER_POOL_ID: 'ap-northeast-1_sVXIP2S8W',
+    APP_CLIENT_ID: '6hjtq2q8aqrekdvujgbghppf3j',
+    IDENTITY_POOL_ID: 'ap-northeast-1:1193783b-97f1-4754-91c0-5ada335570dc'
   },
   social: {
     facebook: {
@@ -38,7 +38,10 @@ const prod = {
     IDENTITY_POOL_ID: 'YOUR_PROD_IDENTITY_POOL_ID'
   },
   social: {
-    FB: '1719505251494936'
+    facebook: {
+      ID: '1719505251494936',
+      URL: 'https://connect.facebook.net/en_US/sdk.js'
+    }
   }
 };
 

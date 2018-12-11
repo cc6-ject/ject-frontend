@@ -15,7 +15,7 @@ function waitForInit() {
   });
 }
 
-export default class FacebookButton extends Component {
+class FacebookButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,3 +83,5 @@ export default class FacebookButton extends Component {
     );
   }
 }
+
+export default FacebookButton;

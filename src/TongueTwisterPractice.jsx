@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -31,7 +32,7 @@ const recognition = new SpeechRecognition();
 
 let transcript = '';
 
-class TongueTwisterMenu extends Component {
+class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -129,4 +130,4 @@ class TongueTwisterMenu extends Component {
   }
 }
 
-export default withStyles(styles)(TongueTwisterMenu);
+export default withStyles(styles)(TongueTwisterPractice);

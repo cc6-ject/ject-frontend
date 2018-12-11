@@ -6,6 +6,7 @@ import TongueTwisterMenu from './TongueTwisterMenu';
 import ProjectionMenu from './ProjectionMenu';
 import ChallengeMenu from './ChallengeMenu';
 import KaraokeMenu from './KaraokeMenu';
+import Activity from './Activity';
 import Login from './Login';
 import SignUp from './SignUp';
 import { views } from './Constants';
@@ -25,8 +26,8 @@ class App extends Component {
     try {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -52,6 +53,7 @@ class App extends Component {
 
   render() {
     const { currentView, isAuthenticated, isAuthenticating } = this.state;
+    console.log('BEFORE SEND', isAuthenticated);
 
     return (
       <div className="app">
@@ -68,13 +70,15 @@ class App extends Component {
             {currentView === views.home.TITLE ? (
               <HomePage switchView={this.handleViewSwitch} />
             ) : currentView === views.projection.TITLE ? (
-              <ProjectionMenu />
+              <ProjectionMenu isAuthenticated={isAuthenticated} />
             ) : currentView === views.tongueTwister.TITLE ? (
               <TongueTwisterMenu />
             ) : currentView === views.challenge.TITLE ? (
               <ChallengeMenu />
             ) : currentView === views.karaoke.TITLE ? (
               <KaraokeMenu />
+            ) : currentView === views.activity.TITLE ? (
+              <Activity />
             ) : currentView === views.login.TITLE ? (
               <Login onLogin={this.handleLogin} />
             ) : currentView === views.signUp.TITLE ? (

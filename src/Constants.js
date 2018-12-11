@@ -29,6 +29,9 @@ export const views = {
   },
   signUp: {
     TITLE: 'Sign Up'
+  },
+  activity: {
+    TITLE: 'Activity'
   }
 };
 
