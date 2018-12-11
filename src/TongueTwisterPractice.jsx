@@ -33,7 +33,6 @@ class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      /* eslint-disable*/
       lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
       twisterTranscript: '',
@@ -49,11 +48,6 @@ class TongueTwisterPractice extends Component {
     });
   }
 
-  componentDidMount() {
-    this.setState({
-      currentTwister: randomTongueTwister(this.lastTongueTwister)
-    });
-  }
   toggleListen() {
     this.setState(
       {
@@ -95,9 +89,9 @@ class TongueTwisterPractice extends Component {
   }
 
   printResults() {
-    let table = [];
+    const table = [];
     for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-      table.push(<p>{this.state.twisterTranscript[i]}</p>);
+      table.push(<p key={i}>{this.state.twisterTranscript[i]}</p>);
     }
     return table;
   }

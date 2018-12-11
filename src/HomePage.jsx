@@ -15,7 +15,6 @@ const styles = theme => ({
     width: 500
   }
 });
-/*eslint-disable*/
 class HomePage extends Component {
   render() {
     const { classes } = this.props;

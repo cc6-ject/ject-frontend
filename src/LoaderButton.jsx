@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-/*eslint-disable*/
 class LoaderButton extends React.Component {
   render() {
     const props = this.props;

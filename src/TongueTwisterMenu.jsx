@@ -23,13 +23,15 @@ class TongueTwisterMenu extends Component {
       toggleTwisterMenu: true,
       togglePractice: false
     };
+    this.tooglePractice = this.tooglePractice.bind(this);
+    this.toogleTwisterMenu = this.toogleTwisterMenu.bind(this);
   }
 
   togglePractice() {
     this.setState({ toggleTwisterMenu: false });
     this.setState({ togglePractice: true });
   }
-  /*eslint-disable*/
+
   render() {
     const { classes } = this.props;
     return (
@@ -41,7 +43,7 @@ class TongueTwisterMenu extends Component {
           alignItems="center"
           spacing={24}
         >
-          {this.state.toggleTwisterMenu ? (
+          {this.toggleTwisterMenu ? (
             <Grid
               container
               direction="column"
@@ -50,16 +52,13 @@ class TongueTwisterMenu extends Component {
               spacing={24}
             >
               <Grid item xs={4}>
-                <Paper
-                  className={classes.paper}
-                  onClick={this.togglePractice.bind(this)}
-                >
+                <Paper className={classes.paper} onClick={this.togglePractice}>
                   Random Tounge Twister
                 </Paper>
               </Grid>
             </Grid>
           ) : null}
-          {this.state.togglePractice ? <TongueTwisterPractice /> : null}
+          {this.togglePractice ? <TongueTwisterPractice /> : null}
         </Grid>
       </div>
     );

@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-/*eslint-disable*/
 import Login from './Login';
 
 it('renders without crashing', () => {

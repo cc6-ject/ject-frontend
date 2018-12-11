@@ -56,7 +56,6 @@ class Menu extends React.Component {
                 onClick={() => {
                   this.toggleDrawer(true);
                 }}
-                eslint
               />
             </IconButton>
             <Drawer
