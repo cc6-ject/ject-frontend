@@ -4,7 +4,11 @@ import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
-import { randomTongueTwister } from './TongueTwisterFiles';
+import {
+  randomTongueTwister,
+  updateLastTongueTwister,
+  splitResults
+} from './TongueTwisterFiles';
 
 const styles = theme => ({
   root: {
@@ -39,6 +43,18 @@ class TongueTwisterPractice extends Component {
     this.handleListen = this.handleListen.bind(this);
   }
 
+  updateLastTwister(newTT) {
+    console.log('newTT... ', newTT);
+    this.setState(
+      {
+        lastTongueTwister: updateLastTongueTwister(newTT)
+      },
+      () => {
+        console.log(this.state.lastTongueTwister, 'lastTongueTwister');
+      }
+    );
+  }
+
   componentDidMount() {
     this.setState({
       currentTwister: randomTongueTwister(this.lastTongueTwister)
@@ -64,13 +80,19 @@ class TongueTwisterPractice extends Component {
       },
       () => {
         console.log(this.state.currentTwister, 'currentTwister');
+        this.updateLastTwister(newTT);
       }
     );
   }
 
   updateResult(newResult) {
     console.log('firing', newResult);
-    this.setState({ twisterTranscript: newResult });
+    this.setState(
+      { twisterTranscript: splitResults(newResult, this.state.currentTwister) },
+      () => {
+        console.log(this.state.twisterTranscript, 'transcript');
+      }
+    );
   }
 
   handleListen() {
@@ -78,9 +100,9 @@ class TongueTwisterPractice extends Component {
 
     if (this.state.listening) {
       recognition.start();
-      // recognition.onend = () => {
-      //   console.log('...continue listening...');
-      //   recognition.start();
+      //   recognition.onend = () => {
+      //     console.log('...continue listening...');
+      //     recognition.start();
       //   };
       // } else {
       //   recognition.stop();
