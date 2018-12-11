@@ -33,7 +33,6 @@ class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      /* eslint-disable*/
       lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
       twisterTranscript: '',
