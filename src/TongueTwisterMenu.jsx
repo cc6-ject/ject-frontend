@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import TongueTwisterPractice from './TongueTwisterPractice';
+
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -17,6 +19,18 @@ const styles = theme => ({
 });
 
 class TongueTwisterMenu extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      toggleTwisterMenu: true,
+      togglePractice: false
+    };
+  }
+  togglePractice() {
+    this.setState({ toggleTwisterMenu: false });
+    this.setState({ togglePractice: true });
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -28,18 +42,25 @@ class TongueTwisterMenu extends Component {
           alignItems="center"
           spacing={24}
         >
-          <Grid item xs={4}>
-            <Paper
-              className={classes.paper}
-              // onClick={this.props.toggleState.bind(
-              //   this,
-              //   'Projection Practice',
-              //   'Projection'
-              // )}
+          {this.state.toggleTwisterMenu ? (
+            <Grid
+              container
+              direction="column"
+              justify="flex-start"
+              alignItems="center"
+              spacing={24}
             >
-              Random Tounge Twister
-            </Paper>
-          </Grid>
+              <Grid item xs={4}>
+                <Paper
+                  className={classes.paper}
+                  onClick={this.togglePractice.bind(this)}
+                >
+                  Random Tounge Twister
+                </Paper>
+              </Grid>
+            </Grid>
+          ) : null}
+          {this.state.togglePractice ? <TongueTwisterPractice /> : null}
         </Grid>
       </div>
     );
