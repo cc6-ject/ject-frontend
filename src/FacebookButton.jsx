@@ -1,6 +1,7 @@
-import React from "react";
-import { Auth } from "aws-amplify";
-import LoaderButton from "./LoaderButton";
+import React from 'react';
+import { Auth } from 'aws-amplify';
+import LoaderButton from './LoaderButton';
+import './FacebookButton.css';
 
 function waitForInit() {
   return new Promise((res, rej) => {
@@ -15,7 +16,7 @@ function waitForInit() {
   });
 }
 
-export default class FacebookButton extends React.Component {
+class FacebookButton extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -30,7 +31,7 @@ export default class FacebookButton extends React.Component {
   }
 
   statusChangeCallback = response => {
-    if (response.status === "connected") {
+    if (response.status === 'connected') {
       this.handleResponse(response.authResponse);
     } else {
       this.handleError(response);
@@ -42,7 +43,7 @@ export default class FacebookButton extends React.Component {
   };
 
   handleClick = () => {
-    window.FB.login(this.checkLoginState, { scope: "public_profile,email" });
+    window.FB.login(this.checkLoginState, { scope: 'public_profile,email' });
   };
 
   handleError(error) {
@@ -58,7 +59,7 @@ export default class FacebookButton extends React.Component {
 
     try {
       const response = await Auth.federatedSignIn(
-        "facebook",
+        'facebook',
         { token, expires_at },
         user
       );
@@ -72,9 +73,10 @@ export default class FacebookButton extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
       <LoaderButton
-        className="FacebookButton"
+        className={classes.loaderButton}
         color="inherit"
         disabled={this.state.isLoading}
         handleClick={this.handleClick}
@@ -83,3 +85,5 @@ export default class FacebookButton extends React.Component {
     );
   }
 }
+
+export default FacebookButton;
