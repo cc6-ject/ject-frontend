@@ -51,7 +51,7 @@ export default class FacebookButton extends Component {
     const { email, accessToken: token, expiresIn } = data;
     const expiresAt = expiresIn * 1000 + new Date().getTime();
     const user = { email };
-    const { onFacebookLogin, onLogin } = this.props;
+    const { onLogin } = this.props;
 
     this.setState({ isLoading: true });
 
@@ -62,8 +62,8 @@ export default class FacebookButton extends Component {
         user
       );
       this.setState({ isLoading: false });
-      onFacebookLogin(response);
-      onLogin();
+      // TODO: error check
+      onLogin(response);
     } catch (e) {
       this.setState({ isLoading: false });
       this.handleError(e);

@@ -1,186 +1,277 @@
-/* eslint-disable */
-import React from 'react';
-// import TextField from '@material-ui/core/TextField';
-// import { Auth } from 'aws-amplify';
-// import { List, ListItem } from '@material-ui/core';
-// import LoaderButton from './LoaderButton';
-// import FacebookButton from './FacebookButton';
+import React, { Component } from 'react';
+import { Auth } from 'aws-amplify';
+import {
+  List,
+  ListItem,
+  TextField,
+  Card,
+  CardContent,
+  Typography
+} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import LoaderButton from './LoaderButton';
+import FacebookButton from './FacebookButton';
 
-class SignUp2 extends React.Component {
+const styles = theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 240
+  },
+  dense: {
+    marginTop: 19
+  },
+  menu: {
+    width: 240
+  },
+  center: {
+    margin: '0 auto'
+  }
+});
+
+class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // isLoading: false,
-      // email: '',
-      // password: '',
-      // confirmPassword: '',
-      // confirmationCode: '',
-      // newUser: null
+      isLoading: false,
+      email: '',
+      password: '',
+      confirmPassword: '',
+      confirmationCode: '',
+      newUser: null,
+      errorMessage: ''
     };
   }
 
-  // validateForm = () => {
-  //   const { email, password, confirmPassword } = this.state;
-  //   console.log(
-  //     email.length > 0 && password.length > 0 && password === confirmPassword
-  //   );
-  //   return (
-  //     email.length > 0 && password.length > 0 && password === confirmPassword
-  //   );
-  // };
+  validateForm = () => {
+    const { email, password, confirmPassword } = this.state;
+    return (
+      email.length > 0 && password.length > 0 && password === confirmPassword
+    );
+  };
 
-  // validateConfirmationForm() {
-  //   return this.state.confirmationCode.length > 0;
-  // }
+  validateConfirmationForm = () => {
+    const { confirmationCode } = this.state;
+    return confirmationCode.length > 0;
+  };
 
-  // handleChange = e => {
-  //   console.log(e.target.id, e.target.value);
-  //   const key = e.target.id;
-  //   const value = e.target.value;
-  //   this.setState({ [key]: value });
-  // };
+  handleChange = event => {
+    const { id, value } = event.target;
+    this.setState({ [id]: value });
+  };
 
-  // handleSubmit = async e => {
-  //   e.preventDefault();
+  handleSubmit = async event => {
+    event.preventDefault();
+    this.setState({ isLoading: true, errorMessage: '' });
 
-  //   this.setState({ isLoading: true });
-  //   try {
-  //     const newUser = await Auth.signUp({
-  //       username: this.state.email,
-  //       password: this.state.password
-  //     });
-  //     this.setState({ newUser });
-  //   } catch (e) {
-  //     // alert(e.message);
-  //   }
-  //   this.setState({ isLoading: false });
-  // };
+    const { email, password } = this.state;
 
-  // handleConfirmationCode = async e => {
-  //   e.preventDefault();
-  //   this.setState({ isLoading: true });
+    try {
+      const newUser = await Auth.signUp(email, password);
+      this.setState({ newUser, isLoading: false });
+      console.log(newUser);
+    } catch (error) {
+      this.setState({
+        isLoading: false,
+        errorMessage: error.message
+      });
+    }
+  };
 
-  //   try {
-  //     await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
-  //     await Auth.signIn(this.state.email, this.state.password);
+  handleConfirmationSubmit = async event => {
+    event.preventDefault();
+    this.setState({ isLoading: true });
 
-  //     this.props.userHasAuthenticated(true);
-  //     this.props.toggleSignup();
-  //     this.props.toggleLogin();
-  //   } catch (e) {
-  //     // alert(e.message);
-  //     this.setState({ isLoading: false });
-  //   }
-  // };
+    const { email, password, confirmationCode } = this.state;
+    const { onLogin } = this.props;
 
-  // renderConfirmation = () => {};
+    try {
+      await Auth.confirmSignUp(email, confirmationCode);
+      await Auth.signIn(email, password);
+      onLogin();
+    } catch (error) {
+      this.setState({
+        isLoading: false,
+        errorMessage: error.message
+      });
+    }
+  };
 
-  // handleFbLogin = () => {
-  //   this.props.userHasAuthenticated(true);
-  // };
+  handleFacebookLogin = () => {
+    // TODO: check callback.
+    const { onLogin } = this.props;
+    onLogin();
+  };
 
-  // renderForm = () => (
-  //   <div
-  //     className="sign-up-input"
-  //     style={{
-  //       display: 'flex',
-  //       flexDirection: 'column',
-  //       justifyContent: 'center'
-  //     }}
-  //   >
-  //     <List
-  //       style={{
-  //         display: 'flex',
-  //         flexDirection: 'column',
-  //         justifyContent: 'center',
-  //         margin: '0 auto'
-  //       }}
-  //     >
-  //       <ListItem>
-  //         <FacebookButton
-  //           onLogin={this.handleFbLogin}
-  //           toggleLogin={this.props.toggleSignup}
-  //         />
-  //       </ListItem>
-  //       <ListItem>
-  //         <form onSubmit={this.handleSubmit}>
-  //           <List>
-  //             <ListItem>
-  //               <TextField
-  //                 id="email"
-  //                 label="email"
-  //                 value={this.state.email}
-  //                 onChange={this.handleChange}
-  //                 margin="normal"
-  //               />
-  //             </ListItem>
-  //             <ListItem>
-  //               <TextField
-  //                 id="password"
-  //                 label="password"
-  //                 value={this.state.password}
-  //                 onChange={this.handleChange}
-  //                 margin="normal"
-  //                 type="password"
-  //               />
-  //             </ListItem>
-  //             <ListItem>
-  //               <TextField
-  //                 id="confirmPassword"
-  //                 label="confirmPassword"
-  //                 value={this.state.confirmPassword}
-  //                 onChange={this.handleChange}
-  //                 margin="normal"
-  //                 type="password"
-  //               />
-  //             </ListItem>
-  //             <ListItem>
-  //               <LoaderButton
-  //                 color="inherit"
-  //                 type="submit"
-  //                 disabled={!this.validateForm()}
-  //                 isLoading={this.state.isLoading}
-  //                 text="Sign Up"
-  //                 loadingText="Signing up..."
-  //               />
-  //             </ListItem>
-  //           </List>
-  //         </form>
-  //       </ListItem>
-  //     </List>
-  //   </div>
-  // );
+  renderForm = () => {
+    const { classes } = this.props;
+    const {
+      email,
+      password,
+      confirmPassword,
+      isLoading,
+      errorMessage
+    } = this.state;
 
-  // renderConfirmationForm = () => (
-  //   <form onSubmit={this.handleConfirmationSubmit}>
-  //     Please check your email for the code.
-  //     <TextField
-  //       id="confirmationCode"
-  //       label="confirmationCode"
-  //       value={this.state.confirmationCode}
-  //       onChange={this.handleChange}
-  //       margin="normal"
-  //     />
-  //     <LoaderButton
-  //       color="inherit"
-  //       type="submit"
-  //       disabled={!this.validateConfirmationForm()}
-  //       isLoading={this.state.isLoading}
-  //       text="Verify"
-  //       loadingText="Verifying…"
-  //     />
-  //   </form>
-  // );
+    return (
+      <List className={classes.center}>
+        <ListItem>
+          <FacebookButton
+            onLogin={this.handleFacebookLogin}
+            className={classes.center}
+          />
+        </ListItem>
+        <ListItem>
+          <Typography
+            variant="button"
+            gutterBottom
+            color="primary"
+            className={classes.center}
+          >
+            OR
+          </Typography>
+        </ListItem>
+        <ListItem>
+          <form onSubmit={this.handleSubmit}>
+            <Card>
+              <CardContent>
+                <List>
+                  <ListItem>
+                    <TextField
+                      id="email"
+                      label="Email"
+                      className={classes.textField}
+                      value={email}
+                      onChange={this.handleChange}
+                      margin="normal"
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <TextField
+                      id="password"
+                      label="Password"
+                      className={classes.textField}
+                      value={password}
+                      onChange={this.handleChange}
+                      margin="normal"
+                      type="password"
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <TextField
+                      id="confirmPassword"
+                      label="Confirm Password"
+                      className={classes.textField}
+                      value={confirmPassword}
+                      onChange={this.handleChange}
+                      margin="normal"
+                      type="password"
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <LoaderButton
+                      color="inherit"
+                      type="submit"
+                      disabled={!this.validateForm()}
+                      isLoading={isLoading}
+                      text="Sign Up"
+                      loadingText="Signing up..."
+                    />
+                  </ListItem>
+                  {errorMessage && errorMessage.length > 0 ? (
+                    <ListItem>
+                      <Typography variant="overline" gutterBottom color="error">
+                        {errorMessage}
+                      </Typography>
+                    </ListItem>
+                  ) : null}
+                </List>
+              </CardContent>
+            </Card>
+          </form>
+        </ListItem>
+      </List>
+    );
+  };
+
+  renderConfirmationForm = () => {
+    const { confirmationCode, isLoading, errorMessage } = this.state;
+    const { classes } = this.props;
+
+    return (
+      <List className={classes.center}>
+        <ListItem>
+          <form onSubmit={this.handleConfirmationSubmit}>
+            <List>
+              <ListItem>
+                <Typography
+                  noWrap
+                  variant="button"
+                  gutterBottom
+                  color="primary"
+                  className={classes.center}
+                >
+                  Please check your email for the code.
+                </Typography>
+              </ListItem>
+              <Card>
+                <CardContent>
+                  <List>
+                    <ListItem>
+                      <TextField
+                        id="confirmationCode"
+                        label="Confirmation Code"
+                        className={classes.textField}
+                        value={confirmationCode}
+                        onChange={this.handleChange}
+                        margin="normal"
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <LoaderButton
+                        color="inherit"
+                        type="submit"
+                        disabled={!this.validateConfirmationForm()}
+                        isLoading={isLoading}
+                        text="Verify"
+                        loadingText="Verifying…"
+                      />
+                    </ListItem>
+                    {errorMessage && errorMessage.length > 0 ? (
+                      <ListItem>
+                        <Typography
+                          variant="overline"
+                          gutterBottom
+                          color="error"
+                        >
+                          {errorMessage}
+                        </Typography>
+                      </ListItem>
+                    ) : null}
+                  </List>
+                </CardContent>
+              </Card>
+            </List>
+          </form>
+        </ListItem>
+      </List>
+    );
+  };
 
   render() {
+    const { newUser } = this.state;
+    const { classes } = this.props;
+
     return (
-      <div className="sign-up">
-        {/* {this.state.newUser === null
-          ? this.renderForm()
-          : this.renderConfirmationForm()} */}
+      <div className={classes.container}>
+        {newUser === null ? this.renderForm() : this.renderConfirmationForm()}
       </div>
     );
   }
 }
 
-export default SignUp2;
+export default withStyles(styles)(SignUp);

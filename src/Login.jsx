@@ -20,13 +20,13 @@ const styles = theme => ({
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
-    width: 200
+    width: 240
   },
   dense: {
     marginTop: 19
   },
   menu: {
-    width: 200
+    width: 240
   },
   center: {
     margin: '0 auto'
@@ -65,7 +65,6 @@ class Login extends Component {
       await Auth.signIn(email, password);
       onLogin();
     } catch (error) {
-      console.log(error);
       this.setState({
         isLoading: false,
         errorMessage: error.message
@@ -74,6 +73,7 @@ class Login extends Component {
   };
 
   handleFacebookLogin = () => {
+    // TODO: check callback.
     const { onLogin } = this.props;
     onLogin();
   };
@@ -86,11 +86,7 @@ class Login extends Component {
       <div className={classes.container}>
         <List className={classes.center}>
           <ListItem>
-            <FacebookButton
-              onFacebookLogin={this.handleFacebookLogin}
-              onLogin={onLogin}
-              className={classes.center}
-            />
+            <FacebookButton onLogin={onLogin} className={classes.center} />
           </ListItem>
           <ListItem>
             <Typography
@@ -110,7 +106,7 @@ class Login extends Component {
                     <ListItem>
                       <TextField
                         id="email"
-                        label="email"
+                        label="Email"
                         className={classes.textField}
                         value={email}
                         onChange={this.handleChange}
@@ -120,7 +116,7 @@ class Login extends Component {
                     <ListItem>
                       <TextField
                         id="password"
-                        label="password"
+                        label="Password"
                         className={classes.textField}
                         value={password}
                         onChange={this.handleChange}

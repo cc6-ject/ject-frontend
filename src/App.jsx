@@ -44,12 +44,6 @@ class App extends Component {
     this.userHasAuthenticated(false);
   };
 
-  handleSignUp = async () => {
-    // TODO:
-    this.userHasAuthenticated(true);
-    this.handleViewSwitch(views.home.TITLE);
-  };
-
   handleViewSwitch = viewTitle => {
     this.setState({
       currentView: viewTitle
@@ -84,7 +78,7 @@ class App extends Component {
             ) : currentView === views.login.TITLE ? (
               <Login onLogin={this.handleLogin} />
             ) : currentView === views.signUp.TITLE ? (
-              <SignUp onSignUp={this.handleSignUp} />
+              <SignUp onLogin={this.handleLogin} />
             ) : null}
           </div>
         </header>
