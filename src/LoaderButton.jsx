@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
@@ -9,6 +10,9 @@ const styles = () => ({
     '&:hover': {
       backgroundColor: 'rgba(59, 89, 152, 0.8)'
     }
+  },
+  width100: {
+    width: '100%'
   }
 });
 
@@ -26,7 +30,7 @@ const LoaderButton = ({
     type="submit"
     onClick={handleClick}
     color="primary"
-    className={classes[customColor]}
+    className={classNames(classes[customColor], classes.width100)}
     variant="contained"
   >
     {!isLoading ? text : loadingText}

@@ -75,7 +75,6 @@ export default class FacebookButton extends Component {
 
     return (
       <LoaderButton
-        className="FacebookButton"
         disabled={isLoading}
         handleClick={this.handleClick}
         text="Login with Facebook"

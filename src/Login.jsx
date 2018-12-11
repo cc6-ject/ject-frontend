@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Auth } from 'aws-amplify';
 import {
   List,
@@ -27,10 +27,13 @@ const styles = theme => ({
   },
   menu: {
     width: 200
+  },
+  center: {
+    margin: '0 auto'
   }
 });
 
-class Login extends React.Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -81,15 +84,21 @@ class Login extends React.Component {
 
     return (
       <div className={classes.container}>
-        <List>
+        <List className={classes.center}>
           <ListItem>
             <FacebookButton
               onFacebookLogin={this.handleFacebookLogin}
               onLogin={onLogin}
+              className={classes.center}
             />
           </ListItem>
           <ListItem>
-            <Typography variant="button" gutterBottom color="primary">
+            <Typography
+              variant="button"
+              gutterBottom
+              color="primary"
+              className={classes.center}
+            >
               OR
             </Typography>
           </ListItem>
