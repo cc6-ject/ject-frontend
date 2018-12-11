@@ -105,10 +105,10 @@ class TongueTwisterPractice extends Component {
       //     recognition.start();
       //   };
       // } else {
-      //   recognition.stop();
-      //   recognition.onend = () => {
-      //     console.log('Stopped listening per click');
-      //   };
+      // recognition.stop();
+      recognition.onend = () => {
+        console.log('Stopped listening per click');
+      };
     }
 
     recognition.onstart = () => {
@@ -144,11 +144,7 @@ class TongueTwisterPractice extends Component {
             <Paper
               className={classes.paper}
               onClick={this.updateTwister.bind(this)}
-              // onClick={this.startTwister.bind(this)}
-              //onClick={this.startTwister}
             >
-              {/* Place Holder */}
-              {/* {TongueTwisterFiles.randomArrayIndex(this.lastTongueTwister)} */}
               {this.state.currentTwister}
             </Paper>
           </Grid>
@@ -158,10 +154,7 @@ class TongueTwisterPractice extends Component {
             </Paper>
           </Grid>
           <Grid item xs={4}>
-            <Paper className={classes.paper}>
-              {/* {this.state.twisterTranscript} */}
-              {this.printResults()}
-            </Paper>
+            <Paper className={classes.paper}>{this.printResults()}</Paper>
           </Grid>
         </Grid>
       </div>
