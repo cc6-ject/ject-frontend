@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import {
   Button,
@@ -25,6 +26,15 @@ const styles = () => ({
   },
   gridIcon: {
     color: 'rgba(255, 255, 255, 0.54)'
+  },
+  pl20: {
+    paddingLeft: 20
+  },
+  pr20: {
+    paddingRight: 20
+  },
+  p0: {
+    padding: 0
   }
 });
 
@@ -55,13 +65,12 @@ const HomePage = ({ classes, switchView }) => (
   <div className={classes.gridRoot}>
     <GridList
       cellHeight={400}
-      className={classes.gridList}
-      style={{ paddingLeft: 20, paddingRight: 20 }}
+      className={classNames(classes.pl20, classes.pr20, classes.gridList)}
     >
       {tileData.map((tile, index) => (
         <GridListTile key={index}>
           <Button
-            style={{ padding: 0 }}
+            className={classes.p0}
             onClick={() => {
               switchView(tile.title);
             }}

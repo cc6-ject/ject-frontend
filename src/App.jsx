@@ -8,7 +8,6 @@ import ChallengeMenu from './ChallengeMenu';
 import KaraokeMenu from './KaraokeMenu';
 import Login from './Login';
 import SignUp from './SignUp';
-// import config from './config';
 import { views } from './Constants';
 import './App.css';
 
@@ -22,10 +21,7 @@ class App extends Component {
     };
   }
 
-  // Check if user is already logined and load FB SDK
   async componentDidMount() {
-    // TODO: call from libs.
-    // this.loadFacebookSDK();
     try {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
@@ -59,29 +55,6 @@ class App extends Component {
       currentView: viewTitle
     });
   };
-
-  // TODO: move to libs.
-  // loadFacebookSDK() {
-  //   window.fbAsyncInit = function() {
-  //     window.FB.init({
-  //       appId: config.social.FB,
-  //       autoLogAppEvents: true,
-  //       xfbml: true,
-  //       version: 'v3.1'
-  //     });
-  //   };
-
-  //   (function(d, s, id) {
-  //     const fjs = d.getElementsByTagName(s)[0];
-  //     if (d.getElementById(id)) {
-  //       return;
-  //     }
-  //     const js = d.createElement(s);
-  //     js.id = id;
-  //     js.src = 'https://connect.facebook.net/en_US/sdk.js';
-  //     fjs.parentNode.insertBefore(js, fjs);
-  //   })(document, 'script', 'facebook-jssdk');
-  // }
 
   render() {
     const { currentView, isAuthenticated, isAuthenticating } = this.state;
