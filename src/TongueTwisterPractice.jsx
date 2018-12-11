@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Children } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -121,6 +121,14 @@ class TongueTwisterPractice extends Component {
     };
   }
 
+  printResults() {
+    let table = [];
+    for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+      table.push(<p>{this.state.twisterTranscript[i]}</p>);
+    }
+    return table;
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -151,7 +159,8 @@ class TongueTwisterPractice extends Component {
           </Grid>
           <Grid item xs={4}>
             <Paper className={classes.paper}>
-              {this.state.twisterTranscript}
+              {/* {this.state.twisterTranscript} */}
+              {this.printResults()}
             </Paper>
           </Grid>
         </Grid>
