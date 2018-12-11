@@ -21,7 +21,10 @@ const styles = theme => ({
     width: 500
   }
 });
-const SpeechRecognition = window.webkitSpeechRecognition;
+// window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+// const SpeechRecognition = window.webkitSpeechRecognition;
+const SpeechRecognition =
+  global.window.SpeechRecognition || global.window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 // recognition.maxAlternatives = 10; //<- supposed to give alternatives
 // recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
@@ -40,6 +43,7 @@ class TongueTwisterPractice extends Component {
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
+    this.updateTwister = this.updateTwister.bind(this);
   }
 
   updateLastTwister(newTT) {
@@ -90,7 +94,7 @@ class TongueTwisterPractice extends Component {
 
   printResults() {
     const table = [];
-    for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+    for (let i = 0; i < this.state.twisterTranscript.length; i + 1) {
       table.push(<p key={i}>{this.state.twisterTranscript[i]}</p>);
     }
     return table;
@@ -108,10 +112,7 @@ class TongueTwisterPractice extends Component {
           spacing={24}
         >
           <Grid item xs={4}>
-            <Paper
-              className={classes.paper}
-              onClick={this.updateTwister.bind(this)}
-            >
+            <Paper className={classes.paper} onClick={this.updateTwister}>
               {this.state.currentTwister}
             </Paper>
           </Grid>
