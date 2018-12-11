@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Menu from './Menu';
 import HomePage from './HomePage';
-import TongueTwisterMenu from './TongueTwisterMenu';
+// import TongueTwisterMenu from './TongueTwisterMenu';
 import TongueTwisterPractice from './TongueTwisterPractice';
 import ProjectionMenu from './ProjectionMenu';
 import ChallengeMenu from './ChallengeMenu';

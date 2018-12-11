@@ -1,4 +1,4 @@
-import React, { Component, Children } from 'react';
+import React, { Component } from 'react';
 
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -23,9 +23,9 @@ const styles = theme => ({
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
-//recognition.maxAlternatives = 10; //<- supposed to give alternatives
-//recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
-//recognition.interimResults = true; //<-will need to delete so it doesn't auto correct
+// recognition.maxAlternatives = 10; //<- supposed to give alternatives
+// recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
+// recognition.interimResults = true; //<-will need to delete so it doesn't auto correct
 
 let transcript = '';
 
@@ -33,7 +33,7 @@ class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      //tongueTwisters: [twistersArray],
+      /* eslint-disable*/
       lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
       twisterTranscript: '',
@@ -44,15 +44,9 @@ class TongueTwisterPractice extends Component {
   }
 
   updateLastTwister(newTT) {
-    console.log('newTT... ', newTT);
-    this.setState(
-      {
-        lastTongueTwister: updateLastTongueTwister(newTT)
-      },
-      () => {
-        console.log(this.state.lastTongueTwister, 'lastTongueTwister');
-      }
-    );
+    this.setState({
+      lastTongueTwister: updateLastTongueTwister(newTT)
+    });
   }
 
   componentDidMount() {
@@ -70,42 +64,21 @@ class TongueTwisterPractice extends Component {
   }
 
   updateTwister() {
-    console.log('enter');
-    console.log(randomTongueTwister(this.lastTongueTwister));
     const newTT = randomTongueTwister(this.lastTongueTwister);
-    console.log('newTT..', newTT);
-    this.setState(
-      {
-        currentTwister: newTT
-      },
-      () => {
-        console.log(this.state.currentTwister, 'currentTwister');
-        this.updateLastTwister(newTT);
-      }
-    );
+    this.setState({
+      currentTwister: newTT
+    });
   }
 
   updateResult(newResult) {
-    console.log('firing', newResult);
-    this.setState(
-      { twisterTranscript: splitResults(newResult, this.state.currentTwister) },
-      () => {
-        console.log(this.state.twisterTranscript, 'transcript');
-      }
-    );
+    this.setState({
+      twisterTranscript: splitResults(newResult, this.state.currentTwister)
+    });
   }
 
   handleListen() {
-    console.log('listening?', this.state.listening);
-
     if (this.state.listening) {
       recognition.start();
-      //   recognition.onend = () => {
-      //     console.log('...continue listening...');
-      //     recognition.start();
-      //   };
-      // } else {
-      // recognition.stop();
       recognition.onend = () => {
         console.log('Stopped listening per click');
       };
