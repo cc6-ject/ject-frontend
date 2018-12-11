@@ -7,7 +7,7 @@ const coffee = 'A proper copper coffee pot.';
 const twistersArray = [shells, lorry, newYork, buscuits, coffee];
 
 const randomArrayIndex = function(last) {
-  let newTwister = Math.floor(Math.random() * (twistersArray.length - 1) + 1);
+  const newTwister = Math.floor(Math.random() * (twistersArray.length - 1) + 1);
   return newTwister === last ? randomArrayIndex : newTwister;
 };
 

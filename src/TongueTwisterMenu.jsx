@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-
-import TongueTwisterPractice from './TongueTwisterPractice';
-
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import TongueTwisterPractice from './TongueTwisterPractice';
 
 const styles = theme => ({
   root: {
@@ -26,11 +24,12 @@ class TongueTwisterMenu extends Component {
       togglePractice: false
     };
   }
+
   togglePractice() {
     this.setState({ toggleTwisterMenu: false });
     this.setState({ togglePractice: true });
   }
-
+  /*eslint-disable*/
   render() {
     const { classes } = this.props;
     return (
