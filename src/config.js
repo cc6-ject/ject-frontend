@@ -14,10 +14,14 @@ const dev = {
     IDENTITY_POOL_ID: 'ap-northeast-1:1193783b-97f1-4754-91c0-5ada335570dc'
   },
   social: {
-    FB: '1719505251494936'
+    facebook: {
+      ID: '1719505251494936',
+      URL: 'https://connect.facebook.net/en_US/sdk.js'
+    }
   }
 };
 
+// TODO:
 const prod = {
   s3: {
     REGION: 'YOUR_PROD_S3_UPLOADS_BUCKET_REGION',
@@ -34,7 +38,10 @@ const prod = {
     IDENTITY_POOL_ID: 'YOUR_PROD_IDENTITY_POOL_ID'
   },
   social: {
-    FB: '1719505251494936'
+    facebook: {
+      ID: '1719505251494936',
+      URL: 'https://connect.facebook.net/en_US/sdk.js'
+    }
   }
 };
 

@@ -1,24 +1,41 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import classNames from 'classnames';
+import { Button } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
-class LoaderButton extends React.Component {
-  render() {
-    const props = this.props;
-    return (
-      <Button
-        className="LoaderButton"
-        disabled={props.disabled || props.isLoading}
-        type="submit"
-        onClick={() => {
-          if (props.handleClick) {
-            props.handleClick();
-          }
-        }}
-      >
-        {!props.isLoading ? props.text : props.loadingText}
-      </Button>
-    );
+const styles = () => ({
+  facebook: {
+    color: '#fff',
+    backgroundColor: 'rgba(59, 89, 152)',
+    '&:hover': {
+      backgroundColor: 'rgba(59, 89, 152, 0.8)'
+    }
+  },
+  width100: {
+    width: '100%'
   }
-}
+});
 
-export default LoaderButton;
+const LoaderButton = ({
+  disabled,
+  isLoading,
+  handleClick,
+  loadingText,
+  text,
+  customColor,
+  classes
+}) => (
+  <Button
+    disabled={disabled || isLoading}
+    type="submit"
+    onClick={handleClick}
+    color="primary"
+    className={classNames(classes[customColor], classes.width100)}
+    variant="contained"
+  >
+    {!isLoading ? text : loadingText}
+    {customColor}
+  </Button>
+);
+
+export default withStyles(styles)(LoaderButton);

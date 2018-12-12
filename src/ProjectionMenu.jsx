@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
-import ProjectionChart from './ProjectionChart';
+import { Fab, Card, CardContent } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
+import ProjectionChart from './ProjectionChart';
 import './ProjectionMenu.css';
 
 const styles = theme => ({
@@ -37,10 +37,8 @@ class ProjectionMenu extends Component {
     try {
       const data = await Auth.currentAuthenticatedUser();
       this.setState({ username: data.id });
-    } catch (e) {
-      if (e.message !== undefined) {
-        alert(e.message);
-      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -50,6 +48,7 @@ class ProjectionMenu extends Component {
     const constraint = { audio: true };
     navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
   };
+
   handleSuccess = stream => {
     this.setState({ trainingDecibel: [] });
     const id = setInterval(() => {
@@ -80,11 +79,12 @@ class ProjectionMenu extends Component {
       const array = new Uint8Array(analyser.frequencyBinCount);
       analyser.getByteFrequencyData(array);
       average = getAverageVolume(array);
-      console.log('VOLUME:' + average);
+      console.log(`VOLUME: ${average}`);
     };
   };
-  handleError = err => {
-    console.log('The following error occured: ' + err.name);
+
+  handleError = error => {
+    console.log(`The following error occured: ${error.name}`);
   };
 
   handleClose = async () => {
@@ -117,11 +117,11 @@ class ProjectionMenu extends Component {
     clearInterval(state.intervalID);
   };
 
-  saveToAWS = (trainingDecibel, avgDecibel, duration) => {
-    return API.post('ject', '/decibel', {
+  saveToAWS = (trainingDecibel, avgDecibel, duration) =>
+    API.post('ject', '/decibel', {
       body: {
         decibel: JSON.stringify(trainingDecibel),
-        avgDecibel: avgDecibel,
+        avgDecibel,
         duration
       },
       requestContext: {
@@ -130,7 +130,6 @@ class ProjectionMenu extends Component {
         }
       }
     });
-  };
 
   componentWillUnmount() {
     if (audioContext) {
@@ -143,60 +142,64 @@ class ProjectionMenu extends Component {
     const state = this.state;
     return (
       <div className="Projection">
-        <svg
-          className="ThumbCheck"
-          xmlns="http://www.w3.org/2000/svg"
-          width="200"
-          height="200"
-          viewBox="0 0 24 24"
-          style={state.volume}
-        >
-          <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z" />
-        </svg>
-        {state.isFinish ? (
-          <ProjectionChart
-            trainingDecibel={state.trainingDecibel}
-            durations={state.durations[state.durations.length - 1]}
-            avgDecibels={state.avgDecibels[state.avgDecibels.length - 1]}
-          />
-        ) : (
-          <br />
-        )}
-        {!this.state.isTry ? (
-          <Fab
-            color="secondary"
-            className={classes.fab}
-            onClick={() => {
-              this.handleClick();
-            }}
-          >
+        <Card style={{ textAlign: 'center', margin: 100 }}>
+          <CardContent>
             <svg
+              className="ThumbCheck"
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
+              width="200"
+              height="200"
               viewBox="0 0 24 24"
+              style={state.volume}
             >
-              <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+              <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z" />
             </svg>
-          </Fab>
-        ) : (
-          <Fab
-            color="secondary"
-            className={classes.fab}
-            onClick={() => {
-              this.handleClose();
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
-            </svg>
-          </Fab>
-        )}
+            {state.isFinish ? (
+              <ProjectionChart
+                trainingDecibel={state.trainingDecibel}
+                durations={state.durations[state.durations.length - 1]}
+                avgDecibels={state.avgDecibels[state.avgDecibels.length - 1]}
+              />
+            ) : (
+              <br />
+            )}
+            {!this.state.isTry ? (
+              <Fab
+                color="secondary"
+                className={classes.fab}
+                onClick={() => {
+                  this.handleClick();
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+                </svg>
+              </Fab>
+            ) : (
+              <Fab
+                color="secondary"
+                className={classes.fab}
+                onClick={() => {
+                  this.handleClose();
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
+                </svg>
+              </Fab>
+            )}
+          </CardContent>
+        </Card>
       </div>
     );
   }

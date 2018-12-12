@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@material-ui/core';
 
-const ChallengeMenu = () => (
+const KaraokeMenu = () => (
   <div>
     <Typography variant="button" gutterBottom color="primary">
       Coming soon...
@@ -9,4 +9,4 @@ const ChallengeMenu = () => (
   </div>
 );
 
-export default ChallengeMenu;
+export default KaraokeMenu;
