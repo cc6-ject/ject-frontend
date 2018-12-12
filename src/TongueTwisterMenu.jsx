@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
+
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import TongueTwisterPractice from './TongueTwisterPractice';
+
+import {
+  randomTongueTwister,
+  updateLastTongueTwister,
+  splitResults
+} from './TongueTwisterFiles';
 
 const styles = theme => ({
   root: {
@@ -15,25 +21,95 @@ const styles = theme => ({
     width: 500
   }
 });
+const SpeechRecognition = window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+// recognition.maxAlternatives = 10; //<- supposed to give alternatives
+// recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
+// recognition.interimResults = true; //<-will need to delete so it doesn't auto correct
 
-class TongueTwisterMenu extends Component {
+let transcript = '';
+
+class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      toggleTwisterMenu: true,
-      togglePractice: false
+      lastTongueTwister: -1,
+      currentTwister: 'Practice Random Tongue Twister',
+      twisterTranscript: '',
+      listening: false,
+      statusMessage: 'Start'
     };
-    this.tooglePractice = this.tooglePractice.bind(this);
-    this.toogleTwisterMenu = this.toogleTwisterMenu.bind(this);
+    this.toggleListen = this.toggleListen.bind(this);
+    this.handleListen = this.handleListen.bind(this);
   }
 
-  togglePractice() {
-    this.setState({ toggleTwisterMenu: false });
-    this.setState({ togglePractice: true });
+  componentDidMount() {
+    this.setState({
+      currentTwister: randomTongueTwister(this.lastTongueTwister)
+    });
+  }
+
+  updateLastTwister(newTT) {
+    this.setState({
+      lastTongueTwister: updateLastTongueTwister(newTT)
+    });
+  }
+
+  toggleListen() {
+    this.setState(
+      {
+        listening: !this.state.listening
+      },
+      this.handleListen
+    );
+  }
+
+  updateTwister() {
+    const newTT = randomTongueTwister(this.lastTongueTwister);
+    this.setState({
+      currentTwister: newTT
+    });
+  }
+
+  updateResult(newResult) {
+    this.setState({
+      twisterTranscript: splitResults(newResult, this.state.currentTwister)
+    });
+  }
+
+  handleListen() {
+    if (this.state.listening) {
+      recognition.start();
+      recognition.onend = () => {
+        this.setState({
+          statusMessage: 'Start'
+        });
+      };
+    }
+
+    recognition.onstart = () => {
+      this.setState({
+        statusMessage: 'Listening!'
+      });
+      recognition.onresult = event => {
+        const current = event.resultIndex;
+        transcript = event.results[current][0].transcript;
+        this.updateResult(transcript);
+      };
+    };
+  }
+
+  printResults() {
+    const table = [];
+    for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+      table.push(<p id={i}>{this.state.twisterTranscript[i]}</p>);
+    }
+    return table;
   }
 
   render() {
     const { classes } = this.props;
+    const { statusMessage } = this.state;
     return (
       <div>
         <Grid
@@ -43,25 +119,26 @@ class TongueTwisterMenu extends Component {
           alignItems="center"
           spacing={24}
         >
-          {this.toggleTwisterMenu ? (
-            <Grid
-              container
-              direction="column"
-              justify="flex-start"
-              alignItems="center"
-              spacing={24}
+          <Grid item xs={4}>
+            <Paper
+              className={classes.paper}
+              onClick={this.updateTwister.bind(this)}
             >
-              <Grid item xs={4}>
-                <Paper className={classes.paper} onClick={this.togglePractice}>
-                  Random Tounge Twister
-                </Paper>
-              </Grid>
-            </Grid>
-          ) : null}
-          {this.togglePractice ? <TongueTwisterPractice /> : null}
+              {this.state.currentTwister}
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={classes.paper} onClick={this.toggleListen}>
+              {statusMessage}
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <Paper className={classes.paper}>{this.printResults()}</Paper>
+          </Grid>
         </Grid>
       </div>
     );
   }
 }
-export default withStyles(styles)(TongueTwisterMenu);
+
+export default withStyles(styles)(TongueTwisterPractice);

@@ -1,73 +1,90 @@
-/* eslint-disable react/prefer-stateless-function */
-import React, { Component } from 'react';
-
+import React from 'react';
+import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import {
+  Button,
+  GridList,
+  GridListTile,
+  GridListTileBar
+} from '@material-ui/core';
+import { views } from './Constants';
 
-const styles = theme => ({
+const styles = () => ({
   root: {
     flexGrow: 1
   },
-  paper: {
-    padding: theme.spacing.unit * 2,
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-    width: 500
+  gridRoot: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    overflow: 'hidden',
+    backgroundColor: 'inherit'
+  },
+  gridList: {
+    width: '100%'
+    // height: 600,
+  },
+  gridIcon: {
+    color: 'rgba(255, 255, 255, 0.54)'
+  },
+  pl20: {
+    paddingLeft: 20
+  },
+  pr20: {
+    paddingRight: 20
+  },
+  p0: {
+    padding: 0
   }
 });
-class HomePage extends Component {
-  render() {
-    const { classes } = this.props;
-    return (
-      <div>
-        <Grid
-          container
-          direction="column"
-          justify="flex-start"
-          alignItems="center"
-          spacing={24}
-        >
-          <Grid item xs={4}>
-            <Paper
-              className={classes.paper}
-              onClick={this.props.toggleState.bind(
-                this,
-                'Projection Practice',
-                'Projection'
-              )}
-            >
-              Practice Projection
-            </Paper>
-          </Grid>
-          <Grid item xs={4}>
-            <Paper
-              className={classes.paper}
-              onClick={this.props.toggleState.bind(
-                this,
-                'Tongue Twisters',
-                'TongueTwister'
-              )}
-            >
-              Tounge Twisters
-            </Paper>
-          </Grid>
-          <Grid item xs={4}>
-            <Paper
-              className={classes.paper}
-              onClick={this.props.toggleState.bind(
-                this,
-                'Challenge Mode',
-                'Challenge'
-              )}
-            >
-              Challenge Mode
-            </Paper>
-          </Grid>
-        </Grid>
-      </div>
-    );
+
+const tileData = [
+  {
+    img: views.projection.IMAGE,
+    title: views.projection.TITLE,
+    description: 'Description of Practice Projection...'
+  },
+  {
+    img: views.tongueTwister.IMAGE,
+    title: views.tongueTwister.TITLE,
+    description: 'Description of Tongue Twisters...'
+  },
+  {
+    img: views.challenge.IMAGE,
+    title: views.challenge.TITLE,
+    description: 'Description of Challenge Mode...'
+  },
+  {
+    img: views.karaoke.IMAGE,
+    title: views.karaoke.TITLE,
+    description: 'Description of Karaoke...'
   }
-}
+];
+
+const HomePage = ({ classes, switchView }) => (
+  <div className={classes.gridRoot}>
+    <GridList
+      cellHeight={400}
+      className={classNames(classes.pl20, classes.pr20, classes.gridList)}
+    >
+      {tileData.map((tile, index) => (
+        <GridListTile key={index}>
+          <Button
+            className={classes.p0}
+            onClick={() => {
+              switchView(tile.title);
+            }}
+          >
+            <img src={tile.img} alt={tile.title} />
+          </Button>
+          <GridListTileBar
+            title={tile.title}
+            subtitle={<span>{tile.description}</span>}
+          />
+        </GridListTile>
+      ))}
+    </GridList>
+  </div>
+);
 
 export default withStyles(styles)(HomePage);

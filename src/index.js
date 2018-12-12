@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import Amplify from 'aws-amplify';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import config from './config';
+import './index.css';
 
 const theme = createMuiTheme({
   palette: {
@@ -27,6 +27,7 @@ const theme = createMuiTheme({
 });
 
 // AWS configuration
+// TODO: move to libs.
 Amplify.configure({
   Auth: {
     mandatorySignIn: true,
@@ -50,6 +51,31 @@ Amplify.configure({
     ]
   }
 });
+
+// Facebook login init.
+// TODO: move to libs.
+const loadFacebookSDK = () => {
+  window.fbAsyncInit = function() {
+    window.FB.init({
+      appId: config.social.facebook.ID,
+      autoLogAppEvents: true,
+      xfbml: true,
+      version: 'v3.1'
+    });
+  };
+
+  (function(d, s, id) {
+    const fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+      return;
+    }
+    const js = d.createElement(s);
+    js.id = id;
+    js.src = config.social.facebook.URL;
+    fjs.parentNode.insertBefore(js, fjs);
+  })(document, 'script', 'facebook-jssdk');
+};
+loadFacebookSDK();
 
 ReactDOM.render(
   <MuiThemeProvider theme={theme}>

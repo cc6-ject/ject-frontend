@@ -44,6 +44,7 @@ class ProjectionChart extends React.Component {
       this.setState({ yMax: 3 * yBase, yStepSize: (3 * yBase) / 10 });
     }
   }
+
   handleClick = () => {
     this.setState({ isDetail: true });
     const ctx = document.getElementById('line-chart');
@@ -91,6 +92,7 @@ class ProjectionChart extends React.Component {
       }
     });
   };
+
   renderResult = () => {
     const props = this.props;
     console.log(this.props);

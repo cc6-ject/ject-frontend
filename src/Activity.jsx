@@ -15,14 +15,12 @@ class Activity extends React.Component {
       const data = await this.getDecibels();
       this.setState({ rowData: data });
       this.draw();
-    } catch (e) {
-      alert(e);
+    } catch (error) {
+      console.log(error);
     }
   }
 
-  getDecibels = () => {
-    return API.get('ject', '/decibel');
-  };
+  getDecibels = () => API.get('ject', '/decibel');
 
   draw = () => {
     const state = this.state;
@@ -35,7 +33,10 @@ class Activity extends React.Component {
 
     console.log(recent, decibels, maxdB);
 
-    let xMax, yMax, xStepSize, yStepSize;
+    let xMax;
+    let yMax;
+    let xStepSize;
+    let yStepSize;
     xMax = Math.ceil(recent.duration);
     const xbase = 1;
     if (xMax < 10 * xbase) xStepSize = xbase;
@@ -50,9 +51,7 @@ class Activity extends React.Component {
     if (yMax < 50) yStepSize = 5;
     else if (maxdB > 50) yStepSize = 10;
 
-    const points = decibels.map((point, i) => {
-      return { x: i * 0.5, y: point };
-    });
+    const points = decibels.map((point, i) => ({ x: i * 0.5, y: point }));
 
     this.renderChart(
       xMax,

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { Auth } from 'aws-amplify';
 import LoaderButton from './LoaderButton';
 
 function waitForInit() {
-  return new Promise((res, rej) => {
+  return new Promise(resolve => {
     const hasFbLoaded = () => {
       if (window.FB) {
-        res();
+        resolve();
       } else {
         setTimeout(hasFbLoaded, 300);
       }
@@ -15,7 +15,7 @@ function waitForInit() {
   });
 }
 
-class FacebookButton extends React.Component {
+class FacebookButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -45,26 +45,25 @@ class FacebookButton extends React.Component {
     window.FB.login(this.checkLoginState, { scope: 'public_profile,email' });
   };
 
-  handleError(error) {
-    alert(error);
-  }
+  handleError = () => {};
 
   async handleResponse(data) {
     const { email, accessToken: token, expiresIn } = data;
-    const expires_at = expiresIn * 1000 + new Date().getTime();
+    const expiresAt = expiresIn * 1000 + new Date().getTime();
     const user = { email };
+    const { onLogin } = this.props;
 
     this.setState({ isLoading: true });
 
     try {
       const response = await Auth.federatedSignIn(
         'facebook',
-        { token, expires_at },
+        { token, expiresAt },
         user
       );
       this.setState({ isLoading: false });
-      this.props.onLogin(response);
-      this.props.toggleLogin();
+      // TODO: error check
+      onLogin(response);
     } catch (e) {
       this.setState({ isLoading: false });
       this.handleError(e);
@@ -72,12 +71,14 @@ class FacebookButton extends React.Component {
   }
 
   render() {
+    const { isLoading } = this.state;
+
     return (
       <LoaderButton
-        color="inherit"
-        disabled={this.state.isLoading}
+        disabled={isLoading}
         handleClick={this.handleClick}
         text="Login with Facebook"
+        customColor="facebook"
       />
     );
   }
