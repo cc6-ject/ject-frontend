@@ -34,7 +34,6 @@ const LoaderButton = ({
     variant="contained"
   >
     {!isLoading ? text : loadingText}
-    {customColor}
   </Button>
 );
 
