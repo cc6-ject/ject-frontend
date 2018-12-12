@@ -50,6 +50,7 @@ class ProjectionMenu extends Component {
     const constraint = { audio: true };
     navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
   };
+
   handleSuccess = stream => {
     this.setState({ trainingDecibel: [] });
     const id = setInterval(() => {
