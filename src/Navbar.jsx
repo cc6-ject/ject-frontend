@@ -86,7 +86,6 @@ class Navbar extends React.Component {
             </Typography>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               {currentView}
-              {currentView.title}
             </Typography>
             {isAuthenticated ? (
               <Fragment>
