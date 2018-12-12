@@ -36,7 +36,8 @@ class TongueTwisterPractice extends Component {
       lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
       twisterTranscript: '',
-      listening: false
+      listening: false,
+      statusMessage: 'Start'
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
@@ -80,12 +81,16 @@ class TongueTwisterPractice extends Component {
     if (this.state.listening) {
       recognition.start();
       recognition.onend = () => {
-        console.log('Stopped listening per click');
+        this.setState({
+          statusMessage: 'Start'
+        });
       };
     }
 
     recognition.onstart = () => {
-      console.log('Listening!');
+      this.setState({
+        statusMessage: 'Listening!'
+      });
       recognition.onresult = event => {
         const current = event.resultIndex;
         transcript = event.results[current][0].transcript;
@@ -104,6 +109,7 @@ class TongueTwisterPractice extends Component {
 
   render() {
     const { classes } = this.props;
+    const { statusMessage } = this.state;
     return (
       <div>
         <Grid
@@ -123,7 +129,7 @@ class TongueTwisterPractice extends Component {
           </Grid>
           <Grid item xs={4}>
             <Paper className={classes.paper} onClick={this.toggleListen}>
-              Start
+              {statusMessage}
             </Paper>
           </Grid>
           <Grid item xs={4}>
