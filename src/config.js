@@ -18,6 +18,10 @@ const dev = {
       ID: '1719505251494936',
       URL: 'https://connect.facebook.net/en_US/sdk.js'
     }
+  },
+  randomImage: {
+    URL: 'http://lorempixel.com/800/600/'
+    // URL: 'https://picsum.photos/800/600/?random'
   }
 };
 
@@ -42,6 +46,10 @@ const prod = {
       ID: '1719505251494936',
       URL: 'https://connect.facebook.net/en_US/sdk.js'
     }
+  },
+  randomImage: {
+    URL: 'http://lorempixel.com/800/600/'
+    // URL: 'https://picsum.photos/800/600/?random'
   }
 };
 
