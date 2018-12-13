@@ -9,8 +9,8 @@ const KARAOKE_STATE = {
   COMPLETE: 'complete'
 };
 
-const START_COUNT_DOWN = 5;
-const TALKING_COUNT_DOWN = 300;
+const STARTING_COUNT_DOWN = 2;
+const TALKING_COUNT_DOWN = 100;
 const TIMER_DELAY = 1000;
 const TIMER_DELAY_FAST = 10;
 
@@ -20,8 +20,8 @@ class KaraokeMenu extends Component {
 
     // TODO: get db values
     this.state = {
-      startCountDown: 5,
-      talkingCountDown: 300,
+      startingCountDown: STARTING_COUNT_DOWN,
+      talkingCountDown: TALKING_COUNT_DOWN,
       // pictures: [],
       // fillers: {},
       // wordsPerMin: [],
@@ -29,7 +29,7 @@ class KaraokeMenu extends Component {
       // finishedAt: null,
       karaokeState: KARAOKE_STATE.IDLE
     };
-    this.startCountDownTimer = null;
+    this.startingCountDownTimer = null;
     this.takingCountDownTimer = null;
   }
 
@@ -37,55 +37,64 @@ class KaraokeMenu extends Component {
     console.log(config);
   }
 
-  countDownStart = () => {
-    let { startCountDown, talkingCountDown, karaokeState } = this.state;
-    startCountDown -= 1;
-    if (startCountDown > 0) {
-      setTimeout(this.countDownStart, TIMER_DELAY);
-    } else {
-      karaokeState = KARAOKE_STATE.TALKING;
-      talkingCountDown = TALKING_COUNT_DOWN;
-      setTimeout(this.countDownTalking, TIMER_DELAY_FAST);
+  countDown = () => {
+    let { startingCountDown, talkingCountDown } = this.state;
+    const { karaokeState } = this.state;
+    console.log(karaokeState);
+    switch (karaokeState) {
+      case KARAOKE_STATE.STARTING:
+        startingCountDown -= 1;
+        if (startingCountDown < 1) {
+          this.updateKaraokeState(KARAOKE_STATE.TALKING);
+        } else {
+          setTimeout(this.countDown, TIMER_DELAY);
+        }
+        break;
+      case KARAOKE_STATE.TALKING:
+        talkingCountDown -= 1;
+        if (talkingCountDown < 1) {
+          this.updateKaraokeState(KARAOKE_STATE.COMPLETE);
+        } else {
+          setTimeout(this.countDown, TIMER_DELAY_FAST);
+        }
+        break;
+      default:
     }
 
     this.setState({
-      startCountDown,
-      talkingCountDown,
-      karaokeState
-    });
-  };
-
-  countDownTalking = () => {
-    console.log('count down');
-    let { talkingCountDown, karaokeState } = this.state;
-    talkingCountDown -= 1;
-    if (talkingCountDown > 0) {
-      setTimeout(this.countDownTalking, TIMER_DELAY_FAST);
-    } else {
-      karaokeState = KARAOKE_STATE.COMPLETE;
-    }
-
-    this.setState({
-      talkingCountDown,
-      karaokeState
+      startingCountDown,
+      talkingCountDown
     });
   };
 
   updateKaraokeState = karaokeState => {
-    // TODO: START_COUNT_DOWN?
-    this.setState(
-      {
-        karaokeState,
-        startCountDown: START_COUNT_DOWN
-      },
-      () => {
-        setTimeout(this.countDownStart, TIMER_DELAY);
-      }
-    );
+    let { startingCountDown, talkingCountDown } = this.state;
+
+    switch (karaokeState) {
+      case KARAOKE_STATE.IDLE:
+        startingCountDown = STARTING_COUNT_DOWN;
+        talkingCountDown = TALKING_COUNT_DOWN;
+        break;
+      case KARAOKE_STATE.STARTING:
+        startingCountDown = STARTING_COUNT_DOWN;
+        setTimeout(this.countDown, TIMER_DELAY);
+        break;
+      case KARAOKE_STATE.TALKING:
+        talkingCountDown = TALKING_COUNT_DOWN;
+        setTimeout(this.countDown, TIMER_DELAY_FAST);
+        break;
+      default:
+    }
+
+    this.setState({
+      karaokeState,
+      startingCountDown,
+      talkingCountDown
+    });
   };
 
   render() {
-    const { karaokeState, startCountDown, talkingCountDown } = this.state;
+    const { karaokeState, startingCountDown, talkingCountDown } = this.state;
 
     return (
       <div>
@@ -99,7 +108,7 @@ class KaraokeMenu extends Component {
                 Start
               </Button>
             ) : karaokeState === KARAOKE_STATE.STARTING ? (
-              <div>{startCountDown}</div>
+              <div>{startingCountDown}</div>
             ) : karaokeState === KARAOKE_STATE.TALKING ? (
               <div>asdfasdfasdfs: {talkingCountDown}</div>
             ) : karaokeState === KARAOKE_STATE.COMPLETE ? (
