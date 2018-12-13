@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Typography } from '@material-ui/core';
 import { Auth } from 'aws-amplify';
 import Navbar from './Navbar';
 import HomePage from './HomePage';
@@ -57,35 +58,52 @@ class App extends Component {
 
     return (
       <div className="app">
-        <header className="app-header">
-          <div className="wrapper">
-            <Navbar
-              switchView={this.handleViewSwitch}
-              currentView={currentView}
-              isAuthenticated={isAuthenticated}
-              isAuthenticating={isAuthenticating}
-              onLogout={this.handleLogout}
-            />
-            {/* TODO: React Router DOM */}
-            {currentView === views.home.TITLE ? (
-              <HomePage switchView={this.handleViewSwitch} />
-            ) : currentView === views.projection.TITLE ? (
-              <ProjectionMenu isAuthenticated={isAuthenticated} />
-            ) : currentView === views.tongueTwister.TITLE ? (
-              <TongueTwisterMenu />
-            ) : currentView === views.challenge.TITLE ? (
-              <ChallengeMenu />
-            ) : currentView === views.karaoke.TITLE ? (
-              <KaraokeMenu />
-            ) : currentView === views.activity.TITLE ? (
-              <Activity />
-            ) : currentView === views.login.TITLE ? (
-              <Login onLogin={this.handleLogin} />
-            ) : currentView === views.signUp.TITLE ? (
-              <SignUp onLogin={this.handleLogin} />
-            ) : null}
+        <div className="app--header">
+          <Navbar
+            switchView={this.handleViewSwitch}
+            currentView={currentView}
+            isAuthenticated={isAuthenticated}
+            isAuthenticating={isAuthenticating}
+            onLogout={this.handleLogout}
+          />
+        </div>
+        <div className="app--content">
+          {/* TODO: React Router DOM */}
+          {currentView === views.home.TITLE ? (
+            <HomePage switchView={this.handleViewSwitch} />
+          ) : currentView === views.projection.TITLE ? (
+            <ProjectionMenu isAuthenticated={isAuthenticated} />
+          ) : currentView === views.tongueTwister.TITLE ? (
+            <TongueTwisterMenu />
+          ) : currentView === views.challenge.TITLE ? (
+            <ChallengeMenu />
+          ) : currentView === views.karaoke.TITLE ? (
+            <KaraokeMenu />
+          ) : currentView === views.activity.TITLE ? (
+            <Activity />
+          ) : currentView === views.login.TITLE ? (
+            <Login onLogin={this.handleLogin} />
+          ) : currentView === views.signUp.TITLE ? (
+            <SignUp onLogin={this.handleLogin} />
+          ) : null}
+          {/* </div> */}
+        </div>
+        <div className="app--footer">
+          <div>
+            <Typography variant="overline" gutterBottom color="primary">
+              Created by Daenam, Matt, Toru at Code Chrysalis Cohort 6 2018.
+            </Typography>
+            <Typography variant="overline" gutterBottom color="primary">
+              Ject Logo made with{' '}
+              <a
+                href="https://www.designevo.com/en/"
+                title="Free Online Logo Maker"
+              >
+                DesignEvo
+              </a>
+            </Typography>
           </div>
-        </header>
+        </div>
       </div>
     );
   }
