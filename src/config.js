@@ -1,17 +1,17 @@
 const dev = {
   s3: {
     REGION: 'ap-northeast-1',
-    BUCKET: 'ject-api-dev-attachmentsbucket-jxmku0zj86ek'
+    BUCKET: 'ject-api-dev-attachmentsbucket-1sd5da289tltp'
   },
   apiGateway: {
     REGION: 'ap-northeast-1',
-    URL: 'https://vn6s57z8n5.execute-api.ap-northeast-1.amazonaws.com/dev'
+    URL: 'https://rkj6psmakh.execute-api.ap-northeast-1.amazonaws.com/dev'
   },
   cognito: {
     REGION: 'ap-northeast-1',
-    USER_POOL_ID: 'ap-northeast-1_sVXIP2S8W',
-    APP_CLIENT_ID: '6hjtq2q8aqrekdvujgbghppf3j',
-    IDENTITY_POOL_ID: 'ap-northeast-1:1193783b-97f1-4754-91c0-5ada335570dc'
+    USER_POOL_ID: 'ap-northeast-1_MAxojmp1N',
+    APP_CLIENT_ID: '4ralguhavht02slitv06gi8lvq',
+    IDENTITY_POOL_ID: 'ap-northeast-1:ce2d9e32-860c-4759-8313-71b8ad3d092a'
   },
   social: {
     facebook: {
