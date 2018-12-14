@@ -17,7 +17,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentView: views.home.TITLE,
+      currentView: views.karaoke.TITLE,
       isAuthenticated: false,
       isAuthenticating: false
     };
@@ -54,7 +54,6 @@ class App extends Component {
 
   render() {
     const { currentView, isAuthenticated, isAuthenticating } = this.state;
-    console.log('BEFORE SEND', isAuthenticated);
 
     return (
       <div className="app">

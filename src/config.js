@@ -20,7 +20,8 @@ const dev = {
     }
   },
   randomImage: {
-    URL: 'http://lorempixel.com/800/600/'
+    // Because of CORS in local CORS proxy was set.
+    URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
     // URL: 'https://picsum.photos/800/600/?random'
   }
 };
@@ -48,7 +49,7 @@ const prod = {
     }
   },
   randomImage: {
-    URL: 'http://lorempixel.com/800/600/'
+    URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
     // URL: 'https://picsum.photos/800/600/?random'
   }
 };
