@@ -4,6 +4,7 @@ import { Card, CardContent, Button, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import config from './config';
+import { play as playSound, APPLAUSE, TICK } from './libs/sound';
 import { getRandomCompliment, randomKaraokeTitle } from './Constants';
 
 const KARAOKE_STATE = {
@@ -14,9 +15,9 @@ const KARAOKE_STATE = {
 };
 
 const STARTING_COUNT_DOWN = 5;
-const TALKING_COUNT_DOWN = 300;
+const TALKING_COUNT_DOWN = 30;
 // const TIMER_DELAY = 1000;
-const TIMER_DELAY = 80;
+const TIMER_DELAY = 500;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
 const STEP_MAX = 7;
@@ -75,8 +76,27 @@ class KaraokeMenu extends Component {
   }
 
   async componentDidMount() {
-    await this.initializeSteps();
+    await this.initialize();
   }
+
+  initialize = () => {
+    this.setState({
+      isLoading: true
+    });
+    new Promise(resolve => {
+      resolve();
+    })
+      .then(() => this.initializeSteps())
+      .then(results => {
+        console.log(results);
+        this.setState({
+          isLoading: false
+        });
+      })
+      .catch();
+
+    this.initializeSteps();
+  };
 
   initializeSteps = () => {
     const { randomImage } = config;
@@ -87,44 +107,55 @@ class KaraokeMenu extends Component {
     };
 
     this.stepIndex = 0;
-    this.setState({
-      isLoading: true
-    });
 
+    /* eslint-disable no-loop-func no-new */
+    const promises = [];
     for (let i = 0; i < STEP_MAX; i++) {
       const newStep = {};
       if (i === 0) {
-        newStep.type = STEP_TYPE_TEXT;
-        newStep.data = randomKaraokeTitle();
-        steps[i] = newStep;
+        const promise = new Promise(resolve => {
+          newStep.type = STEP_TYPE_TEXT;
+          newStep.data = randomKaraokeTitle();
+          steps[i] = newStep;
+          resolve(STEP_TYPE_TEXT);
+        });
+        promises.push(promise);
       } else if (i === STEP_MAX - 2) {
-        newStep.type = STEP_TYPE_TEXT;
-        newStep.data = 'In Conclusion';
-        steps[i] = newStep;
+        const promise = new Promise(resolve => {
+          newStep.type = STEP_TYPE_TEXT;
+          newStep.data = 'In Conclusion';
+          steps[i] = newStep;
+          resolve(STEP_TYPE_TEXT);
+        });
+        promises.push(promise);
       } else {
-        newStep.type = STEP_TYPE_IMAGE;
-        axios
-          .get(randomImage.URL, axiosConfig)
-          .then(response => {
-            const { data } = response;
-            // FIXME: deprecated.
-            /* eslint-disable no-buffer-constructor */
-            newStep.data = new Buffer(data, 'binary').toString('base64');
-            /* eslint-enable no-buffer-constructor */
-            steps[i] = newStep;
-            this.setState({
-              steps,
-              isLoading: false
+        const promise = new Promise(resolve => {
+          newStep.type = STEP_TYPE_IMAGE;
+          axios
+            .get(randomImage.URL, axiosConfig)
+            .then(response => {
+              const { data } = response;
+              // FIXME: deprecated.
+              /* eslint-disable no-buffer-constructor */
+              newStep.data = new Buffer(data, 'binary').toString('base64');
+              /* eslint-enable no-buffer-constructor */
+              steps[i] = newStep;
+              this.setState(
+                {
+                  steps
+                },
+                resolve(STEP_TYPE_IMAGE)
+              );
+            })
+            .catch(error => {
+              console.log(error);
             });
-          })
-          .catch(error => {
-            console.log(error);
-            this.setState({
-              isLoading: false
-            });
-          });
+        });
+        promises.push(promise);
       }
+      /* eslint-enable no-loop-func no-new  */
     }
+    return Promise.all(promises);
   };
 
   updateStep = count => {
@@ -140,7 +171,7 @@ class KaraokeMenu extends Component {
     const { karaokeState } = this.state;
     switch (karaokeState) {
       case KARAOKE_STATE.STARTING:
-        // TODO: play tick sound.
+        playSound(TICK);
         startingCountDown--;
         if (startingCountDown < 1) {
           this.updateKaraokeState(KARAOKE_STATE.TALKING);
@@ -151,7 +182,7 @@ class KaraokeMenu extends Component {
       case KARAOKE_STATE.TALKING:
         talkingCountDown--;
         if (talkingCountDown < 1) {
-          // TODO: play applouse
+          playSound(APPLAUSE);
           this.updateKaraokeState(KARAOKE_STATE.COMPLETE);
         } else {
           this.updateStep(talkingCountDown);
@@ -174,7 +205,7 @@ class KaraokeMenu extends Component {
       case KARAOKE_STATE.IDLE:
         startingCountDown = STARTING_COUNT_DOWN;
         talkingCountDown = TALKING_COUNT_DOWN;
-        this.initializeSteps();
+        this.initialize();
         break;
       case KARAOKE_STATE.STARTING:
         startingCountDown = STARTING_COUNT_DOWN;
