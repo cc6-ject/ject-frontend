@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+/* eslint-disable*/
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -7,7 +7,8 @@ import Grid from '@material-ui/core/Grid';
 import {
   randomTongueTwister,
   updateLastTongueTwister,
-  splitResults
+  splitResults,
+  targetStringToArray
 } from './TongueTwisterFiles';
 
 const styles = theme => ({
@@ -23,9 +24,9 @@ const styles = theme => ({
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
-// recognition.maxAlternatives = 10; //<- supposed to give alternatives
-// recognition.continous = true; //<- maybe this needs to be deleted for better tt reading?
-// recognition.interimResults = true; //<-will need to delete so it doesn't auto correct
+recognition.maxAlternatives = 1; // <- supposed to give alternatives
+recognition.continous = true; // <- maybe this needs to be deleted for better tt reading?
+recognition.interimResults = true; // <-will need to delete so it doesn't auto correct
 
 let transcript = '';
 
@@ -35,12 +36,16 @@ class TongueTwisterPractice extends Component {
     this.state = {
       lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
-      twisterTranscript: '',
+      twisterTranscript: [],
       listening: false,
-      statusMessage: 'Start'
+      statusMessage: 'Start',
+      toggleRepCount: false
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
+    this.repCount = 0;
+    this.outOf = ' out of 10';
+    // dont use state for TT transcript - to slow define here and access here
   }
 
   componentDidMount() {
@@ -75,17 +80,24 @@ class TongueTwisterPractice extends Component {
     this.setState({
       twisterTranscript: splitResults(newResult, this.state.currentTwister)
     });
+    // count length here for rep count?
+    // this.repCount++;
+    this.setState({ toggleRepCount: true });
   }
 
   handleListen() {
-    if (this.state.listening) {
-      recognition.start();
-      recognition.onend = () => {
-        this.setState({
-          statusMessage: 'Start'
-        });
-      };
-    }
+    if (this.state.listening) recognition.start();
+
+    let finalTranscript = '';
+    recognition.onresult = event => {
+      let interimTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalTranscript += `${transcript} `;
+        else interimTranscript += transcript;
+      }
+    };
 
     recognition.onstart = () => {
       this.setState({
@@ -100,9 +112,31 @@ class TongueTwisterPractice extends Component {
   }
 
   printResults() {
+    const targetString = this.state.currentTwister;
     const table = [];
+    setTimeout(() => {
+      console.log('NOW!');
+    }, 3000);
+    // const endTimer = clearTimeout(timer);
+    // const timer = setTimeout;
+    // const count = 0;
     for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-      table.push(<p id={i}>{this.state.twisterTranscript[i]}</p>);
+      // clearTimeout(timer);
+      // timer(() => {
+      table.push(
+        <p id={i}>
+          {this.state.twisterTranscript[i]}
+          {this.state.twisterTranscript[i] === targetString ? ' OK' : ' FAIL!'}
+        </p>
+      );
+      this.repCount = i;
+      // }, 2000);
+
+      // const test = function() {
+
+      // };
+
+      setTimeout(() => {}, 2000);
     }
     return table;
   }
@@ -131,6 +165,14 @@ class TongueTwisterPractice extends Component {
             <Paper className={classes.paper} onClick={this.toggleListen}>
               {statusMessage}
             </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            {this.state.toggleRepCount ? (
+              <Paper className={classes.paper}>
+                {this.repCount}
+                {this.outOf}
+              </Paper>
+            ) : null}
           </Grid>
           <Grid item xs={4}>
             <Paper className={classes.paper}>{this.printResults()}</Paper>
