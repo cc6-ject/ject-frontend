@@ -22,13 +22,22 @@ const numOfDays = {
   12: 31
 };
 
+const NOW = new Date();
+const DATE = NOW.getDate();
+const MONTH = NOW.getMonth() + 1;
+const YEAR = NOW.getFullYear();
+const PRE_MONTH = MONTH - 1 > 0 ? MONTH - 1 : MONTH + 11;
+const PRE_PRE_MONTH = MONTH - 2 > 0 ? MONTH - 2 : MONTH + 10;
+const PRE_PRE_PRE_MONTH = MONTH - 3 > 0 ? MONTH - 3 : MONTH + 9;
+console.log(YEAR, MONTH, DATE);
+
 class Activity extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       projectionData: null,
       karaokeData: null,
-      tongueTwisterData: null,
+      TTData: null,
       view: 'Days',
       activity: 'Projection',
       timeAnchorEl: null,
@@ -38,14 +47,8 @@ class Activity extends React.Component {
 
   async componentDidMount() {
     try {
-      const decibels = await this.getDecibel();
-      const proData = decibels.map(val => ({
-        userId: val.userId,
-        createdAt: moment(val.createdAt),
-        avgDecibel: val.avgDecibel,
-        duration: val.duration,
-        decibels: JSON.parse(val.decibels)
-      }));
+      const data = await this.getDecibel();
+      const proData = this.arrangeData(data, 'projection');
       this.setState({ projectionData: proData });
       const { projectionData, activity } = this.state;
       this.renderDays(projectionData, activity);
@@ -54,26 +57,10 @@ class Activity extends React.Component {
     }
     try {
       const karaokes = await this.getKaraoke();
-      const karaokeData = karaokes.map(val => ({
-        userId: val.userId,
-        createdAt: moment(val.createdAt),
-        finishedAt: moment(val.finishedAt),
-        pics: JSON.parse(val.pics),
-        decibels: JSON.parse(val.decibels),
-        wpm: val.wpm,
-        text: val.text,
-        avgDecibel: val.avgDecibel,
-        countWord: JSON.parse(val.countWord)
-      }));
-      const tongueTwisters = await this.getTongueTwister();
-      const tongueTwisterData = tongueTwisters.map(val => ({
-        userId: val.userId,
-        createdAt: moment(val.createdAt),
-        name: val.name,
-        coverage: val.coverage,
-        failWords: JSON.stringify(val.failWords)
-      }));
-      this.setState({ karaokeData, tongueTwisterData });
+      const TTs = await this.getTongueTwister();
+      const karaokeData = this.arrangeData(karaokes, 'karaoke');
+      const TTData = this.arrangeData(TTs, 'tongueTwister');
+      this.setState({ karaokeData, TTData });
     } catch (error) {
       console.log(error);
     }
@@ -85,21 +72,57 @@ class Activity extends React.Component {
 
   getTongueTwister = () => API.get('ject', '/tongueTwister');
 
+  arrangeData = (data, type) => {
+    if (type === 'projection') {
+      return data.map(val => ({
+        userId: val.userId,
+        createdAt: moment(val.createdAt),
+        avgDecibel: val.avgDecibel,
+        duration: val.duration,
+        decibels: JSON.parse(val.decibels)
+      }));
+    }
+    if (type === 'karaoke') {
+      return data.map(val => ({
+        userId: val.userId,
+        createdAt: moment(val.createdAt),
+        finishedAt: moment(val.finishedAt),
+        pics: JSON.parse(val.pics),
+        decibels: JSON.parse(val.decibels),
+        wpm: val.wpm,
+        text: val.text,
+        avgDecibel: val.avgDecibel,
+        countWord: JSON.parse(val.countWord)
+      }));
+    }
+    return data.map(val => ({
+      userId: val.userId,
+      createdAt: moment(val.createdAt),
+      name: val.name,
+      coverage: val.coverage,
+      failWords: JSON.stringify(val.failWords)
+    }));
+  };
+
   renderDays = (data, activityType) => {
     const result = [];
     const scale = [];
-    for (let i = 1; i <= 31; i++) {
+    const days = numOfDays[`${MONTH}`];
+
+    // eslint-disable-next-line no-plusplus
+    for (let i = 1; i <= days; i++) {
       scale.push(i);
       result.push({ x: `${i}`, y: 0 });
     }
-    const now = new Date();
-    const monthlyData = data.filter(
-      val =>
-        val.createdAt.year() === now.getFullYear() &&
-        val.createdAt.month() === now.getMonth()
-    );
+
+    const monthlyData = data.filter(activity => {
+      const { createdAt } = activity;
+      return createdAt.year() === YEAR && createdAt.month() + 1 === MONTH;
+    });
+
     result.forEach(day => {
       let count = 0;
+      // eslint-disable-next-line no-restricted-syntax
       for (const activity of monthlyData) {
         if (Number(day.x) === activity.createdAt.date()) {
           if (activityType === 'Projection' || activityType === 'Karaoke') {
@@ -108,76 +131,49 @@ class Activity extends React.Component {
             // For Tongue Twister
             // day.y += activity.avgDecibel;
           }
-
-          count++;
+          count += 1;
         }
       }
       if (count !== 0) {
         day.y /= count;
       }
     });
+    console.log(scale, result);
+
     this.drawBarChart(scale, result);
   };
 
   renderWeeks = (data, activityType) => {
-    const result = [];
-    const scale = [];
-    const now = new Date();
-    const day = 6 - now.getDay();
-    const baseDate = now.getDate() + day;
-    let month = now.getMonth() + 1;
-    let days = 0;
-    for (let i = 0; i <= 11; i++) {
-      if (baseDate - 7 * i > 0) {
-        scale.unshift(`${month}/${baseDate - 7 * i}`);
-        result.unshift({ month, date: baseDate - 7 * i, y: 0 });
-      } else if (baseDate - 7 * i > -30) {
-        if (month - 1 <= 0) month += 12;
-        days = numOfDays[month - 1];
-        scale.unshift(`${month - 1}/${baseDate - 7 * i + days}`);
-        result.unshift({
-          month: month - 1,
-          date: baseDate - 7 * i + days,
-          y: 0
-        });
-      } else if (baseDate - 7 * i > -60) {
-        if (month - 2 <= 0) month += 12;
-        days = numOfDays[month - 1] + numOfDays[month - 2];
-        scale.unshift(`${month - 2}/${baseDate - 7 * i + days}`);
-        result.unshift({
-          month: month - 2,
-          date: baseDate - 7 * i + days,
-          y: 0
-        });
-      } else {
-        if (month - 3 <= 0) month += 12;
-        days =
-          numOfDays[month - 1] + numOfDays[month - 2] + numOfDays[month - 3];
-        scale.unshift(`${month - 3}/${baseDate - 7 * i + days}`);
-        result.unshift({
-          month: month - 3,
-          date: baseDate - 7 * i + days,
-          y: 0
-        });
-      }
-    }
-    const threeMonthsData = data.filter(
-      val =>
-        (val.createdAt.year() === now.getFullYear() ||
-          val.createdAt.year() === now.getFullYear() - 1) &&
-        (val.createdAt.month() === now.getMonth() ||
-          val.createdAt.month() === now.getMonth() - 1 ||
-          val.createdAt.month() === now.getMonth() - 2)
-    );
+    const chartItem = this.makeWeekScale();
+    const { result, scale } = chartItem;
+
+    const threeMonthsData = data.filter(activity => {
+      const { createdAt } = activity;
+      return (
+        (createdAt.year() === YEAR || createdAt.year() === YEAR - 1) &&
+        (createdAt.month() + 1 === MONTH ||
+          createdAt.month() + 1 === PRE_MONTH ||
+          createdAt.month() + 1 === PRE_PRE_MONTH)
+      );
+    });
 
     result.forEach(week => {
       let count = 0;
+      const { date } = week;
+      // eslint-disable-next-line no-restricted-syntax
       for (const activity of threeMonthsData) {
-        const actDate = activity.createdAt;
-        if (week.month === actDate.month() + 1) {
-          if (actDate.date() <= week.date && actDate.date() >= week.date - 6) {
-            week.y += activity.avgDecibel;
-            count++;
+        const { createdAt } = activity;
+        if (week.month === createdAt.month() + 1) {
+          const inWeek =
+            createdAt.date() <= date && createdAt.date() >= date - 6;
+          if (inWeek) {
+            if (activityType === 'Projection' || activityType === 'Karaoke') {
+              week.y += activity.avgDecibel;
+            } else {
+              // For Tongue Twister
+              // day.y += activity.avgDecibel;
+            }
+            count += 1;
           }
         }
       }
@@ -188,25 +184,74 @@ class Activity extends React.Component {
     this.drawBarChart(scale, result);
   };
 
-  renderMonths = (data, activityType) => {
-    console.log('HI MONTHS');
-
+  makeWeekScale = () => {
     const result = [];
     const scale = [];
-    for (let i = 1; i <= 12; i++) {
+    const day = 6 - NOW.getDay();
+    const baseDate = DATE + day;
+    let days;
+
+    for (let i = 0; i <= 11; i += 1) {
+      const targetDay = baseDate - 7 * i;
+      if (targetDay > 0) {
+        scale.unshift(`${MONTH} / ${targetDay}`);
+        result.unshift({ month: MONTH, date: targetDay, y: 0 });
+      } else if (targetDay > -30) {
+        days = numOfDays[`${PRE_MONTH}`];
+        scale.unshift(`${PRE_MONTH}/${targetDay + days}`);
+        result.unshift({
+          month: PRE_MONTH,
+          date: targetDay + days,
+          y: 0
+        });
+      } else if (targetDay > -60) {
+        days = numOfDays[`${PRE_MONTH}`] + numOfDays[`${PRE_PRE_MONTH}`];
+        scale.unshift(`${PRE_PRE_MONTH}/${targetDay + days}`);
+        result.unshift({
+          month: PRE_PRE_MONTH,
+          date: targetDay + days,
+          y: 0
+        });
+      } else {
+        days =
+          numOfDays[`${PRE_MONTH}`] +
+          numOfDays[`${PRE_PRE_MONTH}`] +
+          numOfDays[`${PRE_PRE_PRE_MONTH}`];
+        scale.unshift(`${PRE_PRE_PRE_MONTH}/${targetDay + days}`);
+        result.unshift({
+          month: PRE_PRE_PRE_MONTH,
+          date: targetDay + days,
+          y: 0
+        });
+      }
+    }
+    return { result, scale };
+  };
+
+  renderMonths = (data, activityType) => {
+    const result = [];
+    const scale = [];
+    for (let i = 1; i <= 12; i += 1) {
       scale.push(i);
       result.push({ x: `${i}`, y: 0 });
     }
-    const now = new Date();
+
     const annualData = data.filter(
-      val => val.createdAt.year() === now.getFullYear()
+      activity => activity.createdAt.year() === YEAR
     );
+
     result.forEach(day => {
       let count = 0;
+      // eslint-disable-next-line no-restricted-syntax
       for (const activity of annualData) {
         if (Number(day.x) === activity.createdAt.month() + 1) {
-          day.y += activity.avgDecibel;
-          count++;
+          if (activityType === 'Projection' || activityType === 'Karaoke') {
+            day.y += activity.avgDecibel;
+          } else {
+            // For Tongue Twister
+            // day.y += activity.avgDecibel;
+          }
+          count += 1;
         }
       }
       if (count !== 0) {
@@ -217,16 +262,10 @@ class Activity extends React.Component {
   };
 
   drawBarChart = (scale, data) => {
-    const wrapper = document.getElementById('primaryChartAreaWrapper');
-    const canvas = document.getElementById('primaryChart');
-    canvas.remove();
-    const newCanvas = document.createElement('canvas');
-    newCanvas.setAttribute('id', 'primaryChart');
-    newCanvas.setAttribute('height', '300');
-    newCanvas.setAttribute('width', '1200');
-    wrapper.append(newCanvas);
+    this.initBarChart();
 
     const ctx = document.getElementById('primaryChart').getContext('2d');
+    // eslint-disable-next-line no-new
     new Chart(ctx, {
       type: 'bar',
       data: {
@@ -247,9 +286,23 @@ class Activity extends React.Component {
               ticks: { fontSize: 18 }
             }
           ]
+        },
+        legend: {
+          display: false
         }
       }
     });
+  };
+
+  initBarChart = () => {
+    const wrapper = document.getElementById('primaryChartAreaWrapper');
+    const canvas = document.getElementById('primaryChart');
+    canvas.remove();
+    const newCanvas = document.createElement('canvas');
+    newCanvas.setAttribute('id', 'primaryChart');
+    newCanvas.setAttribute('height', '300');
+    newCanvas.setAttribute('width', '1200');
+    wrapper.append(newCanvas);
   };
 
   handleTimeClick = event => {
@@ -264,50 +317,54 @@ class Activity extends React.Component {
 
   handleTimeClose = e => {
     const menuItem = e.currentTarget.textContent;
-    const {
-      activity,
-      projectionData,
-      karaokeData,
-      tongueTwisterData
-    } = this.state;
+    const { activity, projectionData, karaokeData, TTData } = this.state;
 
     let data;
-    if (activity === 'Projection') data = projectionData;
-    else if (activity === 'Karaoke') data = karaokeData;
-    else if (activity === 'Tongue Twister') data = tongueTwisterData;
+    if (activity === 'Projection') {
+      data = projectionData;
+    } else if (activity === 'Karaoke') {
+      data = karaokeData;
+    } else if (activity === 'Tongue Twister') {
+      data = TTData;
+    }
 
-    if (menuItem === 'Days') this.renderDays(data, activity);
-    else if (menuItem === 'Weeks') this.renderWeeks(data, activity);
-    if (menuItem === 'Months') this.renderMonths(data, activity);
+    if (menuItem === 'Days') {
+      this.renderDays(data, activity);
+    } else if (menuItem === 'Weeks') {
+      this.renderWeeks(data, activity);
+    } else {
+      this.renderMonths(data, activity);
+    }
 
     this.setState({ timeAnchorEl: null, view: menuItem });
   };
 
   handleActivityClose = e => {
     const menuItem = e.currentTarget.textContent;
-    const {
-      activity,
-      view,
-      projectionData,
-      karaokeData,
-      tongueTwisterData
-    } = this.state;
+    const { activity, view, projectionData, karaokeData, TTData } = this.state;
 
     let data;
-    if (menuItem === 'Projection') data = projectionData;
-    else if (menuItem === 'Karaoke') data = karaokeData;
-    else if (menuItem === 'Tongue Twister') data = tongueTwisterData;
+    if (menuItem === 'Projection') {
+      data = projectionData;
+    } else if (menuItem === 'Karaoke') {
+      data = karaokeData;
+    } else {
+      data = TTData;
+    }
 
-    if (view === 'Days') this.renderDays(data, activity);
-    else if (view === 'Weeks') this.renderWeeks(data, activity);
-    if (view === 'Months') this.renderMonths(data, activity);
+    if (view === 'Days') {
+      this.renderDays(data, activity);
+    } else if (view === 'Weeks') {
+      this.renderWeeks(data, activity);
+    } else {
+      this.renderMonths(data, activity);
+    }
 
     this.setState({ activityAnchorEl: null, activity: menuItem });
   };
 
   render() {
     const { view, timeAnchorEl, activityAnchorEl, activity } = this.state;
-    console.log(this.state);
     return (
       <div className="activity">
         <Button
