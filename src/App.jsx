@@ -55,7 +55,6 @@ class App extends Component {
 
   render() {
     const { currentView, isAuthenticated, isAuthenticating } = this.state;
-    console.log('BEFORE SEND', isAuthenticated);
 
     return (
       <div className="app">
