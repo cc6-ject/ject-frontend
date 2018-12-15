@@ -1,0 +1,14 @@
+.primaryChartWrapper {
+  position: relative;
+}
+
+.primaryChartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+#primaryChartAreaWrapper {
+  overflow-x: scroll;
+  width: 1500px;
+}

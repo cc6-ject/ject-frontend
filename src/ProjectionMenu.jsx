@@ -36,6 +36,7 @@ class ProjectionMenu extends Component {
   async componentDidMount() {
     try {
       const data = await Auth.currentAuthenticatedUser();
+      console.log(data.id);
       this.setState({ username: data.id });
     } catch (error) {
       console.log(error);
@@ -117,7 +118,7 @@ class ProjectionMenu extends Component {
     clearInterval(state.intervalID);
   };
 
-  saveToAWS = (trainingDecibel, avgDecibel, duration) =>
+  saveToAWS = (trainingDecibel, avgDecibel, duration) => {
     API.post('ject', '/decibel', {
       body: {
         decibel: JSON.stringify(trainingDecibel),
@@ -130,7 +131,38 @@ class ProjectionMenu extends Component {
         }
       }
     });
+    API.post('ject', '/karaoke', {
+      body: {
+        finishedAt: 11,
+        pics: JSON.stringify(['URL1', 'URL2']),
+        decibels: JSON.stringify([11, 11]),
+        wpm: 40,
+        text: 'YEAH',
+        avgDecibel: 40,
+        countWord: JSON.stringify({ abc: 1 })
+      },
+      requestContext: {
+        identity: {
+          cognitoIdentityId: this.state.username
+        }
+      }
+    });
+    API.post('ject', '/tongueTwister', {
+      body: {
+        finishedAt: 11,
+        name: 'Mixed Biscket',
+        coverage: 90,
+        faileWords: JSON.stringify({ Mixed: 2, Biscket: 1 })
+      },
+      requestContext: {
+        identity: {
+          cognitoIdentityId: this.state.username
+        }
+      }
+    });
+  };
 
+  // "{\"finishedAt\": 1234, \"pics\":\"[URL1, URL2]\", \"decibels\":\"[35, 46]\", \"wpm\": 40, \"text\":\"YEAH\", \"avgDecibel\": 40, \"countWord\":\"[abc, def]\"}"
   componentWillUnmount() {
     if (audioContext) {
       this.handleClose();

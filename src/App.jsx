@@ -26,8 +26,10 @@ class App extends Component {
     try {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      if (e !== 'not authenticated') {
+        console.log(e);
+      }
     }
   }
 
