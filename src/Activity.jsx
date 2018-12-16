@@ -1,12 +1,16 @@
 import React from 'react';
-import { API } from 'aws-amplify';
-import Chart from 'chart.js';
-import 'chartjs-plugin-annotation';
-import moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
+import { API } from 'aws-amplify';
+import Chart from 'chart.js';
+import 'chartjs-plugin-annotation';
+
 import { NAME_OF_MONTH, NUM_OF_DAYS } from './Constants';
+import arrangeData from './lib/arrangeData';
+import makeWeekScale from './lib/makeWeekScale';
+import { getAxisConfig, getAnnotationConfig } from './lib/chartConfig';
 import './Activity.css';
 
 const NOW = new Date();
@@ -15,7 +19,6 @@ const MONTH = NOW.getMonth() + 1;
 const YEAR = NOW.getFullYear();
 const PRE_MONTH = MONTH - 1 > 0 ? MONTH - 1 : MONTH + 11;
 const PRE_PRE_MONTH = MONTH - 2 > 0 ? MONTH - 2 : MONTH + 10;
-const PRE_PRE_PRE_MONTH = MONTH - 3 > 0 ? MONTH - 3 : MONTH + 9;
 
 class Activity extends React.Component {
   constructor(props) {
@@ -34,18 +37,15 @@ class Activity extends React.Component {
   async componentDidMount() {
     try {
       const data = await this.getDecibel();
-      const proData = this.arrangeData(data, 'projection');
+      const proData = arrangeData(data, 'projection');
       await this.setState({ projectionData: proData });
       const { projectionData } = this.state;
       this.renderDay(projectionData);
-    } catch (error) {
-      console.log(error);
-    }
-    try {
+
       const karaokes = await this.getKaraoke();
       const TTs = await this.getTongueTwister();
-      const karaokeData = this.arrangeData(karaokes, 'karaoke');
-      const TTData = this.arrangeData(TTs, 'tongueTwister');
+      const karaokeData = arrangeData(karaokes, 'karaoke');
+      const TTData = arrangeData(TTs, 'tongueTwister');
       this.setState({ karaokeData, TTData });
     } catch (error) {
       console.log(error);
@@ -58,39 +58,6 @@ class Activity extends React.Component {
 
   getTongueTwister = () => API.get('ject', '/tongueTwister');
 
-  arrangeData = (data, type) => {
-    if (type === 'projection') {
-      return data.map(val => ({
-        userId: val.userId,
-        createdAt: moment(val.createdAt),
-        avgDecibel: val.avgDecibel,
-        duration: val.duration,
-        decibels: JSON.parse(val.decibels),
-        transcripts: val.transcripts ? JSON.parse(val.transcripts) : undefined
-      }));
-    }
-    if (type === 'karaoke') {
-      return data.map(val => ({
-        userId: val.userId,
-        createdAt: moment(val.createdAt),
-        finishedAt: moment(val.finishedAt),
-        pics: JSON.parse(val.pics),
-        decibels: JSON.parse(val.decibels),
-        wpm: val.wpm,
-        text: val.text,
-        avgDecibel: val.avgDecibel,
-        countWord: JSON.parse(val.countWord)
-      }));
-    }
-    return data.map(val => ({
-      userId: val.userId,
-      createdAt: moment(val.createdAt),
-      name: val.name,
-      coverage: val.coverage,
-      failWords: JSON.stringify(val.failWords)
-    }));
-  };
-
   renderActivity = data => {
     const result = [];
     const scale = [];
@@ -102,8 +69,7 @@ class Activity extends React.Component {
         y: data.decibels[i * 2]
       });
     }
-
-    this.drawBarChart(scale, result, 'line');
+    this.drawChart(scale, result, 'line');
   };
 
   renderDay = (data, date = DATE) => {
@@ -132,10 +98,10 @@ class Activity extends React.Component {
       if (activity === 'Projection' || activity === 'Karaoke') {
         result.push({ x: i, y: training.avgDecibel });
       } else {
-        result.push({ x: i, y: training.avgDecibel });
+        result.push({ x: i, y: training.coverage });
       }
     });
-    this.drawBarChart(scale, result, 'bar');
+    this.drawChart(scale, result, 'bar');
   };
 
   renderDays = data => {
@@ -172,11 +138,11 @@ class Activity extends React.Component {
       }
     });
 
-    this.drawBarChart(scale, result, 'bar');
+    this.drawChart(scale, result, 'bar');
   };
 
   renderWeeks = data => {
-    const chartItem = this.makeWeekScale();
+    const chartItem = makeWeekScale();
     const { result, scale } = chartItem;
     const { activity } = this.state;
 
@@ -213,51 +179,7 @@ class Activity extends React.Component {
         week.y /= count;
       }
     });
-    this.drawBarChart(scale, result, 'bar');
-  };
-
-  makeWeekScale = () => {
-    const result = [];
-    const scale = [];
-    const day = 6 - NOW.getDay();
-    const baseDate = DATE + day;
-    let days;
-
-    for (let i = 0; i <= 11; i += 1) {
-      const targetDay = baseDate - 7 * i;
-      if (targetDay > 0) {
-        scale.unshift(`${MONTH}/${targetDay}`);
-        result.unshift({ month: MONTH, date: targetDay, y: 0 });
-      } else if (targetDay > -30) {
-        days = NUM_OF_DAYS[`${PRE_MONTH}`];
-        scale.unshift(`${PRE_MONTH}/${targetDay + days}`);
-        result.unshift({
-          month: PRE_MONTH,
-          date: targetDay + days,
-          y: 0
-        });
-      } else if (targetDay > -60) {
-        days = NUM_OF_DAYS[`${PRE_MONTH}`] + NUM_OF_DAYS[`${PRE_PRE_MONTH}`];
-        scale.unshift(`${PRE_PRE_MONTH}/${targetDay + days}`);
-        result.unshift({
-          month: PRE_PRE_MONTH,
-          date: targetDay + days,
-          y: 0
-        });
-      } else {
-        days =
-          NUM_OF_DAYS[`${PRE_MONTH}`] +
-          NUM_OF_DAYS[`${PRE_PRE_MONTH}`] +
-          NUM_OF_DAYS[`${PRE_PRE_PRE_MONTH}`];
-        scale.unshift(`${PRE_PRE_PRE_MONTH}/${targetDay + days}`);
-        result.unshift({
-          month: PRE_PRE_PRE_MONTH,
-          date: targetDay + days,
-          y: 0
-        });
-      }
-    }
-    return { result, scale };
+    this.drawChart(scale, result, 'bar');
   };
 
   renderMonths = data => {
@@ -289,15 +211,19 @@ class Activity extends React.Component {
         month.y /= count;
       }
     });
-    this.drawBarChart(scale, result, 'bar');
+    this.drawChart(scale, result, 'bar');
   };
 
-  drawBarChart = (scale, data, chartType) => {
+  drawChart = (scale, data, chartType) => {
     this.initBarChart();
     const { activity, view } = this.state;
+
     const yLabel = activity === 'Tongue Twister' ? '%' : 'dB';
+    const axisConfig = getAxisConfig(yLabel);
+
     const transparent = activity === 'Tongue Twister' ? 0 : 0.5;
     const isLabel = activity !== 'Tongue Twister';
+    const annotationConfig = getAnnotationConfig(transparent, isLabel);
 
     const ctx = document.getElementById('primaryChart').getContext('2d');
     const chart = new Chart(ctx, {
@@ -313,41 +239,11 @@ class Activity extends React.Component {
         ]
       },
       options: {
-        scales: {
-          yAxes: [
-            {
-              ticks: { beginAtZero: true },
-              scaleLabel: { display: true, labelString: yLabel, fontSize: 18 }
-            }
-          ],
-          xAxes: [
-            {
-              barPercentage: 0.4,
-              barThickness: 10,
-              ticks: { fontSize: 18 }
-            }
-          ]
-        },
+        scales: axisConfig,
         legend: {
           display: false
         },
-        annotation: {
-          annotations: [
-            {
-              type: 'line',
-              id: 'hLine',
-              mode: 'horizontal',
-              scaleID: 'y-axis-0',
-              value: 40,
-              borderWidth: 1,
-              borderColor: `rgba(20, 29, 33, ${transparent})`,
-              label: {
-                enabled: isLabel,
-                content: 'Proper Level'
-              }
-            }
-          ]
-        },
+        annotation: annotationConfig,
         showAllTooltips: true,
         tooltips: {
           enabled: true,
@@ -356,7 +252,7 @@ class Activity extends React.Component {
           caretSize: 5,
           callbacks: {
             title(tooltipItem, data) {
-              return `${data.labels[tooltipItem[0].index]}Sec`;
+              return `${data.labels[tooltipItem[0].index]}`;
             },
             label(tooltipItem, data) {
               return `${data.datasets[0].data[tooltipItem.index].y}dB`;
@@ -369,9 +265,9 @@ class Activity extends React.Component {
                 return transcripts ? transcripts[range] : '';
               }
               return '';
-            } // afterBody;
-          } // callbacks;
-        } // tooltips;
+            }
+          }
+        }
       }
     });
     const canvas = document.getElementById('primaryChart');

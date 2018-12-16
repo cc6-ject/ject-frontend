@@ -48,8 +48,22 @@ const prod = {
 // Default to dev if not set
 const config = process.env.FRONTEND_STAGE === 'prod' ? prod : dev;
 
+const color = {
+  primary: {
+    light: '#4A6572',
+    main: '#344955',
+    dark: '#344955',
+    contrastText: '#fff'
+  },
+  secondary: {
+    main: '#F9AA33',
+    contrastText: '#000'
+  }
+};
+
 export default {
   // Add common config values here
   MAX_ATTACHMENT_SIZE: 5000000,
+  ...color,
   ...config
 };
