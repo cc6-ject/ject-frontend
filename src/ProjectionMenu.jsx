@@ -162,7 +162,6 @@ class ProjectionMenu extends React.Component {
   };
 
   saveToAWS = (decibels, avgDecibel, duration, transcripts) => {
-    console.log('HI', decibels, avgDecibel, duration, transcripts);
     const { username } = this.state;
     API.post('ject', '/decibel', {
       body: {
