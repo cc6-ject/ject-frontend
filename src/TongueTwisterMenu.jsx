@@ -129,7 +129,7 @@ class TongueTwisterPractice extends Component {
           {this.state.twisterTranscript[i] === targetString ? ' OK' : ' FAIL!'}
         </p>
       );
-      this.repCount = i;
+      this.repCount = i + 1;
       // }, 2000);
 
       // const test = function() {
