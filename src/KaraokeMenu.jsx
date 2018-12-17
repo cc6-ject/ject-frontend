@@ -10,6 +10,7 @@ import config from './config';
 import { play as playSound, APPLAUSE, TICK } from './libs/sound';
 import { getRandomCompliment, randomKaraokeTitle } from './Constants';
 import getAverageVolume from './libs/getAverageVolume';
+import AudioTool from './libs/AudioTool';
 
 const KARAOKE_STATE = {
   IDLE: 'idle',
@@ -83,40 +84,33 @@ class KaraokeMenu extends Component {
       // fillers: {},
       // wordsPerMin: [],
       // stringPerMin: [],
-      // TODO: TEST ▼▼▼▼
-      volume: { transform: 'rotate(0deg)' },
-      isListen: false,
-      isFinish: false,
-      intervalAudioId: null,
-      intervalSpeechId: null,
-      decibels: [],
-      transcripts: [],
-      durations: [],
-      avgDecibels: [],
-      username: '',
-      startTime: 0,
-      // finishedAt: null,
-      // startedAt: null,
-      // TODO: TEST ▲▲▲▲▲▲
       karaokeState: KARAOKE_STATE.IDLE,
       isLoading: false,
       compliment: ''
     };
+
+    this.audioTool = new AudioTool();
   }
 
   async componentDidMount() {
-    // TODO: be passed from component.
     try {
+      // TODO: be passed from component.
       const data = await Auth.currentAuthenticatedUser();
       this.setState({ username: data.id });
     } catch (error) {
       console.log(error);
     }
+
+    this.audioTool.openAudio(() => {
+      console.log('Audio was opened.');
+    });
     await this.initialize();
   }
 
   componentWillUnmount() {
-    if (audioContext) this.handleClose();
+    this.audioTool.closeAudio(() => {
+      console.log('Audio was closed.');
+    });
   }
 
   initialize = () => {
@@ -134,14 +128,6 @@ class KaraokeMenu extends Component {
         });
       })
       .catch();
-
-    // TODO: start dB
-    // TODO: wait until user approved to use mic.
-    console.log('hey!!!');
-    const constraint = { audio: true };
-    // navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
-    navigator.getUserMedia(constraint, this.handleSuccess, () => alert('fail'));
-    // TODO: start transcript
 
     this.initializeSteps();
   };
@@ -206,7 +192,7 @@ class KaraokeMenu extends Component {
   updateStep = count => {
     const unit = Math.floor(TALKING_COUNT_DOWN / STEP_MAX);
     if (count <= unit * (STEP_MAX - 1) && count % unit === 0) {
-      console.log(count, unit * 6, this.stepIndex);
+      // console.log(count, unit * 6, this.stepIndex);
       this.stepIndex++;
     }
   };
@@ -258,10 +244,34 @@ class KaraokeMenu extends Component {
         break;
       case KARAOKE_STATE.TALKING:
         talkingCountDown = TALKING_COUNT_DOWN;
+        this.audioTool.startListening();
         setTimeout(this.countDown, TIMER_DELAY);
         break;
       case KARAOKE_STATE.COMPLETE:
-        this.handleClose();
+        const { steps } = this.state;
+        this.audioTool.stopListening(async () => {
+          const body = {
+            avgDecibel: this.audioTool.getAvgDecibel(),
+            decibels: this.audioTool.getDecibels(),
+            pics: [] /* FIXME: error happens when adding base64 images, steps.map((step, index) =>
+              !(index === 0 || index === STEP_MAX - 2) ? step.data : undefined
+            )*/,
+            wordsPerEachMinute: this.audioTool.getWordsPerEachMinute(),
+            fillerWords: this.audioTool.getFillerWords(),
+            wordCounts: this.audioTool.getWordCounts(),
+            transcripts: this.audioTool.getTranscripts(),
+            duration: this.audioTool.getDuration(),
+            startedAt: this.audioTool.getStartedAt(),
+            finishedAt: this.audioTool.getFinishedAt()
+          };
+
+          console.log(body);
+          try {
+            await this.saveToAWS(body);
+          } catch (e) {
+            console.log(e.message);
+          }
+        });
         break;
       default:
     }
@@ -274,135 +284,9 @@ class KaraokeMenu extends Component {
     });
   };
 
-  // TEST　▼▼▼▼▼▼
-  handleSuccess = stream => {
-    const { isListen } = this.state;
-
-    const intervalAudioId = setInterval(() => {
-      const { decibels } = this.state;
-      this.setState({
-        volume: { transform: `rotate(${-180 + 3 * average}deg)` },
-        decibels: [...decibels, average]
-      });
-    }, 500);
-
-    const intervalSpeechId = setInterval(() => {
-      const { transcripts } = this.state;
-      this.setState({
-        transcripts: [...transcripts, transcript]
-      });
-      transcript = '';
-    }, 10000);
-
-    this.setState({ isListen: !isListen, intervalAudioId, intervalSpeechId });
-
-    this.handleSpeech();
-    this.handleAudio(stream);
-  };
-
-  handleError = error => {
-    console.log(`The following error occured: ${error.name}`);
-  };
-
-  handleAudio = stream => {
-    // Create analyser interface to get frequency and time-domain analysis
-    audioContext = new AudioContext();
-    console.log('Audio context', typeof audioContext.close);
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 1024;
-    analyser.maxDecibels = 0;
-
-    // Input is microphone
-    const microphone = audioContext.createMediaStreamSource(stream);
-    microphone.connect(analyser);
-
-    // Pass microphone data to processor
-    const processor = audioContext.createScriptProcessor(256, 1, 1);
-    analyser.connect(processor);
-    processor.connect(audioContext.destination);
-
-    // Do something with streaming PCM data
-    processor.onaudioprocess = function() {
-      const array = new Uint8Array(analyser.frequencyBinCount);
-      analyser.getByteFrequencyData(array);
-      average = getAverageVolume(array);
-    };
-  };
-
-  handleSpeech = () => {
-    const { isListen } = this.state;
-    if (isListen) {
-      recognition.start();
-    }
-
-    recognition.onresult = event => {
-      processScript = Array.from(event.results)
-        .map(result => result[0])
-        .map(result => result.transcript)
-        .join('');
-      if (event.results[0].isFinal) {
-        if (transcript === '') {
-          transcript = transcript.concat('', processScript);
-        } else {
-          transcript = transcript.concat('. ', processScript);
-        }
-        console.log('TRANSCRIPT', transcript);
-      }
-    };
-    recognition.onend = () => {
-      const { isListen } = this.state;
-      if (isListen) {
-        recognition.start();
-      }
-    };
-  };
-
-  handleClose = async () => {
-    // TDOO: sometimes handle was not closed?
-    console.log('Audio context handleClose', typeof audioContext.close);
-    audioContext.close();
-    recognition.stop();
-    const { decibels, startTime, transcripts } = this.state;
-
-    const sum = decibels.reduce((total, val) => total + val, 0);
-    let avgDecibel = sum / decibels.length;
-    avgDecibel = Math.floor(avgDecibel * 100) / 100;
-
-    // Sec
-    const endTime = performance.now();
-    const duration = Math.floor((endTime - startTime) / 1000);
-
-    const { isAuthenticated } = this.props;
-    console.log('INIT AWS', isAuthenticated, decibels.length);
-    if (isAuthenticated && decibels.length > 1) {
-      try {
-        // TODO: do some process
-        console.log('Before AWS');
-        await this.saveToAWS(decibels, avgDecibel, duration, transcripts);
-        console.log('After AWS');
-      } catch (e) {
-        console.log(e.message);
-      }
-    }
-
-    this.init(avgDecibel, duration);
-  };
-
-  saveToAWS = (decibels, avgDecibel, duration, transcripts) => {
-    console.log('AWS!!!!!');
+  // TODO: make a lib file.
+  saveToAWS = body => {
     const { username } = this.state;
-    const body = {
-      avgDecibel: 40,
-      countWord: '{"abc":1}',
-      createdAt: 1544695930530,
-      decibels: '[11,11]',
-      finishedAt: 11,
-      pics: '["URL1","URL2"]',
-      text: 'YEAH',
-      userId: 'ap-northeast-1:f141c3c4-f5a5-41b7-a07f-4ee573089f45',
-      wpm: 40
-    };
-
     // TODO: set these as constants
     API.post('ject', '/karaoke', {
       body,
@@ -413,34 +297,6 @@ class KaraokeMenu extends Component {
       }
     });
   };
-
-  init = (avgDecibel, duration) => {
-    const {
-      isListen,
-      intervalAudioId,
-      intervalSpeechId,
-      avgDecibels,
-      durations
-    } = this.state;
-    // const state = this.state;
-
-    this.setState({
-      isListen: !isListen,
-      volume: { transform: `rotate(0deg)` },
-      decibels: [],
-      avgDecibels: [...avgDecibels, avgDecibel],
-      transcripts: [],
-      durations: [...durations, duration],
-      isFinish: true
-    });
-    transcript = '';
-    processScript = '';
-
-    clearInterval(intervalAudioId);
-    clearInterval(intervalSpeechId);
-  };
-
-  // TEST　▲▲▲▲▲▲▲
 
   renderIdle() {
     const { isLoading } = this.state;
