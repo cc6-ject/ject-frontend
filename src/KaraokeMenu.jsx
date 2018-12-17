@@ -1,11 +1,15 @@
+// TODO:
+/* eslint-disable */
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Card, CardContent, Button, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
+import { API, Auth } from 'aws-amplify';
 import config from './config';
 import { play as playSound, APPLAUSE, TICK } from './libs/sound';
 import { getRandomCompliment, randomKaraokeTitle } from './Constants';
+import getAverageVolume from './libs/getAverageVolume';
 
 const KARAOKE_STATE = {
   IDLE: 'idle',
@@ -14,10 +18,10 @@ const KARAOKE_STATE = {
   COMPLETE: 'complete'
 };
 
+const PRODUCTION = false;
+const TALKING_COUNT_DOWN = PRODUCTION ? 300 : 10;
+const TIMER_DELAY = PRODUCTION ? 1000 : 100;
 const STARTING_COUNT_DOWN = 5;
-const TALKING_COUNT_DOWN = 30;
-// const TIMER_DELAY = 1000;
-const TIMER_DELAY = 500;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
 const STEP_MAX = 7;
@@ -56,6 +60,16 @@ const styles = {
   }
 };
 
+let audioContext;
+let analyser;
+let average = 0;
+const SpeechRecognition = window.webkitSpeechRecognition;
+const recognition = new SpeechRecognition();
+recognition.lang = 'en-US';
+// recognition.continuous = true;
+recognition.interimResults = true;
+let [transcript, processScript] = ['', ''];
+
 class KaraokeMenu extends Component {
   constructor(props) {
     super(props);
@@ -69,14 +83,40 @@ class KaraokeMenu extends Component {
       // fillers: {},
       // wordsPerMin: [],
       // stringPerMin: [],
+      // TODO: TEST ▼▼▼▼
+      volume: { transform: 'rotate(0deg)' },
+      isListen: false,
+      isFinish: false,
+      intervalAudioId: null,
+      intervalSpeechId: null,
+      decibels: [],
+      transcripts: [],
+      durations: [],
+      avgDecibels: [],
+      username: '',
+      startTime: 0,
       // finishedAt: null,
+      // startedAt: null,
+      // TODO: TEST ▲▲▲▲▲▲
       karaokeState: KARAOKE_STATE.IDLE,
-      isLoading: false
+      isLoading: false,
+      compliment: ''
     };
   }
 
   async componentDidMount() {
+    // TODO: be passed from component.
+    try {
+      const data = await Auth.currentAuthenticatedUser();
+      this.setState({ username: data.id });
+    } catch (error) {
+      console.log(error);
+    }
     await this.initialize();
+  }
+
+  componentWillUnmount() {
+    if (audioContext) this.handleClose();
   }
 
   initialize = () => {
@@ -87,13 +127,21 @@ class KaraokeMenu extends Component {
       resolve();
     })
       .then(() => this.initializeSteps())
-      .then(results => {
-        console.log(results);
+      .then(() => {
         this.setState({
-          isLoading: false
+          isLoading: false,
+          compliment: getRandomCompliment()
         });
       })
       .catch();
+
+    // TODO: start dB
+    // TODO: wait until user approved to use mic.
+    console.log('hey!!!');
+    const constraint = { audio: true };
+    // navigator.getUserMedia(constraint, this.handleSuccess, this.handleError);
+    navigator.getUserMedia(constraint, this.handleSuccess, () => alert('fail'));
+    // TODO: start transcript
 
     this.initializeSteps();
   };
@@ -107,8 +155,6 @@ class KaraokeMenu extends Component {
     };
 
     this.stepIndex = 0;
-
-    /* eslint-disable no-loop-func no-new */
     const promises = [];
     for (let i = 0; i < STEP_MAX; i++) {
       const newStep = {};
@@ -153,7 +199,6 @@ class KaraokeMenu extends Component {
         });
         promises.push(promise);
       }
-      /* eslint-enable no-loop-func no-new  */
     }
     return Promise.all(promises);
   };
@@ -198,14 +243,14 @@ class KaraokeMenu extends Component {
     });
   };
 
-  updateKaraokeState = karaokeState => {
+  updateKaraokeState = async karaokeState => {
     let { startingCountDown, talkingCountDown } = this.state;
 
     switch (karaokeState) {
       case KARAOKE_STATE.IDLE:
         startingCountDown = STARTING_COUNT_DOWN;
         talkingCountDown = TALKING_COUNT_DOWN;
-        this.initialize();
+        await this.initialize();
         break;
       case KARAOKE_STATE.STARTING:
         startingCountDown = STARTING_COUNT_DOWN;
@@ -215,15 +260,187 @@ class KaraokeMenu extends Component {
         talkingCountDown = TALKING_COUNT_DOWN;
         setTimeout(this.countDown, TIMER_DELAY);
         break;
+      case KARAOKE_STATE.COMPLETE:
+        this.handleClose();
+        break;
       default:
     }
 
+    console.log(karaokeState);
     this.setState({
       karaokeState,
       startingCountDown,
       talkingCountDown
     });
   };
+
+  // TEST　▼▼▼▼▼▼
+  handleSuccess = stream => {
+    const { isListen } = this.state;
+
+    const intervalAudioId = setInterval(() => {
+      const { decibels } = this.state;
+      this.setState({
+        volume: { transform: `rotate(${-180 + 3 * average}deg)` },
+        decibels: [...decibels, average]
+      });
+    }, 500);
+
+    const intervalSpeechId = setInterval(() => {
+      const { transcripts } = this.state;
+      this.setState({
+        transcripts: [...transcripts, transcript]
+      });
+      transcript = '';
+    }, 10000);
+
+    this.setState({ isListen: !isListen, intervalAudioId, intervalSpeechId });
+
+    this.handleSpeech();
+    this.handleAudio(stream);
+  };
+
+  handleError = error => {
+    console.log(`The following error occured: ${error.name}`);
+  };
+
+  handleAudio = stream => {
+    // Create analyser interface to get frequency and time-domain analysis
+    audioContext = new AudioContext();
+    console.log('Audio context', typeof audioContext.close);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 1024;
+    analyser.maxDecibels = 0;
+
+    // Input is microphone
+    const microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
+
+    // Pass microphone data to processor
+    const processor = audioContext.createScriptProcessor(256, 1, 1);
+    analyser.connect(processor);
+    processor.connect(audioContext.destination);
+
+    // Do something with streaming PCM data
+    processor.onaudioprocess = function() {
+      const array = new Uint8Array(analyser.frequencyBinCount);
+      analyser.getByteFrequencyData(array);
+      average = getAverageVolume(array);
+    };
+  };
+
+  handleSpeech = () => {
+    const { isListen } = this.state;
+    if (isListen) {
+      recognition.start();
+    }
+
+    recognition.onresult = event => {
+      processScript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
+      if (event.results[0].isFinal) {
+        if (transcript === '') {
+          transcript = transcript.concat('', processScript);
+        } else {
+          transcript = transcript.concat('. ', processScript);
+        }
+        console.log('TRANSCRIPT', transcript);
+      }
+    };
+    recognition.onend = () => {
+      const { isListen } = this.state;
+      if (isListen) {
+        recognition.start();
+      }
+    };
+  };
+
+  handleClose = async () => {
+    // TDOO: sometimes handle was not closed?
+    console.log('Audio context handleClose', typeof audioContext.close);
+    audioContext.close();
+    recognition.stop();
+    const { decibels, startTime, transcripts } = this.state;
+
+    const sum = decibels.reduce((total, val) => total + val, 0);
+    let avgDecibel = sum / decibels.length;
+    avgDecibel = Math.floor(avgDecibel * 100) / 100;
+
+    // Sec
+    const endTime = performance.now();
+    const duration = Math.floor((endTime - startTime) / 1000);
+
+    const { isAuthenticated } = this.props;
+    console.log('INIT AWS', isAuthenticated, decibels.length);
+    if (isAuthenticated && decibels.length > 1) {
+      try {
+        // TODO: do some process
+        console.log('Before AWS');
+        await this.saveToAWS(decibels, avgDecibel, duration, transcripts);
+        console.log('After AWS');
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+
+    this.init(avgDecibel, duration);
+  };
+
+  saveToAWS = (decibels, avgDecibel, duration, transcripts) => {
+    console.log('AWS!!!!!');
+    const { username } = this.state;
+    const body = {
+      avgDecibel: 40,
+      countWord: '{"abc":1}',
+      createdAt: 1544695930530,
+      decibels: '[11,11]',
+      finishedAt: 11,
+      pics: '["URL1","URL2"]',
+      text: 'YEAH',
+      userId: 'ap-northeast-1:f141c3c4-f5a5-41b7-a07f-4ee573089f45',
+      wpm: 40
+    };
+
+    // TODO: set these as constants
+    API.post('ject', '/karaoke', {
+      body,
+      requestContext: {
+        identity: {
+          cognitoIdentityId: username
+        }
+      }
+    });
+  };
+
+  init = (avgDecibel, duration) => {
+    const {
+      isListen,
+      intervalAudioId,
+      intervalSpeechId,
+      avgDecibels,
+      durations
+    } = this.state;
+    // const state = this.state;
+
+    this.setState({
+      isListen: !isListen,
+      volume: { transform: `rotate(0deg)` },
+      decibels: [],
+      avgDecibels: [...avgDecibels, avgDecibel],
+      transcripts: [],
+      durations: [...durations, duration],
+      isFinish: true
+    });
+    transcript = '';
+    processScript = '';
+
+    clearInterval(intervalAudioId);
+    clearInterval(intervalSpeechId);
+  };
+
+  // TEST　▲▲▲▲▲▲▲
 
   renderIdle() {
     const { isLoading } = this.state;
@@ -293,11 +510,12 @@ class KaraokeMenu extends Component {
 
   renderComplete() {
     const { classes } = this.props;
+    const { compliment } = this.state;
 
     return (
       <div className={classes.flexColumn}>
         <div className={classes.flexCenter}>
-          <Typography variant="h3">{getRandomCompliment()}</Typography>
+          <Typography variant="h3">{compliment}</Typography>
         </div>
         <div className={classNames(classes.flexCenter, classes.mt50)}>
           <Button

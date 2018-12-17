@@ -77,11 +77,11 @@ class App extends Component {
           ) : currentView === views.tongueTwister.TITLE ? (
             <TongueTwisterMenu />
           ) : currentView === views.challenge.TITLE ? (
-            <ChallengeMenu />
+            <ChallengeMenu isAuthenticated={isAuthenticated} />
           ) : currentView === views.karaoke.TITLE ? (
-            <KaraokeMenu />
+            <KaraokeMenu isAuthenticated={isAuthenticated} />
           ) : currentView === views.activity.TITLE ? (
-            <Activity />
+            <Activity isAuthenticated={isAuthenticated} />
           ) : currentView === views.login.TITLE ? (
             <Login onLogin={this.handleLogin} />
           ) : currentView === views.signUp.TITLE ? (
