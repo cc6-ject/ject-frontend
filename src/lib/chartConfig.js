@@ -10,8 +10,8 @@ export function getAxisConfig(yLabel) {
     ],
     xAxes: [
       {
-        barPercentage: 0.4,
-        barThickness: 10,
+        barPercentage: 0.7,
+        barThickness: 20,
         ticks: { fontSize: 18 }
       }
     ]
