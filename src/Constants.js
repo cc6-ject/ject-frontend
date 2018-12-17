@@ -37,9 +37,16 @@ export const views = {
 
 export const LOGO = logo;
 
+const now = new Date();
+const year = now.getFullYear();
+function isLeapYear(year) {
+  if (year == null) return false;
+  return !!((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0);
+}
+
 export const NUM_OF_DAYS = {
   1: 31,
-  2: 28,
+  2: isLeapYear(year) ? 29 : 28,
   3: 31,
   4: 30,
   5: 31,
