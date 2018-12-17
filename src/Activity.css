@@ -10,5 +10,38 @@
 }
 #primaryChartAreaWrapper {
   overflow-x: scroll;
-  width: 1500px;
+  width: 3000px;
+}
+
+.secondaryChartWrapper {
+  position: relative;
+}
+
+.secondaryChartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+#secondaryChartAreaWrapper {
+  overflow-x: scroll;
+  width: 3000px;
+}
+
+.thirdlyChartWrapper {
+  position: relative;
+}
+
+.thirdlyChartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+#thirdlyChartAreaWrapper {
+  overflow-x: scroll;
+  width: 3000px;
+}
+.title {
+  text-align: center;
 }

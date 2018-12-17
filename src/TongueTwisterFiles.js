@@ -1,8 +1,8 @@
-const shells = 'She sells seashells by the seashore.';
-const lorry = 'Red lorry, yellow lorry.';
-const newYork = 'Unique New York.';
-const buscuits = 'Mixed biscuits.';
-const coffee = 'A proper copper coffee pot.';
+const shells = 'she sells seashells by the seashore';
+const lorry = 'red lorry yellow lorry';
+const newYork = 'unique New York';
+const buscuits = 'mixed biscuits';
+const coffee = 'a proper copper coffee pot';
 
 const twistersArray = [shells, lorry, newYork, buscuits, coffee];
 
@@ -19,6 +19,14 @@ const updateLastTongueTwister = function(newTwister) {
   return twistersArray.indexOf(newTwister);
 };
 
+const targetStringToArray = function(str) {
+  return str.split(' ');
+};
+
+const targetLength = function(phrase) {
+  return phrase.split('').length;
+};
+
 const splitResults = function(transcript, phrase) {
   const count = phrase.split(' ').length;
   const words = transcript.split(' ');
@@ -29,4 +37,24 @@ const splitResults = function(transcript, phrase) {
   return result;
 };
 
-module.exports = { randomTongueTwister, updateLastTongueTwister, splitResults };
+const checkFailure = function(target, result) {
+  const checkAgainst = target.split(' ');
+  const failed = result.split(' ');
+  let answer;
+  checkAgainst.forEach((val, dex) => {
+    if (val !== failed[dex] && answer === undefined) {
+      answer = val;
+    }
+  });
+  console.log('checkFailure = ', answer);
+  return answer;
+};
+
+module.exports = {
+  randomTongueTwister,
+  updateLastTongueTwister,
+  splitResults,
+  targetStringToArray,
+  targetLength,
+  checkFailure
+};
