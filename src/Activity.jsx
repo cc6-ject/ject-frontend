@@ -2,6 +2,7 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { Typography } from '@material-ui/core';
 
 import { API } from 'aws-amplify';
 import Chart from 'chart.js';
@@ -27,10 +28,12 @@ class Activity extends React.Component {
       projectionData: null,
       karaokeData: null,
       TTData: null,
-      view: 'Day',
+      view: 'Days',
       activity: 'Projection',
       timeAnchorEl: null,
-      activityAnchorEl: null
+      activityAnchorEl: null,
+      selectedDay: null,
+      selectedTime: null
     };
   }
 
@@ -40,7 +43,9 @@ class Activity extends React.Component {
       const proData = arrangeData(data, 'projection');
       await this.setState({ projectionData: proData });
       const { projectionData } = this.state;
-      this.renderDay(projectionData);
+      this.renderDays(projectionData);
+      this.renderDay();
+      this.renderActivity();
 
       const karaokes = await this.getKaraoke();
       const TTs = await this.getTongueTwister();
@@ -58,24 +63,59 @@ class Activity extends React.Component {
 
   getTongueTwister = () => API.get('ject', '/tongueTwister');
 
-  renderActivity = data => {
+  renderActivity = (hour, min, targetData) => {
     const result = [];
     const scale = [];
-    for (let i = 0; i <= data.duration; i += 0.5) {
+    const {
+      activity,
+      projectionData,
+      karaokeData,
+      TTData,
+      selectedDay
+    } = this.state;
+    const data =
+      activity === 'Projection'
+        ? projectionData
+        : activity === 'Karaoke'
+        ? karaokeData
+        : TTData;
+
+    let targetAct = data.find(training => {
+      const { createdAt } = training;
+      return (
+        training.avgDecibel === targetData &&
+        createdAt.year() === YEAR &&
+        createdAt.month() + 1 === MONTH &&
+        createdAt.date() === selectedDay &&
+        createdAt.hours() === hour &&
+        createdAt.minutes() === min
+      );
+    });
+
+    targetAct = !targetAct ? data[data.length - 1] : targetAct;
+
+    for (let i = 0; i <= targetAct.duration; i += 0.5) {
       scale.push(i);
       result.push({
-        transcripts: data.transcripts,
+        transcripts: targetAct.transcripts,
         x: i,
-        y: data.decibels[i * 2]
+        y: targetAct.decibels[i * 2]
       });
     }
-    this.drawChart(scale, result, 'line');
+    this.drawChart(scale, result, 'line', 'thirdly');
   };
 
-  renderDay = (data, date = DATE) => {
+  renderDay = (date = DATE) => {
+    if (date.length > 2) return;
     const result = [];
     const scale = [];
-    const { activity } = this.state;
+    const { activity, projectionData, karaokeData, TTData } = this.state;
+    const data =
+      activity === 'Projection'
+        ? projectionData
+        : activity === 'Karaoke'
+        ? karaokeData
+        : TTData;
 
     const dailyData = data.filter(training => {
       const { createdAt } = training;
@@ -101,7 +141,8 @@ class Activity extends React.Component {
         result.push({ x: i, y: training.coverage });
       }
     });
-    this.drawChart(scale, result, 'bar');
+
+    this.drawChart(scale, result, 'bar', 'secondary');
   };
 
   renderDays = data => {
@@ -193,6 +234,7 @@ class Activity extends React.Component {
     const annualData = data.filter(
       training => training.createdAt.year() === YEAR
     );
+
     const { activity } = this.state;
     result.forEach(month => {
       let count = 0;
@@ -214,18 +256,19 @@ class Activity extends React.Component {
     this.drawChart(scale, result, 'bar');
   };
 
-  drawChart = (scale, data, chartType) => {
-    this.initBarChart();
+  drawChart = (scale, data, chartType, priority = 'primary') => {
+    this.initChart(priority);
+
     const { activity, view } = this.state;
 
-    const yLabel = activity === 'Tongue Twister' ? '%' : 'dB';
+    const yLabel = activity === 'Tongue Twister' ? 'Coverage (%)' : 'dB';
     const axisConfig = getAxisConfig(yLabel);
 
     const transparent = activity === 'Tongue Twister' ? 0 : 0.5;
     const isLabel = activity !== 'Tongue Twister';
     const annotationConfig = getAnnotationConfig(transparent, isLabel);
 
-    const ctx = document.getElementById('primaryChart').getContext('2d');
+    const ctx = document.getElementById(`${priority}Chart`).getContext('2d');
     const chart = new Chart(ctx, {
       type: chartType,
       data: {
@@ -255,10 +298,12 @@ class Activity extends React.Component {
               return `${data.labels[tooltipItem[0].index]}`;
             },
             label(tooltipItem, data) {
-              return `${data.datasets[0].data[tooltipItem.index].y}dB`;
+              let newData = data.datasets[0].data[tooltipItem.index].y;
+              newData = Math.floor(newData * 100) / 100;
+              return `${newData}dB`;
             },
             afterBody(tooltipItem, data) {
-              if (activity === 'Projection' && view === 'Activity') {
+              if (activity === 'Projection' && view === 'Days') {
                 const { index } = tooltipItem[0];
                 const { transcripts } = data.datasets[0].data[index];
                 const range = Math.floor(index / 20);
@@ -270,57 +315,50 @@ class Activity extends React.Component {
         }
       }
     });
-    const canvas = document.getElementById('primaryChart');
+    const canvas = document.getElementById(`${priority}Chart`);
     canvas.addEventListener('click', e => {
       this.handleChartClick(e, chart);
     });
   };
 
-  initBarChart = () => {
-    const wrapper = document.getElementById('primaryChartAreaWrapper');
-    const canvas = document.getElementById('primaryChart');
+  initChart = (priority = 'primary') => {
+    const wrapper = document.getElementById(`${priority}ChartAreaWrapper`);
+    const canvas = document.getElementById(`${priority}Chart`);
     canvas.remove();
     const newCanvas = document.createElement('canvas');
-    newCanvas.setAttribute('id', 'primaryChart');
+    newCanvas.setAttribute('id', `${priority}Chart`);
     newCanvas.setAttribute('height', '300');
     newCanvas.setAttribute('width', '1500');
     wrapper.append(newCanvas);
+    if (priority === 'primary') {
+      this.setState({ selectedDay: null, selectedTime: null });
+    } else if (priority === 'secondary') {
+      this.setState({ selectedTime: null });
+    }
   };
 
   handleChartClick = async (e, chart) => {
-    const { view, activity, projectionData, karaokeData, TTData } = this.state;
-    if (view === 'Day') {
+    const { view } = this.state;
+    if (view === 'Days') {
+      if (!chart.getElementsAtEvent(e)[0]) return;
+
       // Extract Time and Y data from clicked data
       const { data } = chart.getElementsAtEvent(e)[0]._chart;
+      if (!data) return;
       const { _index } = chart.getElementsAtEvent(e)[0];
-      const label = data.labels[_index].split(':');
-      const hour = Number(label[0]);
-      const minutes = Number(label[1]);
-      const YData = data.datasets[0].data[_index].y;
+      let label = data.labels[_index];
 
-      const allData =
-        activity === 'Projection'
-          ? projectionData
-          : activity === 'Karaoke'
-          ? karaokeData
-          : TTData;
-
-      const targetAct = allData.find(training => {
-        const { createdAt } = training;
-        return (
-          training.avgDecibel === YData &&
-          createdAt.year() === YEAR &&
-          createdAt.month() + 1 === MONTH &&
-          createdAt.date() === DATE &&
-          createdAt.hours() === hour &&
-          createdAt.minutes() === minutes
-        );
-      });
-      try {
-        await this.setState({ view: 'Activity' });
-        this.renderActivity(targetAct);
-      } catch (e) {
-        console.log(e);
+      if (label.length > 2) {
+        this.setState({ selectedTime: label });
+        label = label.split(':');
+        const hour = Number(label[0]);
+        const minutes = Number(label[1]);
+        const YData = data.datasets[0].data[_index].y;
+        this.renderActivity(hour, minutes, YData);
+      } else {
+        this.renderDay(label);
+        this.initChart('thirdly');
+        this.setState({ selectedDay: label });
       }
     }
   };
@@ -348,14 +386,16 @@ class Activity extends React.Component {
     try {
       await this.setState({ view: menuItem });
       const { view } = this.state;
-      if (view === 'Day') {
-        this.renderDay(data);
-      } else if (view === 'Days') {
+      if (view === 'Days') {
         this.renderDays(data);
       } else if (view === 'Weeks') {
         this.renderWeeks(data);
+        this.initChart('secondary');
+        this.initChart('thirdly');
       } else {
         this.renderMonths(data);
+        this.initChart('secondary');
+        this.initChart('thirdly');
       }
     } catch (e) {
       console.log(e);
@@ -376,10 +416,9 @@ class Activity extends React.Component {
           : activity === 'Karaoke'
           ? karaokeData
           : TTData;
-      if (view === 'Day' || view === 'Activity') {
-        await this.setState({ view: 'Day' });
-        this.renderDay(data);
-      } else if (view === 'Days') {
+      this.initChart('secondary');
+      this.initChart('thirdly');
+      if (view === 'Days') {
         this.renderDays(data);
       } else if (view === 'Weeks') {
         this.renderWeeks(data);
@@ -394,7 +433,14 @@ class Activity extends React.Component {
   };
 
   render() {
-    const { view, timeAnchorEl, activityAnchorEl, activity } = this.state;
+    const {
+      view,
+      timeAnchorEl,
+      activityAnchorEl,
+      activity,
+      selectedDay,
+      selectedTime
+    } = this.state;
     return (
       <div className="activity">
         <Button
@@ -410,7 +456,6 @@ class Activity extends React.Component {
           open={Boolean(timeAnchorEl)}
           onClose={this.handleTimeClose}
         >
-          <MenuItem onClick={this.handleTimeClose}>Day</MenuItem>
           <MenuItem onClick={this.handleTimeClose}>Days</MenuItem>
           <MenuItem onClick={this.handleTimeClose}>Weeks</MenuItem>
           <MenuItem onClick={this.handleTimeClose}>Months</MenuItem>
@@ -434,7 +479,37 @@ class Activity extends React.Component {
         </Menu>
         <div className="primaryChartWrapper">
           <div id="primaryChartAreaWrapper">
-            <canvas id="primaryChart" onClick={() => this.handleChartClick()} />
+            <canvas id="primaryChart" />
+          </div>
+        </div>
+        {selectedDay !== null ? (
+          <Typography
+            className="title"
+            variant="h6"
+            gutterBottom
+            color="primary"
+          >
+            Graph of {selectedDay}/{MONTH}
+          </Typography>
+        ) : null}
+        <div className="secondaryChartWrapper">
+          <div id="secondaryChartAreaWrapper">
+            <canvas id="secondaryChart" />
+          </div>
+        </div>
+        {selectedTime !== null ? (
+          <Typography
+            className="title"
+            variant="h6"
+            gutterBottom
+            color="primary"
+          >
+            Graph of {selectedTime}
+          </Typography>
+        ) : null}
+        <div className="thirdlyChartWrapper">
+          <div id="thirdlyChartAreaWrapper">
+            <canvas id="thirdlyChart" />
           </div>
         </div>
       </div>

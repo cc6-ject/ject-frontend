@@ -12,7 +12,7 @@ let average = 0;
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 recognition.lang = 'en-US';
-recognition.continous = true;
+// recognition.continuous = true;
 recognition.interimResults = true;
 let [transcript, processScript] = ['', ''];
 
