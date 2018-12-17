@@ -293,6 +293,8 @@ class Activity extends React.Component {
           mode: 'label',
           backgroundColor: '#344955',
           caretSize: 5,
+          titleFontSize: 18,
+          bodyFontSize: 18,
           callbacks: {
             title(tooltipItem, data) {
               return `${data.labels[tooltipItem[0].index]}`;
@@ -316,9 +318,11 @@ class Activity extends React.Component {
       }
     });
     const canvas = document.getElementById(`${priority}Chart`);
-    canvas.addEventListener('click', e => {
-      this.handleChartClick(e, chart);
-    });
+    if (priority !== 'thirdly') {
+      canvas.addEventListener('click', e => {
+        this.handleChartClick(e, chart);
+      });
+    }
   };
 
   initChart = (priority = 'primary') => {
@@ -328,7 +332,7 @@ class Activity extends React.Component {
     const newCanvas = document.createElement('canvas');
     newCanvas.setAttribute('id', `${priority}Chart`);
     newCanvas.setAttribute('height', '300');
-    newCanvas.setAttribute('width', '1500');
+    newCanvas.setAttribute('width', '2000');
     wrapper.append(newCanvas);
     if (priority === 'primary') {
       this.setState({ selectedDay: null, selectedTime: null });
