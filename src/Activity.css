@@ -10,7 +10,7 @@
 }
 #primaryChartAreaWrapper {
   overflow-x: scroll;
-  width: 1500px;
+  width: 3000px;
 }
 
 .secondaryChartWrapper {
@@ -25,7 +25,7 @@
 }
 #secondaryChartAreaWrapper {
   overflow-x: scroll;
-  width: 1500px;
+  width: 3000px;
 }
 
 .thirdlyChartWrapper {
@@ -40,7 +40,7 @@
 }
 #thirdlyChartAreaWrapper {
   overflow-x: scroll;
-  width: 1500px;
+  width: 3000px;
 }
 .title {
   text-align: center;
