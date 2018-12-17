@@ -3,12 +3,14 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import { API, Auth } from 'aws-amplify';
 
 import {
   randomTongueTwister,
   updateLastTongueTwister,
   splitResults,
-  targetStringToArray
+  targetLength,
+  checkFailure
 } from './TongueTwisterFiles';
 
 const styles = theme => ({
@@ -39,22 +41,33 @@ class TongueTwisterPractice extends Component {
       twisterTranscript: [],
       listening: false,
       statusMessage: 'Start',
-      toggleRepCount: false
+      toggleRepCount: false,
+      twisterReps: 0,
+      coverage: 0,
+      failWord: '',
+      username: null
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
     this.repCount = 0;
+    this.wrongResult = '';
+    this.toggleError = false;
     this.outOf = ' out of 10';
-    this.dataToStore = {
-      coverage: 0
-    };
+
     // dont use state for TT transcript - to slow define here and access here
   }
-
-  componentDidMount() {
+  async componentDidMount() {
     this.setState({
       currentTwister: randomTongueTwister(this.lastTongueTwister)
     });
+    try {
+      const data = await Auth.currentAuthenticatedUser();
+      this.setState({
+        username: data.id
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   updateLastTwister(newTT) {
@@ -64,6 +77,7 @@ class TongueTwisterPractice extends Component {
   }
 
   toggleListen() {
+    this.toggleError = false;
     this.setState(
       {
         listening: !this.state.listening
@@ -84,20 +98,68 @@ class TongueTwisterPractice extends Component {
       twisterTranscript: splitResults(newResult, this.state.currentTwister)
     });
     this.setState({ toggleRepCount: true });
+    // for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+    //   if (this.state.twisterTranscript[i] !== targetString) {
+    //     console.log('stop this please');
+    //     this.handleClose();
+    //   }
+    // }
   }
 
   handleListen() {
-    if (this.state.listening) recognition.start();
+    // if (this.toggleError) {
+    //   this.toggleError = false;
+    // }
 
+    if (this.state.listening) recognition.start();
+    this.setState({ coverage: 0, failWord: '' });
+    this.wrongResult = '';
+    const sentenceLength = targetLength(this.state.currentTwister);
+    let updateLength = sentenceLength;
+    let startIndex = 0;
+    let correct = 0;
     recognition.onstart = () => {
       this.setState({
         statusMessage: 'Listening!'
       });
       recognition.onresult = event => {
+        const target = this.state.currentTwister;
         let processScript = Array.from(event.results)
           .map(result => result[0])
           .map(result => result.transcript)
           .join('');
+
+        let temp = processScript.slice(startIndex, updateLength);
+
+        if (processScript.length > updateLength + 8) {
+          if (temp !== target) {
+            this.handleClose();
+            this.wrongResult = temp;
+            this.toggleError = true;
+            this.failAnalysis(target, temp);
+            console.log('FAIL');
+          } else if (temp === target) {
+            console.log('check slice', temp, ' vs ', target);
+            correct++;
+            //console.log(correct);
+            this.setState({ coverage: correct });
+            if (correct >= 10) {
+              if (username) {
+                this.finishedPractice();
+              }
+              //this.printResults();
+              transcript = '';
+              console.log('SUCCESS');
+            }
+          }
+
+          startIndex = startIndex + sentenceLength + 1;
+
+          updateLength = updateLength + sentenceLength + 1;
+
+          console.log('slice position', startIndex, updateLength);
+        }
+
         if (event.results[0].isFinal) {
           if (transcript === '') {
             transcript = transcript.concat('', processScript);
@@ -105,47 +167,75 @@ class TongueTwisterPractice extends Component {
             transcript = transcript.concat('. ', processScript);
           }
           console.log('TRANSCRIPT', transcript);
+          this.updateResult(transcript);
         }
-        this.updateResult(transcript);
+      };
+      recognition.onend = () => {
+        this.setState({ listening: false, statusMessage: 'End' });
       };
     };
   }
 
-  printResults() {
-    const targetString = this.state.currentTwister;
-    const table = [];
-    // setTimeout(() => {
-    //   console.log('NOW!');
-    // }, 3000);
-
-    for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-      //if (this.state.twisterTranscript.isFinal) {
-      table.push(
-        <p id={i}>
-          {this.state.twisterTranscript[i]}
-          {/* {this.state.twisterTranscript[i] === targetString ? ' OK' : ' FAIL!'} */}
-        </p>
-      );
-      //}
-
-      // if (this.state.twisterTranscript[i] === targetString) {
-      //   this.dataToStore.coverage++;
-      // }
-      this.repCount = i + 1;
-      if (i > 0 && this.state.twisterTranscript[i - 1] !== targetString) {
-        console.log('Stop as failed a TT');
-        // this.dataToStore.coverage = this.repCount - 1;
-        // console.log(this.dataToStore.coverage);
-        return table;
+  async failAnalysis(target, final) {
+    try {
+      const failWord = await checkFailure(target, final);
+      await this.setState({ failWord });
+      //this.printResults();
+      this.setState({ togglePrint: true });
+      if (username) {
+        this.finishedPractice();
       }
-      // this.dataToStore.coverage = this.repCount;
-      // console.log(this.dataToStore.coverage);
-      // setTimeout(() => {}, 2000);
+    } catch (e) {
+      console.log(e);
     }
-    //this.dataToStore.coverage = this.repCount;
-    console.log('coverage', this.dataToStore.coverage);
-    return table;
   }
+
+  finishedPractice() {
+    const { currentTwister, coverage, failWord, username } = this.state;
+    API.post('ject', '/tongueTwister', {
+      body: {
+        name: currentTwister,
+        coverage: coverage,
+        failWords: JSON.stringify(failWord)
+      },
+      requestContext: {
+        identity: {
+          cognitoIdentityId: username
+        }
+      }
+    });
+  }
+
+  async handleClose() {
+    recognition.stop();
+    await this.setState({ listening: false, statusMessage: 'End' });
+    transcript = '';
+  }
+
+  // printResults() {
+  //   // if (this.state.statusMessage !== 'End') {
+  //   //   return;
+  //   // }
+  //   // this.setState({ togglePrint: false });
+  //   const targetString = this.state.currentTwister;
+  //   const table = [];
+  //   let count = 0;
+
+  //   for (let i = 0; i < this.state.twisterTranscript.length; i++) {
+  //     if (this.state.twisterTranscript[i] === targetString) {
+  //       count++;
+  //     }
+
+  //     if (this.state.twisterTranscript[i] === targetString) {
+  //       table.push(<p id={i}>{targetString + '  - OK'}</p>);
+  //     }
+  //   }
+  //   this.setState({ coverage: count });
+  //   console.log('failed word?', this.state.failWord);
+
+  //   console.log('how about this for cover', this.state.coverage);
+  //   return table;
+  // }
 
   render() {
     const { classes } = this.props;
@@ -173,15 +263,20 @@ class TongueTwisterPractice extends Component {
             </Paper>
           </Grid>
           <Grid item xs={4}>
-            {this.state.toggleRepCount ? (
-              <Paper className={classes.paper}>
-                {this.repCount}
-                {this.outOf}
-              </Paper>
-            ) : null}
+            {/* {this.state.toggleRepCount ? ( */}
+            <Paper className={classes.paper}>
+              {this.state.coverage}
+              {this.outOf}
+            </Paper>
+            {/* ) : null} */}
           </Grid>
           <Grid item xs={4}>
-            <Paper className={classes.paper}>{this.printResults()}</Paper>
+            {this.toggleError ? (
+              <Paper className={classes.paper}>
+                {/* {this.togglePrint ? this.printResults() : null} */}
+                {this.toggleError ? 'FAIL WORD = ' + this.state.failWord : null}
+              </Paper>
+            ) : null}
           </Grid>
         </Grid>
       </div>

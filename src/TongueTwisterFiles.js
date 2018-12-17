@@ -23,6 +23,10 @@ const targetStringToArray = function(str) {
   return str.split(' ');
 };
 
+const targetLength = function(phrase) {
+  return phrase.split('').length;
+};
+
 const splitResults = function(transcript, phrase) {
   const count = phrase.split(' ').length;
   const words = transcript.split(' ');
@@ -33,9 +37,24 @@ const splitResults = function(transcript, phrase) {
   return result;
 };
 
+const checkFailure = function(target, result) {
+  const checkAgainst = target.split(' ');
+  const failed = result.split(' ');
+  let answer;
+  checkAgainst.forEach((val, dex) => {
+    if (val !== failed[dex] && answer === undefined) {
+      answer = val;
+    }
+  });
+  console.log('checkFailure = ', answer);
+  return answer;
+};
+
 module.exports = {
   randomTongueTwister,
   updateLastTongueTwister,
   splitResults,
-  targetStringToArray
+  targetStringToArray,
+  targetLength,
+  checkFailure
 };
