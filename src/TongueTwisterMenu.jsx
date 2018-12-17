@@ -45,6 +45,9 @@ class TongueTwisterPractice extends Component {
     this.handleListen = this.handleListen.bind(this);
     this.repCount = 0;
     this.outOf = ' out of 10';
+    this.dataToStore = {
+      coverage: 0
+    };
     // dont use state for TT transcript - to slow define here and access here
   }
 
@@ -80,32 +83,29 @@ class TongueTwisterPractice extends Component {
     this.setState({
       twisterTranscript: splitResults(newResult, this.state.currentTwister)
     });
-    // count length here for rep count?
-    // this.repCount++;
     this.setState({ toggleRepCount: true });
   }
 
   handleListen() {
     if (this.state.listening) recognition.start();
 
-    let finalTranscript = '';
-    recognition.onresult = event => {
-      let interimTranscript = '';
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) finalTranscript += `${transcript} `;
-        else interimTranscript += transcript;
-      }
-    };
-
     recognition.onstart = () => {
       this.setState({
         statusMessage: 'Listening!'
       });
       recognition.onresult = event => {
-        const current = event.resultIndex;
-        transcript = event.results[current][0].transcript;
+        let processScript = Array.from(event.results)
+          .map(result => result[0])
+          .map(result => result.transcript)
+          .join('');
+        if (event.results[0].isFinal) {
+          if (transcript === '') {
+            transcript = transcript.concat('', processScript);
+          } else {
+            transcript = transcript.concat('. ', processScript);
+          }
+          console.log('TRANSCRIPT', transcript);
+        }
         this.updateResult(transcript);
       };
     };
@@ -114,30 +114,36 @@ class TongueTwisterPractice extends Component {
   printResults() {
     const targetString = this.state.currentTwister;
     const table = [];
-    setTimeout(() => {
-      console.log('NOW!');
-    }, 3000);
-    // const endTimer = clearTimeout(timer);
-    // const timer = setTimeout;
-    // const count = 0;
+    // setTimeout(() => {
+    //   console.log('NOW!');
+    // }, 3000);
+
     for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-      // clearTimeout(timer);
-      // timer(() => {
+      //if (this.state.twisterTranscript.isFinal) {
       table.push(
         <p id={i}>
           {this.state.twisterTranscript[i]}
-          {this.state.twisterTranscript[i] === targetString ? ' OK' : ' FAIL!'}
+          {/* {this.state.twisterTranscript[i] === targetString ? ' OK' : ' FAIL!'} */}
         </p>
       );
+      //}
+
+      // if (this.state.twisterTranscript[i] === targetString) {
+      //   this.dataToStore.coverage++;
+      // }
       this.repCount = i + 1;
-      // }, 2000);
-
-      // const test = function() {
-
-      // };
-
-      setTimeout(() => {}, 2000);
+      if (i > 0 && this.state.twisterTranscript[i - 1] !== targetString) {
+        console.log('Stop as failed a TT');
+        // this.dataToStore.coverage = this.repCount - 1;
+        // console.log(this.dataToStore.coverage);
+        return table;
+      }
+      // this.dataToStore.coverage = this.repCount;
+      // console.log(this.dataToStore.coverage);
+      // setTimeout(() => {}, 2000);
     }
+    //this.dataToStore.coverage = this.repCount;
+    console.log('coverage', this.dataToStore.coverage);
     return table;
   }
 
