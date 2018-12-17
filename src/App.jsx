@@ -27,8 +27,10 @@ class App extends Component {
     try {
       await Auth.currentAuthenticatedUser();
       this.userHasAuthenticated(true);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      if (e !== 'not authenticated') {
+        console.log(e);
+      }
     }
   }
 
@@ -54,7 +56,6 @@ class App extends Component {
 
   render() {
     const { currentView, isAuthenticated, isAuthenticating } = this.state;
-    console.log('BEFORE SEND', isAuthenticated);
 
     return (
       <div className="app">

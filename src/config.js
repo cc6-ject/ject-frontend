@@ -1,17 +1,17 @@
 const dev = {
   s3: {
     REGION: 'ap-northeast-1',
-    BUCKET: 'ject-api-dev-attachmentsbucket-1sd5da289tltp'
+    BUCKET: 'ject-api-dev-attachmentsbucket-b9unefysadas'
   },
   apiGateway: {
     REGION: 'ap-northeast-1',
-    URL: 'https://rkj6psmakh.execute-api.ap-northeast-1.amazonaws.com/dev'
+    URL: 'https://58mrtn1c88.execute-api.ap-northeast-1.amazonaws.com/dev'
   },
   cognito: {
     REGION: 'ap-northeast-1',
-    USER_POOL_ID: 'ap-northeast-1_MAxojmp1N',
-    APP_CLIENT_ID: '4ralguhavht02slitv06gi8lvq',
-    IDENTITY_POOL_ID: 'ap-northeast-1:ce2d9e32-860c-4759-8313-71b8ad3d092a'
+    USER_POOL_ID: 'ap-northeast-1_y2kBEwVTR',
+    APP_CLIENT_ID: '49h6n4r61frij766uakgjjsoqf',
+    IDENTITY_POOL_ID: 'ap-northeast-1:1cab8c85-9f80-48b4-96cd-be0602ee40f9'
   },
   social: {
     facebook: {
@@ -48,8 +48,22 @@ const prod = {
 // Default to dev if not set
 const config = process.env.FRONTEND_STAGE === 'prod' ? prod : dev;
 
+const color = {
+  primary: {
+    light: '#4A6572',
+    main: '#344955',
+    dark: '#344955',
+    contrastText: '#fff'
+  },
+  secondary: {
+    main: '#F9AA33',
+    contrastText: '#000'
+  }
+};
+
 export default {
   // Add common config values here
   MAX_ATTACHMENT_SIZE: 5000000,
+  ...color,
   ...config
 };
