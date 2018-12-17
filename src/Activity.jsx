@@ -1,120 +1,442 @@
 import React from 'react';
+import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { API } from 'aws-amplify';
 import Chart from 'chart.js';
+import 'chartjs-plugin-annotation';
+
+import { NAME_OF_MONTH, NUM_OF_DAYS } from './Constants';
+import arrangeData from './lib/arrangeData';
+import makeWeekScale from './lib/makeWeekScale';
+import { getAxisConfig, getAnnotationConfig } from './lib/chartConfig';
+import './Activity.css';
+
+const NOW = new Date();
+const DATE = NOW.getDate();
+const MONTH = NOW.getMonth() + 1;
+const YEAR = NOW.getFullYear();
+const PRE_MONTH = MONTH - 1 > 0 ? MONTH - 1 : MONTH + 11;
+const PRE_PRE_MONTH = MONTH - 2 > 0 ? MONTH - 2 : MONTH + 10;
 
 class Activity extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rowData: null
+      projectionData: null,
+      karaokeData: null,
+      TTData: null,
+      view: 'Day',
+      activity: 'Projection',
+      timeAnchorEl: null,
+      activityAnchorEl: null
     };
   }
 
   async componentDidMount() {
     try {
-      const data = await this.getDecibels();
-      this.setState({ rowData: data });
-      this.draw();
+      const data = await this.getDecibel();
+      const proData = arrangeData(data, 'projection');
+      await this.setState({ projectionData: proData });
+      const { projectionData } = this.state;
+      this.renderDay(projectionData);
+
+      const karaokes = await this.getKaraoke();
+      const TTs = await this.getTongueTwister();
+      const karaokeData = arrangeData(karaokes, 'karaoke');
+      const TTData = arrangeData(TTs, 'tongueTwister');
+      this.setState({ karaokeData, TTData });
     } catch (error) {
       console.log(error);
     }
   }
 
-  getDecibels = () => API.get('ject', '/decibel');
+  getDecibel = () => API.get('ject', '/decibel');
 
-  draw = () => {
-    const state = this.state;
-    const recent = state.rowData[state.rowData.length - 1];
-    const decibels = JSON.parse(recent.decibels);
-    const maxdB = decibels.reduce((total, val) => {
-      if (val > total) return val;
-      return total;
-    }, 0);
+  getKaraoke = () => API.get('ject', '/karaoke');
 
-    console.log(recent, decibels, maxdB);
+  getTongueTwister = () => API.get('ject', '/tongueTwister');
 
-    let xMax;
-    let yMax;
-    let xStepSize;
-    let yStepSize;
-    xMax = Math.ceil(recent.duration);
-    const xbase = 1;
-    if (xMax < 10 * xbase) xStepSize = xbase;
-    else if (xMax < 20 * xbase) xStepSize = 2 * xbase;
-    else if (xMax < 30 * xbase) xStepSize = 3 * xbase;
-    else if (xMax < 50 * xbase) xStepSize = 5 * xbase;
-    else if (xMax < 70 * xbase) xStepSize = 7 * xbase;
-    else if (xMax < 100 * xbase) xStepSize = 10 * xbase;
-    else if (xMax < 200 * xbase) xStepSize = 20 * xbase;
-
-    yMax = Math.ceil(maxdB);
-    if (yMax < 50) yStepSize = 5;
-    else if (maxdB > 50) yStepSize = 10;
-
-    const points = decibels.map((point, i) => ({ x: i * 0.5, y: point }));
-
-    this.renderChart(
-      xMax,
-      xStepSize,
-      yMax,
-      yStepSize,
-      points,
-      recent.avgDecibel
-    );
+  renderActivity = data => {
+    const result = [];
+    const scale = [];
+    for (let i = 0; i <= data.duration; i += 0.5) {
+      scale.push(i);
+      result.push({
+        transcripts: data.transcripts,
+        x: i,
+        y: data.decibels[i * 2]
+      });
+    }
+    this.drawChart(scale, result, 'line');
   };
 
-  renderChart = (xMax, xStepSize, yMax, yStepSize, points, avgdB) => {
-    const ctx = document.getElementById('line-chart');
-    new Chart(ctx, {
-      type: 'line',
+  renderDay = (data, date = DATE) => {
+    const result = [];
+    const scale = [];
+    const { activity } = this.state;
+
+    const dailyData = data.filter(training => {
+      const { createdAt } = training;
+      return (
+        createdAt.year() === YEAR &&
+        createdAt.month() + 1 === MONTH &&
+        createdAt.date() === date
+      );
+    });
+
+    dailyData.forEach((training, i) => {
+      const { createdAt } = training;
+      const hour = createdAt.hours();
+      const numMin = createdAt.minutes();
+      const min =
+        numMin.toString().length === 1
+          ? `0${createdAt.minutes()}`
+          : createdAt.minutes();
+      scale.push(`${hour}:${min}`);
+      if (activity === 'Projection' || activity === 'Karaoke') {
+        result.push({ x: i, y: training.avgDecibel });
+      } else {
+        result.push({ x: i, y: training.coverage });
+      }
+    });
+    this.drawChart(scale, result, 'bar');
+  };
+
+  renderDays = data => {
+    const result = [];
+    const scale = [];
+    const days = NUM_OF_DAYS[`${MONTH}`];
+    const { activity } = this.state;
+
+    const monthlyData = data.filter(training => {
+      const { createdAt } = training;
+      return createdAt.year() === YEAR && createdAt.month() + 1 === MONTH;
+    });
+
+    for (let i = 1; i <= days; i += 1) {
+      scale.push(i);
+      result.push({ x: `${i}`, y: 0 });
+    }
+
+    result.forEach(day => {
+      let count = 0;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const training of monthlyData) {
+        if (Number(day.x) === training.createdAt.date()) {
+          if (activity === 'Projection' || activity === 'Karaoke') {
+            day.y += training.avgDecibel;
+          } else {
+            day.y += training.coverage;
+          }
+          count += 1;
+        }
+      }
+      if (count !== 0) {
+        day.y /= count;
+      }
+    });
+
+    this.drawChart(scale, result, 'bar');
+  };
+
+  renderWeeks = data => {
+    const chartItem = makeWeekScale();
+    const { result, scale } = chartItem;
+    const { activity } = this.state;
+
+    const threeMonthsData = data.filter(training => {
+      const { createdAt } = training;
+      return (
+        (createdAt.year() === YEAR || createdAt.year() === YEAR - 1) &&
+        (createdAt.month() + 1 === MONTH ||
+          createdAt.month() + 1 === PRE_MONTH ||
+          createdAt.month() + 1 === PRE_PRE_MONTH)
+      );
+    });
+
+    result.forEach(week => {
+      let count = 0;
+      const { date } = week;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const training of threeMonthsData) {
+        const { createdAt } = training;
+        if (week.month === createdAt.month() + 1) {
+          const inWeek =
+            createdAt.date() <= date && createdAt.date() >= date - 6;
+          if (inWeek) {
+            if (activity === 'Projection' || activity === 'Karaoke') {
+              week.y += training.avgDecibel;
+            } else {
+              week.y += training.coverage;
+            }
+            count += 1;
+          }
+        }
+      }
+      if (count !== 0) {
+        week.y /= count;
+      }
+    });
+    this.drawChart(scale, result, 'bar');
+  };
+
+  renderMonths = data => {
+    const result = [];
+    const scale = [];
+    for (let i = 1; i <= 12; i += 1) {
+      scale.push(NAME_OF_MONTH[i]);
+      result.push({ x: `${i}`, y: 0 });
+    }
+
+    const annualData = data.filter(
+      training => training.createdAt.year() === YEAR
+    );
+    const { activity } = this.state;
+    result.forEach(month => {
+      let count = 0;
+      // eslint-disable-next-line no-restricted-syntax
+      for (const training of annualData) {
+        if (Number(month.x) === training.createdAt.month() + 1) {
+          if (activity === 'Projection' || activity === 'Karaoke') {
+            month.y += training.avgDecibel;
+          } else {
+            month.y += training.coverage;
+          }
+          count += 1;
+        }
+      }
+      if (count !== 0) {
+        month.y /= count;
+      }
+    });
+    this.drawChart(scale, result, 'bar');
+  };
+
+  drawChart = (scale, data, chartType) => {
+    this.initBarChart();
+    const { activity, view } = this.state;
+
+    const yLabel = activity === 'Tongue Twister' ? '%' : 'dB';
+    const axisConfig = getAxisConfig(yLabel);
+
+    const transparent = activity === 'Tongue Twister' ? 0 : 0.5;
+    const isLabel = activity !== 'Tongue Twister';
+    const annotationConfig = getAnnotationConfig(transparent, isLabel);
+
+    const ctx = document.getElementById('primaryChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: chartType,
       data: {
+        labels: scale,
         datasets: [
           {
-            data: points,
-            label: 'Recent',
-            borderColor: '#F9AA33',
-            fill: true,
-            backgroundColor: 'rgba(247, 168, 51,0.3)'
-          },
-          {
-            data: [{ x: 0, y: avgdB }, { x: xMax, y: avgdB }],
-            label: 'Avrage',
-            borderColor: '(83, 103, 114)',
-            fill: false
+            data,
+            backgroundColor: 'rgba(249, 170, 51, 0.6)',
+            hoverBackgroundColor: 'rgba(249, 170, 51, 0.9)'
           }
         ]
       },
       options: {
-        scales: {
-          xAxes: [
-            {
-              type: 'linear',
-              position: 'bottom',
-              ticks: {
-                min: 0,
-                max: xMax,
-                stepSize: xStepSize
+        scales: axisConfig,
+        legend: {
+          display: false
+        },
+        annotation: annotationConfig,
+        showAllTooltips: true,
+        tooltips: {
+          enabled: true,
+          mode: 'label',
+          backgroundColor: '#344955',
+          caretSize: 5,
+          callbacks: {
+            title(tooltipItem, data) {
+              return `${data.labels[tooltipItem[0].index]}`;
+            },
+            label(tooltipItem, data) {
+              return `${data.datasets[0].data[tooltipItem.index].y}dB`;
+            },
+            afterBody(tooltipItem, data) {
+              if (activity === 'Projection' && view === 'Activity') {
+                const { index } = tooltipItem[0];
+                const { transcripts } = data.datasets[0].data[index];
+                const range = Math.floor(index / 20);
+                return transcripts ? transcripts[range] : '';
               }
+              return '';
             }
-          ],
-          yAxes: [
-            {
-              ticks: {
-                min: 0,
-                max: yMax,
-                stepSize: yStepSize
-              }
-            }
-          ]
+          }
         }
       }
     });
+    const canvas = document.getElementById('primaryChart');
+    canvas.addEventListener('click', e => {
+      this.handleChartClick(e, chart);
+    });
+  };
+
+  initBarChart = () => {
+    const wrapper = document.getElementById('primaryChartAreaWrapper');
+    const canvas = document.getElementById('primaryChart');
+    canvas.remove();
+    const newCanvas = document.createElement('canvas');
+    newCanvas.setAttribute('id', 'primaryChart');
+    newCanvas.setAttribute('height', '300');
+    newCanvas.setAttribute('width', '1500');
+    wrapper.append(newCanvas);
+  };
+
+  handleChartClick = async (e, chart) => {
+    const { view, activity, projectionData, karaokeData, TTData } = this.state;
+    if (view === 'Day') {
+      // Extract Time and Y data from clicked data
+      const { data } = chart.getElementsAtEvent(e)[0]._chart;
+      const { _index } = chart.getElementsAtEvent(e)[0];
+      const label = data.labels[_index].split(':');
+      const hour = Number(label[0]);
+      const minutes = Number(label[1]);
+      const YData = data.datasets[0].data[_index].y;
+
+      const allData =
+        activity === 'Projection'
+          ? projectionData
+          : activity === 'Karaoke'
+          ? karaokeData
+          : TTData;
+
+      const targetAct = allData.find(training => {
+        const { createdAt } = training;
+        return (
+          training.avgDecibel === YData &&
+          createdAt.year() === YEAR &&
+          createdAt.month() + 1 === MONTH &&
+          createdAt.date() === DATE &&
+          createdAt.hours() === hour &&
+          createdAt.minutes() === minutes
+        );
+      });
+      try {
+        await this.setState({ view: 'Activity' });
+        this.renderActivity(targetAct);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
+  handleTimeClick = event => {
+    const target = event.currentTarget;
+    this.setState({ timeAnchorEl: target });
+  };
+
+  handleActivityClick = event => {
+    const target = event.currentTarget;
+    this.setState({ activityAnchorEl: target });
+  };
+
+  handleTimeClose = async e => {
+    const menuItem = e.currentTarget.textContent;
+    const { activity, projectionData, karaokeData, TTData } = this.state;
+    const data =
+      activity === 'Projection'
+        ? projectionData
+        : activity === 'Karaoke'
+        ? karaokeData
+        : TTData;
+
+    try {
+      await this.setState({ view: menuItem });
+      const { view } = this.state;
+      if (view === 'Day') {
+        this.renderDay(data);
+      } else if (view === 'Days') {
+        this.renderDays(data);
+      } else if (view === 'Weeks') {
+        this.renderWeeks(data);
+      } else {
+        this.renderMonths(data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    this.setState({ timeAnchorEl: null });
+  };
+
+  handleActivityClose = async e => {
+    const menuItem = e.currentTarget.textContent;
+    const { view, projectionData, karaokeData, TTData } = this.state;
+
+    try {
+      await this.setState({ activity: menuItem });
+      const { activity } = this.state;
+      const data =
+        activity === 'Projection'
+          ? projectionData
+          : activity === 'Karaoke'
+          ? karaokeData
+          : TTData;
+      if (view === 'Day' || view === 'Activity') {
+        await this.setState({ view: 'Day' });
+        this.renderDay(data);
+      } else if (view === 'Days') {
+        this.renderDays(data);
+      } else if (view === 'Weeks') {
+        this.renderWeeks(data);
+      } else {
+        this.renderMonths(data);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    this.setState({ activityAnchorEl: null });
   };
 
   render() {
+    const { view, timeAnchorEl, activityAnchorEl, activity } = this.state;
     return (
-      <div className="App">
-        <canvas id="line-chart" />
+      <div className="activity">
+        <Button
+          aria-owns={timeAnchorEl ? 'time-menu' : undefined}
+          aria-haspopup="true"
+          onClick={this.handleTimeClick}
+        >
+          {view}
+        </Button>
+        <Menu
+          id="time-menu"
+          anchorEl={timeAnchorEl}
+          open={Boolean(timeAnchorEl)}
+          onClose={this.handleTimeClose}
+        >
+          <MenuItem onClick={this.handleTimeClose}>Day</MenuItem>
+          <MenuItem onClick={this.handleTimeClose}>Days</MenuItem>
+          <MenuItem onClick={this.handleTimeClose}>Weeks</MenuItem>
+          <MenuItem onClick={this.handleTimeClose}>Months</MenuItem>
+        </Menu>
+        <Button
+          aria-owns={activityAnchorEl ? 'activity-menu' : undefined}
+          aria-haspopup="true"
+          onClick={this.handleActivityClick}
+        >
+          {activity}
+        </Button>
+        <Menu
+          id="activity-menu"
+          anchorEl={activityAnchorEl}
+          open={Boolean(activityAnchorEl)}
+          onClose={this.handleActivityClose}
+        >
+          <MenuItem onClick={this.handleActivityClose}>Projection</MenuItem>
+          <MenuItem onClick={this.handleActivityClose}>Tongue Twister</MenuItem>
+          <MenuItem onClick={this.handleActivityClose}>Karaoke</MenuItem>
+        </Menu>
+        <div className="primaryChartWrapper">
+          <div id="primaryChartAreaWrapper">
+            <canvas id="primaryChart" onClick={() => this.handleChartClick()} />
+          </div>
+        </div>
       </div>
     );
   }
