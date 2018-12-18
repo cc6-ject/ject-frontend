@@ -256,7 +256,7 @@ class Activity extends React.Component {
     this.drawChart(scale, result, 'bar');
   };
 
-  drawChart = (scale, data, chartType, priority = 'primary') => {
+  drawChart = async (scale, data, chartType, priority = 'primary') => {
     this.initChart(priority);
 
     const { activity, view } = this.state;
@@ -268,56 +268,66 @@ class Activity extends React.Component {
     const isLabel = activity !== 'Tongue Twister';
     const annotationConfig = getAnnotationConfig(transparent, isLabel);
 
-    const ctx = document.getElementById(`${priority}Chart`).getContext('2d');
-    const chart = new Chart(ctx, {
-      type: chartType,
-      data: {
-        labels: scale,
-        datasets: [
-          {
-            data,
-            backgroundColor: 'rgba(249, 170, 51, 0.6)',
-            hoverBackgroundColor: 'rgba(249, 170, 51, 0.9)'
-          }
-        ]
-      },
-      options: {
-        scales: axisConfig,
-        legend: {
-          display: false
+    const wrapper = document.querySelector(`.${priority}ChartAreaWrapper`);
+    const ctx = wrapper.querySelector('canvas').getContext('2d');
+    let chart;
+    try {
+      chart = await new Chart(ctx, {
+        type: chartType,
+        data: {
+          labels: scale,
+          datasets: [
+            {
+              data,
+              backgroundColor: 'rgba(249, 170, 51, 0.6)',
+              hoverBackgroundColor: 'rgba(249, 170, 51, 0.9)'
+            }
+          ]
         },
-        annotation: annotationConfig,
-        showAllTooltips: true,
-        tooltips: {
-          enabled: true,
-          mode: 'label',
-          backgroundColor: '#344955',
-          caretSize: 5,
-          titleFontSize: 18,
-          bodyFontSize: 18,
-          callbacks: {
-            title(tooltipItem, data) {
-              return `${data.labels[tooltipItem[0].index]}`;
-            },
-            label(tooltipItem, data) {
-              let newData = data.datasets[0].data[tooltipItem.index].y;
-              newData = Math.floor(newData * 100) / 100;
-              return `${newData}dB`;
-            },
-            afterBody(tooltipItem, data) {
-              if (activity === 'Projection' && view === 'Days') {
-                const { index } = tooltipItem[0];
-                const { transcripts } = data.datasets[0].data[index];
-                const range = Math.floor(index / 20);
-                return transcripts ? transcripts[range] : '';
+        options: {
+          scales: axisConfig,
+          legend: {
+            display: false
+          },
+          annotation: annotationConfig,
+          showAllTooltips: true,
+          tooltips: {
+            enabled: true,
+            mode: 'label',
+            backgroundColor: '#344955',
+            caretSize: 5,
+            titleFontSize: 18,
+            bodyFontSize: 18,
+            callbacks: {
+              title(tooltipItem, data) {
+                return `${data.labels[tooltipItem[0].index]}`;
+              },
+              label(tooltipItem, data) {
+                let newData = data.datasets[0].data[tooltipItem.index].y;
+                newData = Math.floor(newData * 100) / 100;
+                return `${newData}dB`;
+              },
+              afterBody(tooltipItem, data) {
+                if (activity === 'Projection' && view === 'Days') {
+                  const { index } = tooltipItem[0];
+                  const { transcripts } = data.datasets[0].data[index];
+                  const range = Math.floor(index / 20);
+                  return transcripts ? transcripts[range] : '';
+                }
+                return '';
               }
-              return '';
             }
           }
         }
-      }
-    });
-    const canvas = document.getElementById(`${priority}Chart`);
+      });
+      setTimeout(() => {
+        wrapper.style.width = '100%';
+        console.log('INSIDE');
+      }, 1000);
+    } catch (e) {
+      console.log(e);
+    }
+    const canvas = document.querySelector(`.${priority}Chart`);
     if (priority !== 'thirdly') {
       canvas.addEventListener('click', e => {
         this.handleChartClick(e, chart);
@@ -326,14 +336,22 @@ class Activity extends React.Component {
   };
 
   initChart = (priority = 'primary') => {
-    const wrapper = document.getElementById(`${priority}ChartAreaWrapper`);
-    const canvas = document.getElementById(`${priority}Chart`);
-    canvas.remove();
+    const wrapper = document.querySelector(`.${priority}ChartWrapper`);
+    // const areaWrapper = document.querySelector(`.${priority}ChartAreaWrapper`);
+    while (wrapper.firstChild) {
+      wrapper.removeChild(wrapper.firstChild);
+    }
+    const newAreaWrapper = document.createElement('div');
+    newAreaWrapper.setAttribute('class', `${priority}ChartAreaWrapper`);
+
     const newCanvas = document.createElement('canvas');
-    newCanvas.setAttribute('id', `${priority}Chart`);
-    newCanvas.setAttribute('height', '300');
-    newCanvas.setAttribute('width', '2000');
-    wrapper.append(newCanvas);
+    newCanvas.setAttribute('class', `${priority}Chart`);
+    newCanvas.height = '300';
+    newCanvas.width = window.innerWidth * 2;
+
+    newAreaWrapper.append(newCanvas);
+    wrapper.append(newAreaWrapper);
+    console.log(wrapper);
     if (priority === 'primary') {
       this.setState({ selectedDay: null, selectedTime: null });
     } else if (priority === 'secondary') {
@@ -482,8 +500,8 @@ class Activity extends React.Component {
           <MenuItem onClick={this.handleActivityClose}>Karaoke</MenuItem>
         </Menu>
         <div className="primaryChartWrapper">
-          <div id="primaryChartAreaWrapper">
-            <canvas id="primaryChart" />
+          <div className="primaryChartAreaWrapper">
+            <canvas className="primaryChart" height="300" width="1200" />
           </div>
         </div>
         {selectedDay !== null ? (
@@ -497,8 +515,8 @@ class Activity extends React.Component {
           </Typography>
         ) : null}
         <div className="secondaryChartWrapper">
-          <div id="secondaryChartAreaWrapper">
-            <canvas id="secondaryChart" />
+          <div className="secondaryChartAreaWrapper">
+            <canvas className="secondaryChart" />
           </div>
         </div>
         {selectedTime !== null ? (
@@ -512,8 +530,13 @@ class Activity extends React.Component {
           </Typography>
         ) : null}
         <div className="thirdlyChartWrapper">
-          <div id="thirdlyChartAreaWrapper">
-            <canvas id="thirdlyChart" />
+          <div className="thirdlyChartAreaWrapper">
+            <canvas className="thirdlyChart" />
+          </div>
+        </div>
+        <div className="chartWrapper">
+          <div className="chartAreaWrapper">
+            <canvas id="myChart" height="300" width="1200" />
           </div>
         </div>
       </div>
