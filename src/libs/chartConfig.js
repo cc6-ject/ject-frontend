@@ -11,7 +11,7 @@ export function getAxisConfig(yLabel) {
     xAxes: [
       {
         barPercentage: 0.7,
-        barThickness: 20,
+        barThickness: 15,
         ticks: { fontSize: 18 }
       }
     ]
