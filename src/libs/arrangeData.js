@@ -16,14 +16,15 @@ export default function arrangeData(data, type) {
   if (type === 'karaoke') {
     return data.map(val => ({
       userId: val.userId,
-      createdAt: moment(val.createdAt),
+      createdAt: moment(val.startedAt),
       finishedAt: moment(val.finishedAt),
-      pics: JSON.parse(val.pics),
-      decibels: JSON.parse(val.decibels),
-      wpm: val.wpm,
-      text: val.text,
+      pics: val.pics,
+      decibels: val.decibels,
       avgDecibel: val.avgDecibel,
-      countWord: JSON.parse(val.countWord)
+      duration: val.duration,
+      wordsPerEachMinute: val.wordsPerEachMinute,
+      transcripts: val.transcripts,
+      wordCounts: val.wordCounts
     }));
   }
   return data.map(val => ({

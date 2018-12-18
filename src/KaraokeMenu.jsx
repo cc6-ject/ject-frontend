@@ -1,5 +1,3 @@
-// TODO:
-/* eslint-disable */
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Card, CardContent, Button, Typography } from '@material-ui/core';
@@ -9,7 +7,6 @@ import { API, Auth } from 'aws-amplify';
 import config from './config';
 import { play as playSound, APPLAUSE, TICK } from './libs/sound';
 import { getRandomCompliment, randomKaraokeTitle } from './Constants';
-import getAverageVolume from './libs/getAverageVolume';
 import AudioTool from './libs/AudioTool';
 
 const KARAOKE_STATE = {
@@ -19,10 +16,10 @@ const KARAOKE_STATE = {
   COMPLETE: 'complete'
 };
 
-const PRODUCTION = false;
-const TALKING_COUNT_DOWN = PRODUCTION ? 300 : 10;
-const TIMER_DELAY = PRODUCTION ? 1000 : 100;
-const STARTING_COUNT_DOWN = 5;
+const PRODUCTION = true;
+const TALKING_COUNT_DOWN = PRODUCTION ? 300 : 20;
+const TIMER_DELAY = PRODUCTION ? 1000 : 1000;
+const STARTING_COUNT_DOWN = PRODUCTION ? 5 : 1;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
 const STEP_MAX = 7;
@@ -61,15 +58,11 @@ const styles = {
   }
 };
 
-let audioContext;
-let analyser;
-let average = 0;
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 recognition.lang = 'en-US';
 // recognition.continuous = true;
 recognition.interimResults = true;
-let [transcript, processScript] = ['', ''];
 
 class KaraokeMenu extends Component {
   constructor(props) {
@@ -248,14 +241,13 @@ class KaraokeMenu extends Component {
         setTimeout(this.countDown, TIMER_DELAY);
         break;
       case KARAOKE_STATE.COMPLETE:
-        const { steps } = this.state;
         this.audioTool.stopListening(async () => {
           const body = {
             avgDecibel: this.audioTool.getAvgDecibel(),
             decibels: this.audioTool.getDecibels(),
             pics: [] /* FIXME: error happens when adding base64 images, steps.map((step, index) =>
               !(index === 0 || index === STEP_MAX - 2) ? step.data : undefined
-            )*/,
+            ) */,
             wordsPerEachMinute: this.audioTool.getWordsPerEachMinute(),
             fillerWords: this.audioTool.getFillerWords(),
             wordCounts: this.audioTool.getWordCounts(),

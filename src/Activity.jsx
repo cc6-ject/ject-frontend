@@ -319,8 +319,8 @@ class Activity extends React.Component {
     });
     const canvas = document.getElementById(`${priority}Chart`);
     if (priority !== 'thirdly') {
-      canvas.addEventListener('click', e => {
-        this.handleChartClick(e, chart);
+      canvas.addEventListener('click', event => {
+        this.handleChartClick(event, chart);
       });
     }
   };
@@ -341,15 +341,15 @@ class Activity extends React.Component {
     }
   };
 
-  handleChartClick = async (e, chart) => {
+  handleChartClick = async (event, chart) => {
     const { view } = this.state;
     if (view === 'Days') {
-      if (!chart.getElementsAtEvent(e)[0]) return;
+      if (!chart.getElementsAtEvent(event)[0]) return;
 
       // Extract Time and Y data from clicked data
-      const { data } = chart.getElementsAtEvent(e)[0]._chart;
+      const { data } = chart.getElementsAtEvent(event)[0]._chart;
       if (!data) return;
-      const { _index } = chart.getElementsAtEvent(e)[0];
+      const { _index } = chart.getElementsAtEvent(event)[0];
       let label = data.labels[_index];
 
       if (label.length > 2) {
@@ -377,8 +377,8 @@ class Activity extends React.Component {
     this.setState({ activityAnchorEl: target });
   };
 
-  handleTimeClose = async e => {
-    const menuItem = e.currentTarget.textContent;
+  handleTimeClose = async event => {
+    const menuItem = event.currentTarget.textContent;
     const { activity, projectionData, karaokeData, TTData } = this.state;
     const data =
       activity === 'Projection'
@@ -401,14 +401,15 @@ class Activity extends React.Component {
         this.initChart('secondary');
         this.initChart('thirdly');
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
+
     this.setState({ timeAnchorEl: null });
   };
 
-  handleActivityClose = async e => {
-    const menuItem = e.currentTarget.textContent;
+  handleActivityClose = async event => {
+    const menuItem = event.currentTarget.textContent;
     const { view, projectionData, karaokeData, TTData } = this.state;
 
     try {
@@ -429,8 +430,8 @@ class Activity extends React.Component {
       } else {
         this.renderMonths(data);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (error) {
+      console.log(error);
     }
 
     this.setState({ activityAnchorEl: null });

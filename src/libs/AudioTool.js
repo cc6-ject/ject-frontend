@@ -1,7 +1,19 @@
+import fillers from 'fillers';
+
 const TIME_DECIBEL_CAPTURE = 500;
 const TIME_TRANSCRIPT_CAPTURE = 10000;
 // TODO: other languages support.
-// const FILLERS = ['um'];
+// https://www.fluentu.com/blog/english/english-filler-words/
+// Interestingly speech recognition API will not take filler words like um, umm ...
+const FILLER_WORDS = new Set([
+  ...fillers,
+  'um',
+  'umm',
+  'er',
+  'uh',
+  'uhh',
+  'hmm'
+]);
 
 class AudioTool {
   constructor() {
@@ -23,6 +35,7 @@ class AudioTool {
     this.timerDecibel = null;
     this.startedAt = 0;
     this.finishedAt = 0;
+    this.duration = 0;
   }
 
   openAudio = (successCallback, errorCallback) => {
@@ -81,6 +94,10 @@ class AudioTool {
     }, TIME_DECIBEL_CAPTURE);
 
     this.timerTranscript = setInterval(() => {
+      if (this.transcript.length < 1) {
+        return;
+      }
+
       this.transcripts.push(this.transcript);
       this.transcript = '';
     }, TIME_TRANSCRIPT_CAPTURE);
@@ -99,6 +116,30 @@ class AudioTool {
     this.avgDecibel = Math.floor((sum / this.decibels.length) * 100) / 100;
     this.finishedAt = new Date().getTime();
     this.duration = Math.floor((this.finishedAt - this.startedAt) / 1000);
+
+    /* eslint-disable no-restricted-syntax */
+    this.transcripts.forEach((script, indexScript) => {
+      for (let word of script.split(' ')) {
+        word = word.replace('.', '');
+        this.wordCounts[word] = this.wordCounts[word]
+          ? this.wordCounts[word] + 1
+          : 1;
+
+        if (FILLER_WORDS.has(word)) {
+          this.fillerWords[word] = this.fillerWords[word]
+            ? this.fillerWords[word] + 1
+            : 1;
+        }
+
+        const i = Math.floor(indexScript / 6);
+        if (!this.wordsPerEachMinute[i]) {
+          this.wordsPerEachMinute[i] = 1;
+        } else {
+          this.wordsPerEachMinute[i]++;
+        }
+      }
+    });
+    /* eslint-enable no-restricted-syntax */
 
     if (callback instanceof Function) {
       callback();
@@ -120,6 +161,7 @@ class AudioTool {
     this.timerDecibel = null;
     this.startedAt = 0;
     this.finishedAt = 0;
+    this.duration = 0;
   }
 
   getAvgDecibel() {
@@ -175,6 +217,10 @@ class AudioTool {
 
     // Do something with streaming PCM data
     processor.onaudioprocess = () => {
+      if (!this.isListening) {
+        return;
+      }
+
       const array = new Uint8Array(analyser.frequencyBinCount);
 
       // TODO: after analyser.getByteFrequencyData(array), what will happen?
@@ -184,30 +230,34 @@ class AudioTool {
   };
 
   runTranscript = () => {
-    // const { isListen } = this.state;
-    // if (isListen) {
-    //   speechRecognitionAPI.start();
-    // }
-    // speechRecognitionAPI.onresult = event => {
-    //   processScript = Array.from(event.results)
-    //     .map(result => result[0])
-    //     .map(result => result.transcript)
-    //     .join('');
-    //   if (event.results[0].isFinal) {
-    //     if (transcript === '') {
-    //       transcript = transcript.concat('', processScript);
-    //     } else {
-    //       transcript = transcript.concat('. ', processScript);
-    //     }
-    //     console.log('TRANSCRIPT', transcript);
-    //   }
-    // };
-    // speechRecognitionAPI.onend = () => {
-    //   const { isListen } = this.state;
-    //   if (isListen) {
-    //     speechRecognitionAPI.start();
-    //   }
-    // };
+    try {
+      this.speechRecognitionAPI.start();
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    this.speechRecognitionAPI.onresult = event => {
+      if (!this.isListening) {
+        return;
+      }
+
+      const processScript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
+      if (event.results[0].isFinal) {
+        if (this.transcript === '') {
+          this.transcript = this.transcript.concat('', processScript);
+        } else {
+          this.transcript = this.transcript.concat('. ', processScript);
+        }
+        console.log('TRANSCRIPT', this.transcript);
+      }
+    };
+
+    this.speechRecognitionAPI.onend = () => {
+      this.speechRecognitionAPI.start();
+    };
   };
 
   convertDecibel = array => {
