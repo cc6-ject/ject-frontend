@@ -37,7 +37,10 @@ class ProjectionMenu extends React.Component {
   async componentDidMount() {
     try {
       const data = await Auth.currentAuthenticatedUser();
+      // this.setState({ username: data.username });
       this.setState({ username: data.id });
+      console.log('username', data.username);
+      console.log('id', data.id);
     } catch (error) {
       console.log(error);
     }
