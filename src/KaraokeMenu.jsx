@@ -68,8 +68,6 @@ class KaraokeMenu extends Component {
   constructor(props) {
     super(props);
 
-    this.stepIndex = 0;
-    // TODO: get db values
     this.state = {
       startingCountDown: STARTING_COUNT_DOWN,
       talkingCountDown: TALKING_COUNT_DOWN,
@@ -82,6 +80,7 @@ class KaraokeMenu extends Component {
       compliment: ''
     };
 
+    this.stepIndex = 0;
     this.audioTool = new AudioTool();
   }
 
