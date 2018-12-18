@@ -17,7 +17,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentView: views.karaoke.TITLE,
+      currentView: views.home.TITLE,
       isAuthenticated: false,
       isAuthenticating: false
     };
