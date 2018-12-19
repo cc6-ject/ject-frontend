@@ -5,6 +5,9 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { API, Auth } from 'aws-amplify';
 
+import { Fab } from '@material-ui/core';
+// import Typography from '@material-ui/core/Typography';
+
 import {
   randomTongueTwister,
   updateLastTongueTwister,
@@ -16,12 +19,14 @@ import {
 const styles = theme => ({
   root: {
     flexGrow: 1
+    // margin: 100
   },
+
   paper: {
     padding: theme.spacing.unit * 2,
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    width: 500
+    width: 200
   }
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
@@ -45,7 +50,8 @@ class TongueTwisterPractice extends Component {
       twisterReps: 0,
       coverage: 0,
       failWord: '',
-      username: null
+      username: null,
+      endMessage: ''
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
@@ -53,8 +59,6 @@ class TongueTwisterPractice extends Component {
     this.wrongResult = '';
     this.toggleError = false;
     this.outOf = ' out of 10';
-
-    // dont use state for TT transcript - to slow define here and access here
   }
   async componentDidMount() {
     this.setState({
@@ -62,12 +66,15 @@ class TongueTwisterPractice extends Component {
     });
     try {
       const data = await Auth.currentAuthenticatedUser();
-      this.setState({
-        username: data.id
+      console.log(data);
+      await this.setState({
+        username: data.username
       });
+      console.log(this.state.username);
     } catch (error) {
       console.log(error);
     }
+    console.log(this.state.username);
   }
 
   updateLastTwister(newTT) {
@@ -98,19 +105,9 @@ class TongueTwisterPractice extends Component {
       twisterTranscript: splitResults(newResult, this.state.currentTwister)
     });
     this.setState({ toggleRepCount: true });
-    // for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-    //   if (this.state.twisterTranscript[i] !== targetString) {
-    //     console.log('stop this please');
-    //     this.handleClose();
-    //   }
-    // }
   }
 
   handleListen() {
-    // if (this.toggleError) {
-    //   this.toggleError = false;
-    // }
-
     if (this.state.listening) recognition.start();
     this.setState({ coverage: 0, failWord: '' });
     this.wrongResult = '';
@@ -136,28 +133,27 @@ class TongueTwisterPractice extends Component {
             this.handleClose();
             this.wrongResult = temp;
             this.toggleError = true;
+            this.setState({ endMessage: 'FAIL WORD = ' });
             this.failAnalysis(target, temp);
             console.log('FAIL');
           } else if (temp === target) {
             console.log('check slice', temp, ' vs ', target);
             correct++;
-            //console.log(correct);
             this.setState({ coverage: correct });
             if (correct >= 10) {
-              if (username) {
-                this.finishedPractice();
-              }
-              //this.printResults();
+              // here is if 10/10
+              this.toggleError = true;
+              this.setState({
+                endMessage: 'Congratulations you got them all correct'
+              });
+              this.finishedPractice();
               transcript = '';
               console.log('SUCCESS');
             }
           }
-
           startIndex = startIndex + sentenceLength + 1;
-
           updateLength = updateLength + sentenceLength + 1;
-
-          console.log('slice position', startIndex, updateLength);
+          // console.log('slice position', startIndex, updateLength);
         }
 
         if (event.results[0].isFinal) {
@@ -166,12 +162,23 @@ class TongueTwisterPractice extends Component {
           } else {
             transcript = transcript.concat('. ', processScript);
           }
-          console.log('TRANSCRIPT', transcript);
+          // console.log('TRANSCRIPT', transcript);
           this.updateResult(transcript);
         }
       };
       recognition.onend = () => {
-        this.setState({ listening: false, statusMessage: 'End' });
+        console.log('onend happened');
+        this.toggleError = true;
+        this.setState({
+          listening: false,
+          statusMessage: 'End'
+        });
+        if (this.state.failWord.length < 1) {
+          this.setState({
+            endMessage: 'Timed out'
+          });
+        }
+        this.finishedPractice();
       };
     };
   }
@@ -180,17 +187,14 @@ class TongueTwisterPractice extends Component {
     try {
       const failWord = await checkFailure(target, final);
       await this.setState({ failWord });
-      //this.printResults();
-      this.setState({ togglePrint: true });
-      if (username) {
-        this.finishedPractice();
-      }
+      this.finishedPractice();
     } catch (e) {
       console.log(e);
     }
   }
 
   finishedPractice() {
+    console.log('finishedPractice');
     const { currentTwister, coverage, failWord, username } = this.state;
     API.post('ject', '/tongueTwister', {
       body: {
@@ -208,48 +212,29 @@ class TongueTwisterPractice extends Component {
 
   async handleClose() {
     recognition.stop();
+    console.log('here it is??');
     await this.setState({ listening: false, statusMessage: 'End' });
     transcript = '';
+    // this.toggleError = true;
   }
-
-  // printResults() {
-  //   // if (this.state.statusMessage !== 'End') {
-  //   //   return;
-  //   // }
-  //   // this.setState({ togglePrint: false });
-  //   const targetString = this.state.currentTwister;
-  //   const table = [];
-  //   let count = 0;
-
-  //   for (let i = 0; i < this.state.twisterTranscript.length; i++) {
-  //     if (this.state.twisterTranscript[i] === targetString) {
-  //       count++;
-  //     }
-
-  //     if (this.state.twisterTranscript[i] === targetString) {
-  //       table.push(<p id={i}>{targetString + '  - OK'}</p>);
-  //     }
-  //   }
-  //   this.setState({ coverage: count });
-  //   console.log('failed word?', this.state.failWord);
-
-  //   console.log('how about this for cover', this.state.coverage);
-  //   return table;
-  // }
 
   render() {
     const { classes } = this.props;
     const { statusMessage } = this.state;
     return (
       <div>
+        {/* <Fab> */}
         <Grid
           container
           direction="column"
-          justify="flex-start"
+          // justify="flex-start"
+          justify="center"
           alignItems="center"
+          // margin="100"
           spacing={24}
         >
-          <Grid item xs={4}>
+          {/* <Grid item xs={4}> */}
+          <Grid item xs>
             <Paper
               className={classes.paper}
               onClick={this.updateTwister.bind(this)}
@@ -257,28 +242,62 @@ class TongueTwisterPractice extends Component {
               {this.state.currentTwister}
             </Paper>
           </Grid>
-          <Grid item xs={4}>
+          {/* <Grid item xs={4}>
             <Paper className={classes.paper} onClick={this.toggleListen}>
               {statusMessage}
             </Paper>
-          </Grid>
-          <Grid item xs={4}>
-            {/* {this.state.toggleRepCount ? ( */}
+          </Grid> */}
+          {!this.listening ? (
+            <Fab
+              color="secondary"
+              className={classes.fab}
+              // onClick={() => handleClick()}
+              onClick={this.toggleListen}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+              </svg>
+            </Fab>
+          ) : (
+            <Fab
+              color="secondary"
+              className={classes.fab}
+              // onClick={() => handleClose()}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
+              </svg>
+            </Fab>
+          )}
+          <p>
+            <p>{statusMessage}</p>
+          </p>
+          <Grid item xs>
             <Paper className={classes.paper}>
-              {this.state.coverage}
+              {this.state.coverage === 0
+                ? 0
+                : this.state.coverage < 10
+                ? this.state.coverage
+                : 10}
               {this.outOf}
             </Paper>
-            {/* ) : null} */}
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs>
             {this.toggleError ? (
               <Paper className={classes.paper}>
-                {/* {this.togglePrint ? this.printResults() : null} */}
-                {this.toggleError ? 'FAIL WORD = ' + this.state.failWord : null}
+                {this.toggleError
+                  ? this.state.endMessage + this.state.failWord
+                  : null}
               </Paper>
             ) : null}
           </Grid>
         </Grid>
+        {/* </Fab> */}
       </div>
     );
   }

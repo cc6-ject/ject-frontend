@@ -9,9 +9,9 @@ import Chart from 'chart.js';
 import 'chartjs-plugin-annotation';
 
 import { NAME_OF_MONTH, NUM_OF_DAYS } from './Constants';
-import arrangeData from './libs/arrangeData';
-import makeWeekScale from './libs/makeWeekScale';
-import { getAxisConfig, getAnnotationConfig } from './libs/chartConfig';
+import arrangeData from './lib/arrangeData';
+import makeWeekScale from './lib/makeWeekScale';
+import { getAxisConfig, getAnnotationConfig } from './lib/chartConfig';
 import './Activity.css';
 
 const NOW = new Date();
@@ -305,7 +305,10 @@ class Activity extends React.Component {
               label(tooltipItem, data) {
                 let newData = data.datasets[0].data[tooltipItem.index].y;
                 newData = Math.floor(newData * 100) / 100;
-                return `${newData}dB`;
+
+                return activity === 'Projection' && view === 'Days'
+                  ? `${newData}dB`
+                  : `${newData}%`;
               },
               afterBody(tooltipItem, data) {
                 if (activity === 'Projection' && view === 'Days') {
