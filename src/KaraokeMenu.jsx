@@ -5,9 +5,9 @@ import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { API, Auth } from 'aws-amplify';
 import config from './config';
-import { play as playSound, APPLAUSE, TICK } from './libs/sound';
+import { play as playSound, APPLAUSE, TICK } from './lib/sound';
 import { getRandomCompliment, randomKaraokeTitle } from './Constants';
-import AudioTool from './libs/AudioTool';
+import AudioTool from './lib/AudioTool';
 
 const KARAOKE_STATE = {
   IDLE: 'idle',

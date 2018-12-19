@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
-import getAverageVolume from './libs/getAverageVolume';
+import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import './ProjectionMenu.css';
 

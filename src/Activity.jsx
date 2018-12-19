@@ -9,9 +9,9 @@ import Chart from 'chart.js';
 import 'chartjs-plugin-annotation';
 
 import { NAME_OF_MONTH, NUM_OF_DAYS } from './Constants';
-import arrangeData from './libs/arrangeData';
-import makeWeekScale from './libs/makeWeekScale';
-import { getAxisConfig, getAnnotationConfig } from './libs/chartConfig';
+import arrangeData from './lib/arrangeData';
+import makeWeekScale from './lib/makeWeekScale';
+import { getAxisConfig, getAnnotationConfig } from './lib/chartConfig';
 import './Activity.css';
 
 const NOW = new Date();
