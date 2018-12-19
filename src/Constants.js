@@ -1,39 +1,55 @@
-import menuProjection from './images/menu-projection.png';
-import menuTongueTwister from './images/menu-tongue-twister.gif';
-import menuChallenge from './images/menu-challenge.gif';
-import menuKaraoke from './images/menu-karaoke.png';
-import menuActivity from './images/menu-activity.gif';
+import projectionGif from './images/menu-projection.gif';
+import projectionStill from './images/menu-projection.png';
+import tongueTwisterGif from './images/menu-tongue-twister.gif';
+import tongueTwisterStill from './images/menu-tongue-twister.png';
+import challengeGif from './images/menu-challenge.gif';
+import challengeStill from './images/menu-challenge.png';
+import karaokeGif from './images/menu-karaoke.gif';
+import karaokeStill from './images/menu-karaoke.png';
+import activityGif from './images/menu-activity.gif';
+import activityStill from './images/menu-activity.png';
 import logo from './images/logo.png';
 
 export const views = {
   home: {
-    TITLE: 'Home'
+    TITLE: 'Home',
+    GIF: '',
+    STILL: ''
   },
   projection: {
     TITLE: 'Projection',
-    IMAGE: menuProjection
+    GIF: projectionGif,
+    STILL: projectionStill
   },
   tongueTwister: {
     TITLE: 'Tongue Twister',
-    IMAGE: menuTongueTwister
+    GIF: tongueTwisterGif,
+    STILL: tongueTwisterStill
   },
   challenge: {
     TITLE: 'Challenge',
-    IMAGE: menuChallenge
+    GIF: challengeGif,
+    STILL: challengeStill
   },
   karaoke: {
     TITLE: 'Karaoke',
-    IMAGE: menuKaraoke
+    GIF: karaokeGif,
+    STILL: karaokeStill
   },
   login: {
-    TITLE: 'Login'
+    TITLE: 'Login',
+    GIF: '',
+    STILL: ''
   },
   signUp: {
-    TITLE: 'Sign Up'
+    TITLE: 'Sign Up',
+    GIF: '',
+    STILL: ''
   },
   activity: {
     TITLE: 'Activity',
-    IMAGE: menuActivity
+    GIF: activityGif,
+    STILL: activityStill
   }
 };
 

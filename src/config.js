@@ -56,6 +56,7 @@ const prod = {
 
 // Default to dev if not set
 const config = process.env.FRONTEND_STAGE === 'prod' ? prod : dev;
+const stage = process.env.FRONTEND_STAGE;
 
 const color = {
   primary: {
@@ -74,5 +75,6 @@ export default {
   // Add common config values here
   MAX_ATTACHMENT_SIZE: 5000000,
   ...color,
-  ...config
+  ...config,
+  stage
 };
