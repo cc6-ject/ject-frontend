@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
-import 'chartjs-plugin-streaming';
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
