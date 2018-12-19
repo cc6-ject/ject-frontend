@@ -2,6 +2,7 @@ import menuProjection from './images/menu-projection.png';
 import menuTongueTwister from './images/menu-tongue-twister.gif';
 import menuChallenge from './images/menu-challenge.gif';
 import menuKaraoke from './images/menu-karaoke.png';
+import menuActivity from './images/menu-activity.gif';
 import logo from './images/logo.png';
 
 export const views = {
@@ -31,7 +32,8 @@ export const views = {
     TITLE: 'Sign Up'
   },
   activity: {
-    TITLE: 'Activity'
+    TITLE: 'Activity',
+    IMAGE: menuActivity
   }
 };
 

@@ -43,9 +43,9 @@ const tileData = [
     description: 'Description of Tongue Twisters...'
   },
   {
-    img: views.challenge.IMAGE,
-    title: views.challenge.TITLE,
-    description: 'Description of Challenge Mode...'
+    img: views.activity.IMAGE,
+    title: views.activity.TITLE,
+    description: 'Description of Activity Menu...'
   },
   {
     img: views.karaoke.IMAGE,
