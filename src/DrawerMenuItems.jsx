@@ -7,7 +7,10 @@ const DrawerMenuItems = ({ toggleDrawer, switchView }) => (
     <List>
       {Object.keys(views)
         .filter(
-          key => views[key].TITLE !== 'Login' && views[key].TITLE !== 'Sign Up'
+          key =>
+            views[key].TITLE !== 'Login' &&
+            views[key].TITLE !== 'Sign Up' &&
+            views[key].TITLE !== 'Challenge'
         )
         .map((key, index) => (
           <ListItem

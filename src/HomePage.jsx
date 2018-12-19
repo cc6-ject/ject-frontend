@@ -40,28 +40,25 @@ const tileData = [
     gif: views.projection.GIF,
     still: views.projection.STILL,
     title: views.projection.TITLE,
-    description:
-      'Projection Practice to learn how to push your voice to the back of the room.'
+    description: 'Learn how to push your voice to the back of the room'
   },
   {
     gif: views.tongueTwister.GIF,
     still: views.tongueTwister.STILL,
     title: views.tongueTwister.TITLE,
-    description:
-      'Practice Tongue Twisters 10 times. 10 times was recommended by professional opera singer.'
+    description: 'Practice 10 times recommended by professional opera singer'
   },
   {
     gif: views.karaoke.GIF,
     still: views.karaoke.STILL,
     title: views.karaoke.TITLE,
-    description:
-      'Karaoke mode is to practice thinking on your feet. Given random 5 picture and topic to talk about for 5 minutes.'
+    description: 'Practice thinking on your feet'
   },
   {
     gif: views.activity.GIF,
     still: views.activity.STILL,
     title: views.activity.TITLE,
-    description: 'Activity history what you have done.'
+    description: 'History what you have done.'
   }
 ];
 
