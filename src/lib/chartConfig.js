@@ -12,6 +12,10 @@ export function getAxisConfig(yLabel) {
       {
         barPercentage: 0.7,
         barThickness: 15,
+        stacked: false,
+        gridLines: {
+          display: false
+        },
         ticks: { fontSize: 18 }
       }
     ]
