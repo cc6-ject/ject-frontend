@@ -311,7 +311,10 @@ class Activity extends React.Component {
                   : `${newData}%`;
               },
               afterBody(tooltipItem, data) {
-                if (activity === 'Projection' && view === 'Days') {
+                if (
+                  (activity === 'Projection' || activity === 'Karaoke') &&
+                  view === 'Days'
+                ) {
                   const { index } = tooltipItem[0];
                   const { transcripts } = data.datasets[0].data[index];
                   const range = Math.floor(index / 20);

@@ -31,6 +31,7 @@ const styles = theme => ({
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
+recognition.lang = 'en-US';
 recognition.maxAlternatives = 1; // <- supposed to give alternatives
 recognition.continous = true; // <- maybe this needs to be deleted for better tt reading?
 recognition.interimResults = true; // <-will need to delete so it doesn't auto correct
@@ -125,8 +126,8 @@ class TongueTwisterPractice extends Component {
           .map(result => result[0])
           .map(result => result.transcript)
           .join('');
-
         let temp = processScript.slice(startIndex, updateLength);
+        console.log('ON RESULT', temp);
 
         if (processScript.length > updateLength + 8) {
           if (temp !== target) {
@@ -274,9 +275,7 @@ class TongueTwisterPractice extends Component {
               </svg>
             </Fab>
           )}
-          <p>
-            <p>{statusMessage}</p>
-          </p>
+          <p>{statusMessage}</p>
           <Grid item xs>
             <Paper className={classes.paper}>
               {this.state.coverage === 0
