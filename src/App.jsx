@@ -73,13 +73,25 @@ class App extends Component {
           {currentView === views.home.TITLE ? (
             <HomePage switchView={this.handleViewSwitch} />
           ) : currentView === views.projection.TITLE ? (
-            <ProjectionMenu isAuthenticated={isAuthenticated} />
+            <ProjectionMenu
+              isAuthenticated={isAuthenticated}
+              switchView={this.handleViewSwitch}
+            />
           ) : currentView === views.tongueTwister.TITLE ? (
-            <TongueTwisterMenu />
+            <TongueTwisterMenu
+              isAuthenticated={isAuthenticated}
+              switchView={this.handleViewSwitch}
+            />
           ) : currentView === views.challenge.TITLE ? (
-            <ChallengeMenu isAuthenticated={isAuthenticated} />
+            <ChallengeMenu
+              isAuthenticated={isAuthenticated}
+              switchView={this.handleViewSwitch}
+            />
           ) : currentView === views.karaoke.TITLE ? (
-            <KaraokeMenu isAuthenticated={isAuthenticated} />
+            <KaraokeMenu
+              isAuthenticated={isAuthenticated}
+              switchView={this.handleViewSwitch}
+            />
           ) : currentView === views.activity.TITLE ? (
             <Activity isAuthenticated={isAuthenticated} />
           ) : currentView === views.login.TITLE ? (
