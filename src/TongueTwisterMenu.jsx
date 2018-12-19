@@ -146,20 +146,14 @@ class TongueTwisterPractice extends Component {
               this.setState({
                 endMessage: 'Congratulations you got them all correct'
               });
-              // if (username) {
               this.finishedPractice();
-              // }
-
               transcript = '';
               console.log('SUCCESS');
             }
           }
-
           startIndex = startIndex + sentenceLength + 1;
-
           updateLength = updateLength + sentenceLength + 1;
-
-          console.log('slice position', startIndex, updateLength);
+          // console.log('slice position', startIndex, updateLength);
         }
 
         if (event.results[0].isFinal) {
@@ -168,12 +162,23 @@ class TongueTwisterPractice extends Component {
           } else {
             transcript = transcript.concat('. ', processScript);
           }
-          console.log('TRANSCRIPT', transcript);
+          // console.log('TRANSCRIPT', transcript);
           this.updateResult(transcript);
         }
       };
       recognition.onend = () => {
-        this.setState({ listening: false, statusMessage: 'End' });
+        console.log('onend happened');
+        this.toggleError = true;
+        this.setState({
+          listening: false,
+          statusMessage: 'End'
+        });
+        if (this.state.failWord.length < 1) {
+          this.setState({
+            endMessage: 'Timed out'
+          });
+        }
+        this.finishedPractice();
       };
     };
   }
@@ -182,11 +187,7 @@ class TongueTwisterPractice extends Component {
     try {
       const failWord = await checkFailure(target, final);
       await this.setState({ failWord });
-      //this.setState({ togglePrint: true });
-      //console.log('if username', username);
-      // if (username) {
       this.finishedPractice();
-      // }
     } catch (e) {
       console.log(e);
     }
@@ -211,8 +212,10 @@ class TongueTwisterPractice extends Component {
 
   async handleClose() {
     recognition.stop();
+    console.log('here it is??');
     await this.setState({ listening: false, statusMessage: 'End' });
     transcript = '';
+    // this.toggleError = true;
   }
 
   render() {
