@@ -28,6 +28,10 @@ const styles = () => ({
   },
   p0: {
     padding: 0
+  },
+  gridTileBar: {
+    backgroundColor: '#000000d0',
+    transition: 'background-color 1s ease'
   }
 });
 
@@ -47,17 +51,17 @@ const tileData = [
       'Practice Tongue Twisters 10 times. 10 times was recommended by professional opera singer.'
   },
   {
-    gif: views.activity.GIF,
-    still: views.activity.STILL,
-    title: views.activity.TITLE,
-    description: 'Activity history what you have done.'
-  },
-  {
     gif: views.karaoke.GIF,
     still: views.karaoke.STILL,
     title: views.karaoke.TITLE,
     description:
       'Karaoke mode is to practice thinking on your feet. Given random 5 picture and topic to talk about for 5 minutes.'
+  },
+  {
+    gif: views.activity.GIF,
+    still: views.activity.STILL,
+    title: views.activity.TITLE,
+    description: 'Activity history what you have done.'
   }
 ];
 
@@ -77,12 +81,9 @@ class HomePage extends Component {
   handleImagePlay = (index, play) => {
     const { imagePlays } = this.state;
     imagePlays[index] = play;
-    this.setState(
-      {
-        imagePlays
-      },
-      console.log(JSON.stringify(this.state))
-    );
+    this.setState({
+      imagePlays
+    });
   };
 
   render() {
@@ -94,8 +95,6 @@ class HomePage extends Component {
         <GridList cellHeight={400} className={classes.gridList}>
           {tileData.map((tile, index) => (
             <GridListTile key={index}>
-              {/* {`TEST!!!! ${imagePlays[index] ? tile.img : tile.gif}`} */}
-              {tile.still}
               <Button
                 className={classes.p0}
                 onClick={() => {
@@ -110,6 +109,7 @@ class HomePage extends Component {
                 />
               </Button>
               <GridListTileBar
+                className={imagePlays[index] ? classes.gridTileBar : null}
                 title={tile.title}
                 subtitle={<span>{tile.description}</span>}
               />
