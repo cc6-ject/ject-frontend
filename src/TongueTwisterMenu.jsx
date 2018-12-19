@@ -142,7 +142,7 @@ class TongueTwisterPractice extends Component {
             this.setState({ coverage: correct });
             if (correct >= 10) {
               // here is if 10/10
-              this.toggleError = false;
+              this.toggleError = true;
               this.setState({
                 endMessage: 'Congratulations you got them all correct'
               });
@@ -182,7 +182,7 @@ class TongueTwisterPractice extends Component {
     try {
       const failWord = await checkFailure(target, final);
       await this.setState({ failWord });
-      this.setState({ togglePrint: true });
+      //this.setState({ togglePrint: true });
       //console.log('if username', username);
       // if (username) {
       this.finishedPractice();
@@ -276,7 +276,11 @@ class TongueTwisterPractice extends Component {
           </p>
           <Grid item xs>
             <Paper className={classes.paper}>
-              {this.state.coverage}
+              {this.state.coverage === 0
+                ? 0
+                : this.state.coverage < 10
+                ? this.state.coverage
+                : 10}
               {this.outOf}
             </Paper>
           </Grid>
