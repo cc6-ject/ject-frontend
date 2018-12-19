@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Card, CardContent, Button, Typography } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  List,
+  ListItem
+} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { API, Auth } from 'aws-amplify';
 import config from './config';
 import { play as playSound, APPLAUSE, TICK } from './lib/sound';
-import { getRandomCompliment, randomKaraokeTitle } from './Constants';
+import { getRandomCompliment, randomKaraokeTitle, views } from './Constants';
 import AudioTool from './lib/AudioTool';
 
 const KARAOKE_STATE = {
@@ -16,13 +23,13 @@ const KARAOKE_STATE = {
   COMPLETE: 'complete'
 };
 
-const PRODUCTION = true;
-const TALKING_COUNT_DOWN = PRODUCTION ? 300 : 20;
-const TIMER_DELAY = PRODUCTION ? 1000 : 1000;
-const STARTING_COUNT_DOWN = PRODUCTION ? 5 : 1;
+const IS_PRODUCTION = config.state === 'prod';
+const TALKING_COUNT_DOWN = IS_PRODUCTION ? 300 : 50;
+const TIMER_DELAY = 1000;
+const STARTING_COUNT_DOWN = IS_PRODUCTION ? 5 : 3;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
-const STEP_MAX = 7;
+const STEP_MAX = IS_PRODUCTION ? 7 : 5;
 
 const styles = {
   startingCountDown: {
@@ -332,14 +339,14 @@ class KaraokeMenu extends Component {
     return (
       <div>
         <div className={classes.flexCenter}>
-          <Typography variant="h3">
+          <Typography variant="h4">
             {`0${Math.floor(talkingCountDown / 60)} : ${
               talkingCountDown % 60 < 10 ? `0` : ``
             }${talkingCountDown % 60}`}
           </Typography>
         </div>
         {this.stepIndex === 0 || this.stepIndex === STEP_MAX - 2 ? (
-          <Typography variant="h3" className={classes.mt200}>
+          <Typography variant="h4" className={classes.mt200}>
             {steps[this.stepIndex].data}
           </Typography>
         ) : (
@@ -356,13 +363,17 @@ class KaraokeMenu extends Component {
   }
 
   renderComplete() {
-    const { classes } = this.props;
+    const { classes, switchView } = this.props;
     const { compliment } = this.state;
+    const avgDb = this.audioTool.getDecibels();
+    let avgWpm = this.audioTool.getWordsPerEachMinute();
+    avgWpm = avgWpm.reduce((acc, wpm) => acc + wpm, 0) / avgWpm.length;
+    avgWpm = Number.isNaN(avgWpm) ? 0 : avgWpm;
 
     return (
       <div className={classes.flexColumn}>
         <div className={classes.flexCenter}>
-          <Typography variant="h3">{compliment}</Typography>
+          <Typography variant="h4">{compliment}</Typography>
         </div>
         <div className={classNames(classes.flexCenter, classes.mt50)}>
           <Button
@@ -373,6 +384,24 @@ class KaraokeMenu extends Component {
           >
             OK
           </Button>
+        </div>
+        <div className={classNames(classes.flexCenter, classes.mt50)}>
+          <List>
+            <ListItem button>
+              <Typography variant="h4">AVG dB {avgDb}</Typography>
+            </ListItem>
+            <ListItem button>
+              <Typography variant="h4">AVG WPM {avgWpm}</Typography>
+            </ListItem>
+            <ListItem>
+              <Button
+                variant="contained"
+                onClick={() => switchView(views.activity.TITLE)}
+              >
+                <Typography variant="h4">Go to Activity</Typography>
+              </Button>
+            </ListItem>
+          </List>
         </div>
       </div>
     );
