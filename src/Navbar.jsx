@@ -38,7 +38,6 @@ const styles = theme => ({
   },
   toolbar: theme.mixins.toolbar
 });
-
 class Navbar extends React.Component {
   constructor(props) {
     super(props);

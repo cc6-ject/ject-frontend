@@ -83,7 +83,8 @@ class ProjectionMenu extends React.Component {
                 },
                 fontSize: 18,
                 stepSize: 1
-              }
+              },
+              delay: 3000
             }
           ]
         },

@@ -106,6 +106,73 @@ export const NUM_OF_DAYS = {
   12: 31
 };
 
+export const NAME_OF_DAYS = {
+  1: '1st',
+  2: '2nd',
+  3: '3rd',
+  4: '4th',
+  5: '5th',
+  6: '6th',
+  7: '7th',
+  8: '8th',
+  9: '9th',
+  10: '10th',
+  11: '11st',
+  12: '12nd',
+  13: '13rd',
+  14: '14th',
+  15: '15th',
+  16: '16th',
+  17: '17th',
+  18: '18th',
+  19: '19th',
+  20: '20th',
+  21: '21st',
+  22: '22nd',
+  23: '23rd',
+  24: '24th',
+  25: '25th',
+  26: '26th',
+  27: '27th',
+  28: '28th',
+  29: '29th',
+  30: '30th',
+  31: '31st'
+};
+export const DAYS_TO_NUM = {
+  '1st': 1,
+  '2nd': 2,
+  '3rd': 3,
+  '4th': 4,
+  '5th': 5,
+  '6th': 6,
+  '7th': 7,
+  '8th': 8,
+  '9th': 9,
+  '10th': 10,
+  '11st': 11,
+  '12nd': 12,
+  '13rd': 13,
+  '14th': 14,
+  '15th': 15,
+  '16th': 16,
+  '17th': 17,
+  '18th': 18,
+  '19th': 19,
+  '20th': 20,
+  '21st': 21,
+  '22nd': 22,
+  '23rd': 23,
+  '24th': 24,
+  '25th': 25,
+  '26th': 26,
+  '27th': 27,
+  '28th': 28,
+  '29th': 29,
+  '30th': 30,
+  '31st': 31
+};
+
 export const NAME_OF_MONTH = {
   1: 'Jan',
   2: 'Feb',
@@ -119,4 +186,19 @@ export const NAME_OF_MONTH = {
   10: 'Oct',
   11: 'Nov',
   12: 'Dec'
+};
+
+export const LONG_NAME_OF_MONTH = {
+  1: 'January',
+  2: 'February',
+  3: 'March',
+  4: 'April',
+  5: 'May',
+  6: 'June',
+  7: 'July',
+  8: 'August',
+  9: 'September',
+  10: 'October',
+  11: 'November',
+  12: 'December'
 };
