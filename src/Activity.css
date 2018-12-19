@@ -8,9 +8,11 @@
   top: 0;
   pointer-events: none;
 }
-#primaryChartAreaWrapper {
+
+.primaryChartAreaWrapper {
+  width: 200%;
+  height: 300px;
   overflow-x: scroll;
-  width: 3000px;
 }
 
 .secondaryChartWrapper {
@@ -23,9 +25,10 @@
   top: 0;
   pointer-events: none;
 }
-#secondaryChartAreaWrapper {
+.secondaryChartAreaWrapper {
+  width: 200%;
+  height: 300px;
   overflow-x: scroll;
-  width: 3000px;
 }
 
 .thirdlyChartWrapper {
@@ -38,9 +41,10 @@
   top: 0;
   pointer-events: none;
 }
-#thirdlyChartAreaWrapper {
+.thirdlyChartAreaWrapper {
+  width: 200%;
+  height: 300px;
   overflow-x: scroll;
-  width: 3000px;
 }
 .title {
   text-align: center;

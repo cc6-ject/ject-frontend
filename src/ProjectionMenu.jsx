@@ -1,8 +1,10 @@
 import React from 'react';
 import { Card, CardContent } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
+import { Line } from 'react-chartjs-2';
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
+import { getAnnotationConfig } from './lib/chartConfig';
 import './ProjectionMenu.css';
 
 let audioContext;
@@ -16,31 +18,85 @@ recognition.lang = 'en-US';
 recognition.interimResults = true;
 let [transcript, processScript] = ['', ''];
 
+const INIT_CHART_DATA = [];
+const INIT_CHART_LABEL = [];
+for (let i = 0; i < 50; i += 1) {
+  INIT_CHART_DATA.push(45);
+  INIT_CHART_LABEL.push('');
+}
+
+const annotationConfig = getAnnotationConfig(0.5, true);
+
 class ProjectionMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      volume: { transform: 'rotate(0deg)' },
       isListen: false,
       isFinish: false,
       intervalAudioId: null,
       intervalSpeechId: null,
+      intervalChartId: null,
       decibels: [],
       transcripts: [],
       durations: [],
       avgDecibels: [],
       username: '',
-      startTime: 0
+      startTime: 0,
+      lineChartData: {
+        labels: [...INIT_CHART_LABEL],
+        datasets: [
+          {
+            backgroundColor: 'rgba(249, 170, 51, 0)',
+            borderColor: 'rgba(249, 170, 51, 0.8)',
+            data: [...INIT_CHART_DATA]
+          }
+        ]
+      },
+      lineChartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        tooltips: {
+          enabled: true
+        },
+        scales: {
+          yAxes: [
+            {
+              stacked: false,
+              gridLines: {
+                display: false
+              },
+              ticks: { beginAtZero: true },
+              scaleLabel: { display: true, labelString: 'dB', fontSize: 18 }
+            }
+          ],
+          xAxes: [
+            {
+              barPercentage: 0.7,
+              stacked: false,
+              gridLines: {
+                display: false
+              },
+              barThickness: 15,
+              ticks: {
+                callback(value) {
+                  return Number.isInteger(value) ? value : '';
+                },
+                fontSize: 18,
+                stepSize: 1
+              }
+            }
+          ]
+        },
+        legend: { display: false },
+        annotation: annotationConfig
+      }
     };
   }
 
   async componentDidMount() {
     try {
       const data = await Auth.currentAuthenticatedUser();
-      // this.setState({ username: data.username });
-      this.setState({ username: data.id });
-      console.log('username', data.username);
-      console.log('id', data.id);
+      await this.setState({ username: data.id });
     } catch (error) {
       console.log(error);
     }
@@ -60,14 +116,7 @@ class ProjectionMenu extends React.Component {
 
   handleSuccess = stream => {
     const { isListen } = this.state;
-
-    const intervalAudioId = setInterval(() => {
-      const { decibels } = this.state;
-      this.setState({
-        volume: { transform: `rotate(${-180 + 3 * average}deg)` },
-        decibels: [...decibels, average]
-      });
-    }, 500);
+    let time = 0;
 
     const intervalSpeechId = setInterval(() => {
       const { transcripts } = this.state;
@@ -76,8 +125,46 @@ class ProjectionMenu extends React.Component {
       });
       transcript = '';
     }, 10000);
+    const intervalChartId = setInterval(() => {
+      const { lineChartData } = this.state;
+      const { data } = lineChartData.datasets[0];
+      const { labels } = lineChartData;
+      if (time > 0) {
+        labels.pop();
+      }
+      time = time * 10 + 2;
+      time /= 10;
+      if (data.length > 49) {
+        data.shift();
+        labels.shift();
+      }
+      data.push(average);
+      labels.push(time);
+      this.setState({
+        lineChartData: {
+          labels: [...labels, ''],
+          datasets: [
+            {
+              data: [...data]
+            }
+          ]
+        }
+      });
+    }, 200);
 
-    this.setState({ isListen: !isListen, intervalAudioId, intervalSpeechId });
+    const intervalAudioId = setInterval(() => {
+      const { decibels } = this.state;
+      this.setState({
+        decibels: [...decibels, average]
+      });
+    }, 500);
+
+    this.setState({
+      isListen: !isListen,
+      intervalAudioId,
+      intervalSpeechId,
+      intervalChartId
+    });
 
     this.handleSpeech();
     this.handleAudio(stream);
@@ -186,42 +273,48 @@ class ProjectionMenu extends React.Component {
       isListen,
       intervalAudioId,
       intervalSpeechId,
+      intervalChartId,
       avgDecibels,
       durations
     } = this.state;
-    // const state = this.state;
 
     this.setState({
       isListen: !isListen,
-      volume: { transform: `rotate(0deg)` },
       decibels: [],
       avgDecibels: [...avgDecibels, avgDecibel],
       transcripts: [],
       durations: [...durations, duration],
-      isFinish: true
+      isFinish: true,
+      lineChartData: {
+        labels: [...INIT_CHART_LABEL],
+        datasets: [
+          {
+            data: [...INIT_CHART_DATA]
+          }
+        ]
+      }
     });
     transcript = '';
     processScript = '';
 
+    clearInterval(intervalChartId);
     clearInterval(intervalAudioId);
     clearInterval(intervalSpeechId);
   };
 
   render() {
-    const { isFinish, isListen, volume, avgDecibels } = this.state;
+    const {
+      isFinish,
+      isListen,
+      avgDecibels,
+      lineChartData,
+      lineChartOptions
+    } = this.state;
     return (
       <div className="Projection">
         <Card style={{ textAlign: 'center', margin: 100 }}>
           <CardContent>
-            <svg
-              className="ThumbCheck"
-              width="200"
-              height="200"
-              viewBox="0 0 24 24"
-              style={volume}
-            >
-              <path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91l-.01-.01L23 10z" />
-            </svg>
+            <Line data={lineChartData} options={lineChartOptions} />
             <ProjectionToggle
               isListen={isListen}
               isFinish={isFinish}

@@ -18,6 +18,11 @@ const dev = {
       ID: '1719505251494936',
       URL: 'https://connect.facebook.net/en_US/sdk.js'
     }
+  },
+  randomImage: {
+    // Because of CORS in local CORS proxy was set.
+    // URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
+    URL: 'https://picsum.photos/800/600/?random'
   }
 };
 
@@ -42,6 +47,10 @@ const prod = {
       ID: '1719505251494936',
       URL: 'https://connect.facebook.net/en_US/sdk.js'
     }
+  },
+  randomImage: {
+    // URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
+    URL: 'https://picsum.photos/800/600/?random'
   }
 };
 
