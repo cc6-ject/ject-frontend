@@ -305,7 +305,10 @@ class Activity extends React.Component {
               label(tooltipItem, data) {
                 let newData = data.datasets[0].data[tooltipItem.index].y;
                 newData = Math.floor(newData * 100) / 100;
-                return `${newData}dB`;
+
+                return activity === 'Projection' && view === 'Days'
+                  ? `${newData}dB`
+                  : `${newData}%`;
               },
               afterBody(tooltipItem, data) {
                 if (activity === 'Projection' && view === 'Days') {
