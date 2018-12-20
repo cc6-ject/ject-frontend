@@ -102,7 +102,7 @@ class App extends Component {
           {/* </div> */}
         </div>
         <div className="app--footer">
-          <div>
+          <div className="app--footer--container">
             <Typography variant="overline" gutterBottom color="primary">
               Created by Daenam, Matt, Toru @ Code Chrysalis Cohort 6 2018. Ject
               logo made with{' '}

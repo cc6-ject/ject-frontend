@@ -6,22 +6,17 @@ import {
   GridListTile,
   GridListTileBar
 } from '@material-ui/core';
+import classNames from 'classnames';
 import { views } from './Constants';
 
 const styles = () => ({
   root: {
-    flexGrow: 1
-  },
-  gridRoot: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     overflow: 'hidden',
-    backgroundColor: 'inherit'
-  },
-  gridList: {
-    width: '100%'
-    // height: 600,
+    backgroundColor: 'inherit',
+    padding: '100px 5% 0 5%'
   },
   gridIcon: {
     color: 'rgba(255, 255, 255, 0.54)'
@@ -32,6 +27,12 @@ const styles = () => ({
   gridTileBar: {
     backgroundColor: '#000000d0',
     transition: 'background-color 1s ease'
+  },
+  w100: {
+    width: '100%'
+  },
+  w110: {
+    width: '110%'
   }
 });
 
@@ -88,12 +89,18 @@ class HomePage extends Component {
     const { imagePlays } = this.state;
 
     return (
-      <div className={classes.gridRoot}>
-        <GridList cellHeight={400} className={classes.gridList}>
+      <div className={classes.root}>
+        {/* TODO: auto change for cols */}
+        <GridList
+          cellHeight={400}
+          className={classes.w100}
+          cols={2}
+          spacing={10}
+        >
           {tileData.map((tile, index) => (
             <GridListTile key={index}>
               <Button
-                className={classes.p0}
+                className={classNames(classes.p0, classes.w100)}
                 onClick={() => {
                   switchView(tile.title);
                 }}
@@ -101,6 +108,7 @@ class HomePage extends Component {
                 onMouseLeave={() => this.handleImagePlay(index, false)}
               >
                 <img
+                  className={classes.w110}
                   src={imagePlays[index] ? tile.gif : tile.still}
                   alt={tile.title}
                 />

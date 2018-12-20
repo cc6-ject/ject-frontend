@@ -10,11 +10,13 @@
 
 .app--content {
   background-color: #edf0f2;
-  padding: 60px 20px;
   min-height: 100vh;
 }
 
 .app--footer {
   background-color: #edf0f2;
-  padding: 20px;
+}
+
+.app--footer--container {
+  padding: 20px 5% 20px;
 }

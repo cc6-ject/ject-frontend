@@ -4,15 +4,12 @@ import Amplify from 'aws-amplify';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-// eslint-disable-next-line import/no-duplicates
 import config from './config';
-// eslint-disable-next-line import/no-duplicates
-import color from './config';
-
 import './index.css';
 
 const theme = createMuiTheme({
-  palette: color,
+  // only primary and secondary will be applied.
+  palette: config,
   typography: {
     useNextVariants: true,
     fontFamily: 'Work Sans'

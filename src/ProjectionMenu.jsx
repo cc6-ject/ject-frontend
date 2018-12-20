@@ -1,11 +1,11 @@
 import React from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import { Card, CardContent } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
-import './ProjectionMenu.css';
 
 let audioContext;
 let analyser;
@@ -26,6 +26,15 @@ for (let i = 0; i < 50; i += 1) {
 }
 
 const annotationConfig = getAnnotationConfig(0.5, true);
+
+const styles = {
+  root: {
+    padding: '100px 5% 5px 5%'
+  },
+  center: {
+    textAlign: 'center'
+  }
+};
 
 class ProjectionMenu extends React.Component {
   constructor(props) {
@@ -311,9 +320,11 @@ class ProjectionMenu extends React.Component {
       lineChartData,
       lineChartOptions
     } = this.state;
+    const { classes } = this.props;
+
     return (
-      <div className="Projection">
-        <Card style={{ textAlign: 'center', margin: 100 }}>
+      <div className={classes.root}>
+        <Card className={classes.center}>
           <CardContent>
             <Line data={lineChartData} options={lineChartOptions} />
             <ProjectionToggle
@@ -330,4 +341,4 @@ class ProjectionMenu extends React.Component {
   }
 }
 
-export default ProjectionMenu;
+export default withStyles(styles)(ProjectionMenu);
