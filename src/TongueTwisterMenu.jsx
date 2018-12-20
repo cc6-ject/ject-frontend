@@ -47,6 +47,12 @@ const styles = theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
     width: 200
+  },
+  card: {
+    paddingTop: 50,
+    // paddingBottom: 100
+    //height: 300
+    height: 400
   }
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
@@ -254,79 +260,81 @@ class TongueTwisterPractice extends Component {
     const { classes } = this.props;
     const { statusMessage } = this.state;
     return (
-      <div>
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
-          spacing={24}
-        >
-          <Grid item xs>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <Select
-                value={this.state.currentTwister}
-                onChange={this.handleChange}
-                input={<OutlinedInput />}
-              >
-                <MenuItem value={'she sells seashells by the seashore'}>
-                  she sells seashells by the seashore
-                </MenuItem>
-                <MenuItem value={'red lorry yellow lorry'}>
-                  red lorry yellow lorry
-                </MenuItem>
-                <MenuItem value={'unique New York'}>unique New York</MenuItem>
-                <MenuItem value={'mixed biscuits'}>mixed biscuits</MenuItem>
-                <MenuItem value={'a proper copper coffee pot'}>
-                  a proper copper coffee pot
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+      <div className={classes.root}>
+        <Card className={classes.card}>
+          <Grid
+            container
+            direction="column"
+            justify="center"
+            alignItems="center"
+            spacing={24}
+          >
+            <Grid item xs>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <Select
+                  value={this.state.currentTwister}
+                  onChange={this.handleChange}
+                  input={<OutlinedInput />}
+                >
+                  <MenuItem value={'she sells seashells by the seashore'}>
+                    she sells seashells by the seashore
+                  </MenuItem>
+                  <MenuItem value={'red lorry yellow lorry'}>
+                    red lorry yellow lorry
+                  </MenuItem>
+                  <MenuItem value={'unique New York'}>unique New York</MenuItem>
+                  <MenuItem value={'mixed biscuits'}>mixed biscuits</MenuItem>
+                  <MenuItem value={'a proper copper coffee pot'}>
+                    a proper copper coffee pot
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-          {!this.listening ? (
-            <Fab
-              color="secondary"
-              className={classes.fab}
-              onClick={this.toggleListen}
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24">
-                <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
-              </svg>
-            </Fab>
-          ) : (
-            <Fab color="secondary" className={classes.fab}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
+            {!this.listening ? (
+              <Fab
+                color="secondary"
+                className={classes.fab}
+                onClick={this.toggleListen}
               >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
-              </svg>
-            </Fab>
-          )}
-          <p>{statusMessage}</p>
-          <Grid item xs>
-            <Paper className={classes.paper}>
-              {this.state.coverage === 0
-                ? 0
-                : this.state.coverage < 10
-                ? this.state.coverage
-                : 10}
-              {this.outOf}
-            </Paper>
-          </Grid>
-          <Grid item xs>
-            {this.toggleError ? (
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+                </svg>
+              </Fab>
+            ) : (
+              <Fab color="secondary" className={classes.fab}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
+                </svg>
+              </Fab>
+            )}
+            <p>{statusMessage}</p>
+            <Grid item xs>
               <Paper className={classes.paper}>
-                {this.toggleError
-                  ? this.state.endMessage + this.state.failWord
-                  : null}
+                {this.state.coverage === 0
+                  ? 0
+                  : this.state.coverage < 10
+                  ? this.state.coverage
+                  : 10}
+                {this.outOf}
               </Paper>
-            ) : null}
+            </Grid>
+            <Grid item xs>
+              {this.toggleError ? (
+                <Paper className={classes.paper}>
+                  {this.toggleError
+                    ? this.state.endMessage + this.state.failWord
+                    : null}
+                </Paper>
+              ) : null}
+            </Grid>
           </Grid>
-        </Grid>
+        </Card>
         {/* </Fab> */}
       </div>
     );
