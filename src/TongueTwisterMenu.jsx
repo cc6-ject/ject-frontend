@@ -5,6 +5,17 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import { API, Auth } from 'aws-amplify';
 
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import FilledInput from '@material-ui/core/FilledInput';
+import InputLabel from '@material-ui/core/InputLabel';
+
 import { Fab } from '@material-ui/core';
 // import Typography from '@material-ui/core/Typography';
 
@@ -21,7 +32,17 @@ const styles = theme => ({
     flexGrow: 1
     // margin: 100
   },
-
+  button: {
+    margin: theme.spacing.unit
+  },
+  formControl: {
+    textAlign: 'center',
+    margin: theme.spacing.unit,
+    minWidth: 220
+  },
+  input: {
+    display: 'Select Tongue Twister'
+  },
   paper: {
     padding: theme.spacing.unit * 2,
     textAlign: 'center',
@@ -52,7 +73,8 @@ class TongueTwisterPractice extends Component {
       coverage: 0,
       failWord: '',
       username: null,
-      endMessage: ''
+      endMessage: '',
+      openMenu: false
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
@@ -92,6 +114,12 @@ class TongueTwisterPractice extends Component {
       },
       this.handleListen
     );
+  }
+
+  handleMenu() {
+    this.setState({
+      openMenu: !this.state.openMenu
+    });
   }
 
   updateTwister() {
@@ -216,43 +244,50 @@ class TongueTwisterPractice extends Component {
     console.log('here it is??');
     await this.setState({ listening: false, statusMessage: 'End' });
     transcript = '';
-    // this.toggleError = true;
   }
+
+  handleChange = event => {
+    this.setState({ currentTwister: event.target.value });
+  };
 
   render() {
     const { classes } = this.props;
     const { statusMessage } = this.state;
     return (
       <div>
-        {/* <Fab> */}
         <Grid
           container
           direction="column"
-          // justify="flex-start"
           justify="center"
           alignItems="center"
-          // margin="100"
           spacing={24}
         >
-          {/* <Grid item xs={4}> */}
           <Grid item xs>
-            <Paper
-              className={classes.paper}
-              onClick={this.updateTwister.bind(this)}
-            >
-              {this.state.currentTwister}
-            </Paper>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <Select
+                value={this.state.currentTwister}
+                onChange={this.handleChange}
+                input={<OutlinedInput />}
+              >
+                <MenuItem value={'she sells seashells by the seashore'}>
+                  she sells seashells by the seashore
+                </MenuItem>
+                <MenuItem value={'red lorry yellow lorry'}>
+                  red lorry yellow lorry
+                </MenuItem>
+                <MenuItem value={'unique New York'}>unique New York</MenuItem>
+                <MenuItem value={'mixed biscuits'}>mixed biscuits</MenuItem>
+                <MenuItem value={'a proper copper coffee pot'}>
+                  a proper copper coffee pot
+                </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
-          {/* <Grid item xs={4}>
-            <Paper className={classes.paper} onClick={this.toggleListen}>
-              {statusMessage}
-            </Paper>
-          </Grid> */}
+
           {!this.listening ? (
             <Fab
               color="secondary"
               className={classes.fab}
-              // onClick={() => handleClick()}
               onClick={this.toggleListen}
             >
               <svg width="24" height="24" viewBox="0 0 24 24">
@@ -260,11 +295,7 @@ class TongueTwisterPractice extends Component {
               </svg>
             </Fab>
           ) : (
-            <Fab
-              color="secondary"
-              className={classes.fab}
-              // onClick={() => handleClose()}
-            >
+            <Fab color="secondary" className={classes.fab}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
