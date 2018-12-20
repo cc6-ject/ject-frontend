@@ -1,5 +1,11 @@
 import React from 'react';
-import { List, ListItem, ListItemText, ListItemIcon } from '@material-ui/core';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Typography
+} from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import { withStyles } from '@material-ui/core/styles';
 import {
@@ -9,25 +15,36 @@ import {
   TrendingUp,
   Replay5
 } from '@material-ui/icons';
-import { views } from './Constants';
+import { views, LOGO } from './Constants';
 
 const styles = () => ({
+  logoDiv: {
+    display: 'flex',
+    'align-items': 'center',
+    'justify-content': 'flex-start'
+  },
+  logoText: {
+    padding: '0 24px',
+    fontWeight: 1000
+  },
+  logo: {
+    width: '50px',
+    height: '50px'
+  },
+  itemIcon: {
+    margin: 0
+  },
+
   itemDiv: {
     display: 'flex',
     'align-items': 'center'
   },
   item: {
-    // display: 'inline-block',
     padding: '0 24px',
     fontWeight: 500,
     '& svg': {
       fontSize: 20
     }
-  },
-  itemIcon: {
-    // display: 'inline-block',
-    margin: 0
-    // margin: 0
   }
 });
 
@@ -42,6 +59,17 @@ class DrawerMenuItems extends React.Component {
     return (
       <div className="side-drawer">
         <List>
+          <ListItem>
+            <div className={classes.logoDiv}>
+              <ListItemIcon className={classes.itemIcon}>
+                <img src={LOGO} alt="logo" className={classes.logo} />
+              </ListItemIcon>
+              <Typography className={classes.logoText} variant="h6">
+                JECT
+              </Typography>
+            </div>
+          </ListItem>
+          <Divider />
           {Object.keys(views)
             .filter(
               key =>
@@ -77,7 +105,6 @@ class DrawerMenuItems extends React.Component {
                     primary={views[key].TITLE}
                   />
                 </div>
-                <Divider />
               </ListItem>
             ))}
         </List>

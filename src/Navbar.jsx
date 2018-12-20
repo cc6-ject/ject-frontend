@@ -15,8 +15,7 @@ import { LOGO, views } from './Constants';
 const drawerWidth = 200;
 const styles = theme => ({
   root: {
-    flexGrow: 1,
-    marginBottom: 24
+    flexGrow: 1
   },
   grow: {
     flexGrow: 1
@@ -36,7 +35,10 @@ const styles = theme => ({
     flexGrow: 1,
     padding: theme.spacing.unit * 3
   },
-  toolbar: theme.mixins.toolbar
+  toolbar: theme.mixins.toolbar,
+  appBar: {
+    padding: '5px 5%'
+  }
 });
 
 class Navbar extends React.Component {
@@ -64,7 +66,7 @@ class Navbar extends React.Component {
 
     return (
       <div className={classes.root}>
-        <AppBar position="fixed">
+        <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
             <IconButton
               className={classes.menuButton}
