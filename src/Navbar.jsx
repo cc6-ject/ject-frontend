@@ -9,6 +9,7 @@ import {
   Drawer
 } from '@material-ui/core';
 import { AccountCircle, Menu as MenuIcon } from '@material-ui/icons';
+import classNames from 'classnames';
 import DrawerMenuItems from './DrawerMenuItems';
 import { LOGO, views } from './Constants';
 
@@ -38,19 +39,38 @@ const styles = theme => ({
   toolbar: theme.mixins.toolbar,
   appBar: {
     padding: '5px 5%'
+  },
+  center: {
+    textAlign: 'center'
   }
 });
+
 class Navbar extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      drawerOpen: false
+      drawerOpen: false,
+      titleHide: false
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.handleWindowResize);
+    // TODO: What is this meaning?
+    // https://stackoverflow.com/questions/44480053/how-to-detect-if-screen-size-has-changed-to-mobile-in-react?rq=1
+    this.handleWindowResize();
   }
 
   handleDrawerToggle = open => {
     this.setState({ drawerOpen: open });
+  };
+
+  handleWindowResize = () => {
+    // for md
+    this.setState({
+      titleHide: window.innerWidth < 768
+    });
   };
 
   render() {
@@ -61,7 +81,7 @@ class Navbar extends React.Component {
       isAuthenticated,
       onLogout
     } = this.props;
-    const { drawerOpen } = this.state;
+    const { drawerOpen, titleHide } = this.state;
 
     return (
       <div className={classes.root}>
@@ -76,23 +96,33 @@ class Navbar extends React.Component {
             >
               <MenuIcon />
             </IconButton>
-            <img src={LOGO} alt="Logo" style={{ height: 40 }} />
+            {!titleHide ? (
+              <Fragment>
+                <img src={LOGO} alt="Logo" style={{ height: 40 }} />
+                <Button
+                  color="inherit"
+                  onClick={() => switchView(views.home.TITLE)}
+                >
+                  <Typography variant="h6" color="inherit">
+                    Ject
+                  </Typography>
+                </Button>
+              </Fragment>
+            ) : null}
             <Typography
-              onClick={() => switchView(views.home.TITLE)}
               variant="h6"
               color="inherit"
-              className={classes.grow}
+              className={classNames(classes.grow, classes.center)}
             >
-              Ject
-            </Typography>
-            <Typography variant="h6" color="inherit" className={classes.grow}>
               {currentView}
             </Typography>
             {isAuthenticated ? (
               <Fragment>
-                <IconButton color="inherit">
-                  <AccountCircle />
-                </IconButton>
+                {!titleHide ? (
+                  <IconButton color="inherit">
+                    <AccountCircle />
+                  </IconButton>
+                ) : null}
                 <Button color="inherit" onClick={onLogout}>
                   LOGOUT
                 </Button>

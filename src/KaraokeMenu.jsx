@@ -368,7 +368,8 @@ class KaraokeMenu extends Component {
   renderComplete() {
     const { classes, switchView } = this.props;
     const { compliment } = this.state;
-    const avgDb = Math.round(this.audioTool.getDecibels());
+    let avgDb = this.audioTool.getDecibels();
+    avgDb = Number.isNaN(avgDb) ? 0 : Math.round(avgDb);
     let avgWpm = this.audioTool.getWordsPerEachMinute();
     avgWpm = avgWpm.reduce((acc, wpm) => acc + wpm, 0) / avgWpm.length;
     avgWpm = Number.isNaN(avgWpm) ? 0 : Math.round(avgWpm);
