@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { API, Auth } from 'aws-amplify';
@@ -7,9 +6,6 @@ import {
   Paper,
   Fab,
   Card,
-  CardContent,
-  Button,
-  Menu,
   FormControl,
   MenuItem,
   Select,
@@ -17,8 +13,6 @@ import {
 } from '@material-ui/core';
 import {
   randomTongueTwister,
-  updateLastTongueTwister,
-  splitResults,
   targetLength,
   checkFailure
 } from './TongueTwisterFiles';
@@ -50,17 +44,15 @@ const styles = theme => ({
   },
   card: {
     paddingTop: 50,
-    // paddingBottom: 100
-    //height: 300
     height: 400
   }
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
 const recognition = new SpeechRecognition();
 recognition.lang = 'en-US';
-recognition.maxAlternatives = 1; // <- supposed to give alternatives
-recognition.continous = true; // <- maybe this needs to be deleted for better tt reading?
-recognition.interimResults = true; // <-will need to delete so it doesn't auto correct
+recognition.maxAlternatives = 1;
+recognition.continous = true;
+recognition.interimResults = true;
 
 let transcript = '';
 
@@ -68,13 +60,9 @@ class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
-      twisterTranscript: [],
       listening: false,
       statusMessage: 'Start',
-      toggleRepCount: false,
-      twisterReps: 0,
       coverage: 0,
       failWord: '',
       username: null,
@@ -99,54 +87,21 @@ class TongueTwisterPractice extends Component {
       await this.setState({
         username: data.username
       });
-      console.log(this.state.username);
     } catch (error) {
       console.log(error);
     }
-    console.log(this.state.username);
   }
 
-  updateLastTwister(newTT) {
-    this.setState({
-      lastTongueTwister: updateLastTongueTwister(newTT)
-    });
-  }
-
-  toggleListen() {
-    this.toggleError = false;
-    this.setState(
-      {
-        listening: !this.state.listening
-      },
-      this.handleListen
-    );
-  }
-
-  handleMenu() {
-    this.setState({
-      openMenu: !this.state.openMenu
-    });
-  }
-
-  updateTwister() {
-    const newTT = randomTongueTwister(this.lastTongueTwister);
-    this.setState({
-      currentTwister: newTT
-    });
-  }
-
-  updateResult(newResult) {
-    this.setState({
-      twisterTranscript: splitResults(newResult, this.state.currentTwister)
-    });
-    this.setState({ toggleRepCount: true });
-  }
+  handleChange = event => {
+    this.setState({ currentTwister: event.target.value });
+  };
 
   handleListen() {
-    if (this.state.listening) recognition.start();
+    const { listening, currentTwister } = this.state;
+    if (listening) recognition.start();
     this.setState({ coverage: 0, failWord: '' });
     this.wrongResult = '';
-    const sentenceLength = targetLength(this.state.currentTwister);
+    const sentenceLength = targetLength(currentTwister);
     let updateLength = sentenceLength;
     let startIndex = 0;
     let correct = 0;
@@ -155,7 +110,7 @@ class TongueTwisterPractice extends Component {
         statusMessage: 'Listening!'
       });
       recognition.onresult = event => {
-        const target = this.state.currentTwister;
+        const target = currentTwister;
         const processScript = Array.from(event.results)
           .map(result => result[0])
           .map(result => result.transcript)
@@ -176,7 +131,6 @@ class TongueTwisterPractice extends Component {
             correct++;
             this.setState({ coverage: correct });
             if (correct >= 10) {
-              // here is if 10/10
               this.toggleError = true;
               this.setState({
                 endMessage: 'Congratulations you got them all correct'
@@ -197,18 +151,17 @@ class TongueTwisterPractice extends Component {
           } else {
             transcript = transcript.concat('. ', processScript);
           }
-          // console.log('TRANSCRIPT', transcript);
-          this.updateResult(transcript);
         }
       };
       recognition.onend = () => {
+        const { failWord } = this.state;
         console.log('onend happened');
         this.toggleError = true;
         this.setState({
           listening: false,
           statusMessage: 'End'
         });
-        if (this.state.failWord.length < 1) {
+        if (failWord.length < 1) {
           this.setState({
             endMessage: 'Timed out'
           });
@@ -252,13 +205,40 @@ class TongueTwisterPractice extends Component {
     transcript = '';
   }
 
-  handleChange = event => {
-    this.setState({ currentTwister: event.target.value });
-  };
+  updateTwister() {
+    const newTT = randomTongueTwister(this.lastTongueTwister);
+    this.setState({
+      currentTwister: newTT
+    });
+  }
+
+  handleMenu() {
+    const { openMenu } = this.state;
+    this.setState({
+      openMenu: !openMenu
+    });
+  }
+
+  toggleListen() {
+    const { listening } = this.state;
+    this.toggleError = false;
+    this.setState(
+      {
+        listening: !listening
+      },
+      this.handleListen
+    );
+  }
 
   render() {
     const { classes } = this.props;
-    const { statusMessage } = this.state;
+    const {
+      statusMessage,
+      currentTwister,
+      coverage,
+      endMessage,
+      failWord
+    } = this.state;
     return (
       <div className={classes.root}>
         <Card className={classes.card}>
@@ -272,19 +252,19 @@ class TongueTwisterPractice extends Component {
             <Grid item xs>
               <FormControl variant="outlined" className={classes.formControl}>
                 <Select
-                  value={this.state.currentTwister}
+                  value={currentTwister}
                   onChange={this.handleChange}
                   input={<OutlinedInput />}
                 >
-                  <MenuItem value={'she sells seashells by the seashore'}>
+                  <MenuItem value="she sells seashells by the seashore">
                     she sells seashells by the seashore
                   </MenuItem>
-                  <MenuItem value={'red lorry yellow lorry'}>
+                  <MenuItem value="red lorry yellow lorry">
                     red lorry yellow lorry
                   </MenuItem>
-                  <MenuItem value={'unique New York'}>unique New York</MenuItem>
-                  <MenuItem value={'mixed biscuits'}>mixed biscuits</MenuItem>
-                  <MenuItem value={'a proper copper coffee pot'}>
+                  <MenuItem value="unique New York">unique New York</MenuItem>
+                  <MenuItem value="mixed biscuits">mixed biscuits</MenuItem>
+                  <MenuItem value="a proper copper coffee pot">
                     a proper copper coffee pot
                   </MenuItem>
                 </Select>
@@ -316,20 +296,14 @@ class TongueTwisterPractice extends Component {
             <p>{statusMessage}</p>
             <Grid item xs>
               <Paper className={classes.paper}>
-                {this.state.coverage === 0
-                  ? 0
-                  : this.state.coverage < 10
-                  ? this.state.coverage
-                  : 10}
+                {coverage === 0 ? 0 : coverage < 10 ? coverage : 10}
                 {this.outOf}
               </Paper>
             </Grid>
             <Grid item xs>
               {this.toggleError ? (
                 <Paper className={classes.paper}>
-                  {this.toggleError
-                    ? this.state.endMessage + this.state.failWord
-                    : null}
+                  {this.toggleError ? endMessage + failWord : null}
                 </Paper>
               ) : null}
             </Grid>
