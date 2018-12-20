@@ -62,6 +62,9 @@ const styles = {
   },
   talkingImage: {
     borderRadius: 10
+  },
+  root: {
+    padding: '100px 5% 5px 5%'
   }
 };
 
@@ -365,10 +368,10 @@ class KaraokeMenu extends Component {
   renderComplete() {
     const { classes, switchView } = this.props;
     const { compliment } = this.state;
-    const avgDb = this.audioTool.getDecibels();
+    const avgDb = Math.round(this.audioTool.getDecibels());
     let avgWpm = this.audioTool.getWordsPerEachMinute();
     avgWpm = avgWpm.reduce((acc, wpm) => acc + wpm, 0) / avgWpm.length;
-    avgWpm = Number.isNaN(avgWpm) ? 0 : avgWpm;
+    avgWpm = Number.isNaN(avgWpm) ? 0 : Math.round(avgWpm);
 
     return (
       <div className={classes.flexColumn}>
@@ -412,7 +415,7 @@ class KaraokeMenu extends Component {
     const { classes } = this.props;
 
     return (
-      <div>
+      <div className={classes.root}>
         <Card>
           <CardContent
             className={classNames(classes.flexCenter, classes.cardContent)}

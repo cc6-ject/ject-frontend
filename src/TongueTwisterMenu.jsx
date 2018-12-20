@@ -1,24 +1,20 @@
+/* eslint-disable */
 import React, { Component } from 'react';
-/* eslint-disable*/
 import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
 import { API, Auth } from 'aws-amplify';
-
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import FilledInput from '@material-ui/core/FilledInput';
-import InputLabel from '@material-ui/core/InputLabel';
-
-import { Fab } from '@material-ui/core';
-// import Typography from '@material-ui/core/Typography';
-
+import {
+  Grid,
+  Paper,
+  Fab,
+  Card,
+  CardContent,
+  Button,
+  Menu,
+  FormControl,
+  MenuItem,
+  Select,
+  OutlinedInput
+} from '@material-ui/core';
 import {
   randomTongueTwister,
   updateLastTongueTwister,
@@ -29,8 +25,11 @@ import {
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
-    // margin: 100
+    flexGrow: 1,
+    padding: '100px 5% 5px 5%'
+  },
+  center: {
+    textAlign: 'center'
   },
   button: {
     margin: theme.spacing.unit
@@ -63,7 +62,7 @@ class TongueTwisterPractice extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      lastTongueTwister: -1,
+      // lastTongueTwister: -1,
       currentTwister: 'Practice Random Tongue Twister',
       twisterTranscript: [],
       listening: false,
@@ -83,6 +82,7 @@ class TongueTwisterPractice extends Component {
     this.toggleError = false;
     this.outOf = ' out of 10';
   }
+
   async componentDidMount() {
     this.setState({
       currentTwister: randomTongueTwister(this.lastTongueTwister)
@@ -150,11 +150,11 @@ class TongueTwisterPractice extends Component {
       });
       recognition.onresult = event => {
         const target = this.state.currentTwister;
-        let processScript = Array.from(event.results)
+        const processScript = Array.from(event.results)
           .map(result => result[0])
           .map(result => result.transcript)
           .join('');
-        let temp = processScript.slice(startIndex, updateLength);
+        const temp = processScript.slice(startIndex, updateLength);
         console.log('ON RESULT', temp);
 
         if (processScript.length > updateLength + 8) {
@@ -228,7 +228,7 @@ class TongueTwisterPractice extends Component {
     API.post('ject', '/tongueTwister', {
       body: {
         name: currentTwister,
-        coverage: coverage,
+        coverage,
         failWords: JSON.stringify(failWord)
       },
       requestContext: {

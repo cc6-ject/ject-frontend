@@ -102,18 +102,24 @@ class App extends Component {
           {/* </div> */}
         </div>
         <div className="app--footer">
-          <div>
+          <div className="app--footer--container">
             <Typography variant="overline" gutterBottom color="primary">
-              Created by Daenam, Matt, Toru at Code Chrysalis Cohort 6 2018.
-            </Typography>
-            <Typography variant="overline" gutterBottom color="primary">
-              Ject Logo made with{' '}
+              Created by Daenam, Matt, Toru @ Code Chrysalis Cohort 6 2018. Ject
+              logo made with{' '}
               <a
                 href="https://www.designevo.com/en/"
                 title="Free Online Logo Maker"
               >
-                DesignEvo
+                DesignEvo{' '}
               </a>
+              . Menu images with{' '}
+              <a
+                href="https://dribbble.com/shots"
+                title="Beautiful image sources"
+              >
+                dribbble
+              </a>
+              .
             </Typography>
           </div>
         </div>
