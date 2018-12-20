@@ -40,6 +40,7 @@ const styles = theme => ({
     padding: '5px 5%'
   }
 });
+
 class Navbar extends React.Component {
   constructor(props) {
     super(props);
@@ -122,8 +123,6 @@ class Navbar extends React.Component {
           }}
         >
           <DrawerMenuItems
-            className={classes.drawer}
-            classes={{ paper: classes.drawerPaper }}
             toggleDrawer={this.handleDrawerToggle}
             switchView={switchView}
           />

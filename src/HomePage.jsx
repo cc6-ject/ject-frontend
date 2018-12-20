@@ -24,6 +24,7 @@ const styles = () => ({
   p0: {
     padding: 0
   },
+  gridListTile: {},
   gridTileBar: {
     backgroundColor: '#000000d0',
     transition: 'background-color 1s ease'
@@ -98,7 +99,7 @@ class HomePage extends Component {
           spacing={10}
         >
           {tileData.map((tile, index) => (
-            <GridListTile key={index}>
+            <GridListTile className={classes.gridListTile} key={index}>
               <Button
                 className={classNames(classes.p0, classes.w100)}
                 onClick={() => {
