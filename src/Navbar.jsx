@@ -38,6 +38,7 @@ const styles = theme => ({
   },
   toolbar: theme.mixins.toolbar
 });
+
 class Navbar extends React.Component {
   constructor(props) {
     super(props);
@@ -115,13 +116,12 @@ class Navbar extends React.Component {
         </AppBar>
         <Drawer
           open={drawerOpen}
+          className={classes.MuiDrawer}
           onClose={() => {
             this.handleDrawerToggle(false);
           }}
         >
           <DrawerMenuItems
-            className={classes.drawer}
-            classes={{ paper: classes.drawerPaper }}
             toggleDrawer={this.handleDrawerToggle}
             switchView={switchView}
           />

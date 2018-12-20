@@ -16,8 +16,7 @@ const styles = () => ({
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'space-around',
-    overflow: 'hidden',
-    backgroundColor: 'inherit'
+    overflow: 'hidden'
   },
   gridList: {
     width: '100%'
@@ -29,6 +28,7 @@ const styles = () => ({
   p0: {
     padding: 0
   },
+  gridListTile: {},
   gridTileBar: {
     backgroundColor: '#000000d0',
     transition: 'background-color 1s ease'
@@ -91,7 +91,7 @@ class HomePage extends Component {
       <div className={classes.gridRoot}>
         <GridList cellHeight={400} className={classes.gridList}>
           {tileData.map((tile, index) => (
-            <GridListTile key={index}>
+            <GridListTile className={classes.gridListTile} key={index}>
               <Button
                 className={classes.p0}
                 onClick={() => {

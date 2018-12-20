@@ -16,6 +16,17 @@ const theme = createMuiTheme({
   typography: {
     useNextVariants: true,
     fontFamily: 'Work Sans'
+  },
+  overrides: {
+    MuiDrawer: {
+      paper: {
+        background: '#344955',
+        '& *': {
+          color: 'rgba(255, 255, 255, 1)'
+          // width: '300px'
+        }
+      }
+    }
   }
 });
 
