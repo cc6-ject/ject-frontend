@@ -118,7 +118,6 @@ class Navbar extends React.Component {
         </AppBar>
         <Drawer
           open={drawerOpen}
-          className={classes.MuiDrawer}
           onClose={() => {
             this.handleDrawerToggle(false);
           }}
