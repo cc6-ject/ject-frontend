@@ -60,9 +60,11 @@ class Activity extends React.Component {
       const proData = arrangeData(data, 'projection');
       await this.setState({ projectionData: proData });
       const { projectionData } = this.state;
-      const time = projectionData[projectionData.length - 1].createdAt;
-      const stamp = `${time.hours()}:${time.minutes()}`;
-      this.setState({ selectedTime: stamp, selectedDay: DATE });
+
+      const latest = projectionData[projectionData.length - 1].createdAt;
+      const latestStamp = `${latest.hours()}:${latest.minutes()}`;
+      this.setState({ selectedTime: latestStamp, selectedDay: DATE });
+
       this.renderDays(projectionData);
       this.renderDay();
       this.renderActivity();
@@ -436,12 +438,12 @@ class Activity extends React.Component {
       } else if (view === 'Weeks') {
         this.setState({ selectedDay: null, selectedTime: null });
         this.renderWeeks(data);
-        this.initChart('secondary');
-        this.initChart('thirdly');
       } else {
         this.setState({ selectedDay: null, selectedTime: null });
-
         this.renderMonths(data);
+      }
+
+      if (view !== 'Days') {
         this.initChart('secondary');
         this.initChart('thirdly');
       }

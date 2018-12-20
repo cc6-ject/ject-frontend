@@ -152,8 +152,6 @@ class Navbar extends React.Component {
           }}
         >
           <DrawerMenuItems
-            className={classes.drawer}
-            classes={{ paper: classes.drawerPaper }}
             toggleDrawer={this.handleDrawerToggle}
             switchView={switchView}
           />

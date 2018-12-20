@@ -32,6 +32,14 @@ const theme = createMuiTheme({
       rounded: {
         borderRadius: 10
       }
+    },
+    MuiDrawer: {
+      paper: {
+        background: '#344955',
+        '& *': {
+          color: 'rgba(255, 255, 255, 1)'
+        }
+      }
     }
   }
 });
