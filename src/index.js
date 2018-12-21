@@ -15,6 +15,24 @@ const theme = createMuiTheme({
     fontFamily: 'Work Sans'
   },
   overrides: {
+    MuiGridListTile: {
+      root: {
+        boxSizing: 'border-box',
+        padding: 10
+      },
+      tile: {
+        borderRadius: 10,
+        height: '100%',
+        display: 'block',
+        position: 'relative',
+        overflow: 'hidden'
+      }
+    },
+    MuiPaper: {
+      rounded: {
+        borderRadius: 10
+      }
+    },
     MuiDrawer: {
       paper: {
         background: '#344955',

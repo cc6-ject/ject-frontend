@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import {
-  Button,
-  GridList,
-  GridListTile,
-  GridListTileBar
-} from '@material-ui/core';
+import { Button, Grid, GridListTile, GridListTileBar } from '@material-ui/core';
 import classNames from 'classnames';
 import { views } from './Constants';
 
@@ -90,16 +85,10 @@ class HomePage extends Component {
     const { imagePlays } = this.state;
 
     return (
-      <div className={classes.root}>
-        {/* TODO: auto change for cols */}
-        <GridList
-          cellHeight={400}
-          className={classes.w100}
-          cols={2}
-          spacing={10}
-        >
-          {tileData.map((tile, index) => (
-            <GridListTile className={classes.gridListTile} key={index}>
+      <div className={classes.root} style={{ style: '100%' }}>
+        {tileData.map((tile, index) => (
+          <Grid xs={12} md={6}>
+            <GridListTile key={index}>
               <Button
                 className={classNames(classes.p0, classes.w100)}
                 onClick={() => {
@@ -120,8 +109,8 @@ class HomePage extends Component {
                 subtitle={<span>{tile.description}</span>}
               />
             </GridListTile>
-          ))}
-        </GridList>
+          </Grid>
+        ))}
       </div>
     );
   }
