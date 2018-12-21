@@ -13,10 +13,6 @@ import LoaderButton from './LoaderButton';
 import FacebookButton from './FacebookButton';
 
 const styles = theme => ({
-  container: {
-    display: 'flex',
-    flexWrap: 'wrap'
-  },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -30,6 +26,11 @@ const styles = theme => ({
   },
   center: {
     margin: '0 auto'
+  },
+  root: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    padding: '100px 5% 5px 5%'
   }
 });
 
@@ -83,7 +84,7 @@ class Login extends Component {
     const { email, password, isLoading, errorMessage } = this.state;
 
     return (
-      <div className={classes.container}>
+      <div className={classes.root}>
         <List className={classes.center}>
           <ListItem>
             <FacebookButton onLogin={onLogin} className={classes.center} />
