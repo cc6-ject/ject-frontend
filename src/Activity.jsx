@@ -4,9 +4,11 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { Typography, Card, CardContent } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+
 import { API } from 'aws-amplify';
 import Chart from 'chart.js';
 import 'chartjs-plugin-annotation';
+
 import {
   NAME_OF_MONTH,
   NUM_OF_DAYS,
@@ -20,9 +22,6 @@ import { getAxisConfig, getAnnotationConfig } from './lib/chartConfig';
 import './Activity.css';
 
 const styles = theme => ({
-  root: {
-    padding: '100px 5% 5px 5%'
-  },
   button: {
     margin: theme.spacing.unit
   },
@@ -438,12 +437,12 @@ class Activity extends React.Component {
       } else if (view === 'Weeks') {
         this.setState({ selectedDay: null, selectedTime: null });
         this.renderWeeks(data);
+        this.initChart('secondary');
+        this.initChart('thirdly');
       } else {
         this.setState({ selectedDay: null, selectedTime: null });
-        this.renderMonths(data);
-      }
 
-      if (view !== 'Days') {
+        this.renderMonths(data);
         this.initChart('secondary');
         this.initChart('thirdly');
       }
@@ -495,7 +494,7 @@ class Activity extends React.Component {
     } = this.state;
     const { classes } = this.props;
     return (
-      <div className={classes.root}>
+      <div className="activity">
         <Button
           variant="contained"
           className={classes.button}
