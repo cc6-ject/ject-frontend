@@ -32,7 +32,8 @@ const styles = {
     padding: '100px 5% 5px 5%'
   },
   center: {
-    textAlign: 'center'
+    textAlign: 'center',
+    height: 500
   }
 };
 
@@ -203,6 +204,8 @@ class ProjectionMenu extends React.Component {
     // Do something with streaming PCM data
     processor.onaudioprocess = function() {
       const array = new Uint8Array(analyser.frequencyBinCount);
+      // analyser.getFloatFrequencyData(array);
+      // console.log(array);
       analyser.getByteFrequencyData(array);
       average = getAverageVolume(array);
     };
