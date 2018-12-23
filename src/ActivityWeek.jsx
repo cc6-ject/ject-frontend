@@ -130,7 +130,6 @@ class ActivityWeek extends React.Component {
         : TTData;
 
     const { result, scale } = makeWeekScale(data, sat, sun, activity);
-    console.log(result, scale);
 
     this.drawChart(scale, result, 'bar', 'weekly');
   };
@@ -271,7 +270,6 @@ class ActivityWeek extends React.Component {
         date = sun.date + _index - NUM_OF_DAYS[sun.month];
       }
     }
-    console.log(_index, data);
     onHandleDate(year, month, date);
   };
 
