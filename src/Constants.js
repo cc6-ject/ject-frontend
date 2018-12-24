@@ -82,7 +82,7 @@ export const descriptions = {
       karaokeStill,
       'Beyond the normal public speaker!',
       'With a random topic and 5 images, think on your feet and keep talking for a few minutes.',
-      '1. Click START',
+      '1. Click START button.',
       '2. Wait for a few seconds.',
       '3. See a random topic and remember it.',
       '4. Keep talking about the topic until the time is up.',
