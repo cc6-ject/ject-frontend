@@ -149,6 +149,7 @@ class ProjectionMenu extends React.Component {
   }
 
   componentWillUnmount() {
+    if (!audioContext) return;
     if (audioContext.state !== 'closed') {
       this.handleClose();
     }
