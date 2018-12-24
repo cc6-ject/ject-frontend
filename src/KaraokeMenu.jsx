@@ -6,14 +6,17 @@ import {
   Button,
   Typography,
   List,
-  ListItem
+  ListItem,
+  IconButton
 } from '@material-ui/core';
+import { Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { API, Auth } from 'aws-amplify';
 import config from './config';
 import { play as playSound, APPLAUSE, TICK } from './lib/sound';
 import { getRandomCompliment, randomKaraokeTitle, views } from './Constants';
+import Description from './Description';
 import AudioTool from './lib/AudioTool';
 
 const KARAOKE_STATE = {
@@ -58,7 +61,8 @@ const styles = {
   },
   cardContent: {
     height: 700,
-    padding: 50
+    padding: 20,
+    justifyContent: 'space-between'
   },
   talkingImage: {
     borderRadius: 10
@@ -87,7 +91,8 @@ class KaraokeMenu extends Component {
       // stringPerMin: [],
       karaokeState: KARAOKE_STATE.IDLE,
       isLoading: false,
-      compliment: ''
+      compliment: '',
+      descriptionOpen: true
     };
 
     this.stepIndex = 0;
@@ -299,6 +304,18 @@ class KaraokeMenu extends Component {
     });
   };
 
+  handleDescriptionOpen = () => {
+    this.setState({
+      descriptionOpen: true
+    });
+  };
+
+  handleDescriptionClose = () => {
+    this.setState({
+      descriptionOpen: false
+    });
+  };
+
   renderIdle() {
     const { isLoading } = this.state;
     const { classes } = this.props;
@@ -412,7 +429,7 @@ class KaraokeMenu extends Component {
   }
 
   render() {
-    const { karaokeState } = this.state;
+    const { karaokeState, descriptionOpen } = this.state;
     const { classes } = this.props;
 
     return (
@@ -421,6 +438,7 @@ class KaraokeMenu extends Component {
           <CardContent
             className={classNames(classes.flexCenter, classes.cardContent)}
           >
+            <div />
             {karaokeState === KARAOKE_STATE.IDLE
               ? this.renderIdle()
               : karaokeState === KARAOKE_STATE.STARTING
@@ -430,8 +448,18 @@ class KaraokeMenu extends Component {
               : karaokeState === KARAOKE_STATE.COMPLETE
               ? this.renderComplete()
               : null}
+            <div>
+              <IconButton>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
           </CardContent>
         </Card>
+        <Description
+          open={descriptionOpen}
+          onClose={this.handleDescriptionClose}
+          viewTitle={views.karaoke.TITLE}
+        />
       </div>
     );
   }

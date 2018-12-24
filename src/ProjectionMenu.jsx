@@ -1,6 +1,7 @@
 import React from 'react';
+import { Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { Card, CardContent, Typography } from '@material-ui/core';
+import { Card, CardContent, IconButton, Typography } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
 import classNames from 'classnames';
@@ -8,6 +9,8 @@ import classNames from 'classnames';
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
+import Description from './Description';
+import { views } from './Constants';
 
 let audioContext;
 let analyser;
@@ -33,6 +36,15 @@ const styles = {
   root: {
     padding: '100px 5% 5px 5%'
   },
+  center: {
+    textAlign: 'center'
+  },
+  cardContent: {
+    display: 'flex',
+    padding: 20,
+    justifyContent: 'space-between',
+    height: '100%'
+  },
   card: {
     textAlign: 'center',
     margin: 5,
@@ -40,9 +52,6 @@ const styles = {
   },
   cardPhone: {
     height: window.innerHeight * 0.6
-  },
-  cardContent: {
-    height: '100%'
   },
   wrapper: {
     width: '100%',
@@ -60,6 +69,7 @@ class ProjectionMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      descriptionOpen: true,
       isListen: false,
       isFinish: false,
       intervalAudioId: null,
@@ -154,6 +164,18 @@ class ProjectionMenu extends React.Component {
       this.handleClose();
     }
   }
+
+  handleDescriptionOpen = () => {
+    this.setState({
+      descriptionOpen: true
+    });
+  };
+
+  handleDescriptionClose = () => {
+    this.setState({
+      descriptionOpen: false
+    });
+  };
 
   handleWindowResize = () => {
     const isPhone = window.innerWidth < 768;
@@ -430,6 +452,7 @@ class ProjectionMenu extends React.Component {
       avgDecibels,
       lineChartData,
       lineChartOptions,
+      descriptionOpen,
       isPhone,
       shouldRedraw
     } = this.state;
@@ -443,37 +466,50 @@ class ProjectionMenu extends React.Component {
           )}
         >
           <CardContent className={classes.cardContent}>
-            <Typography
-              className={classes.title}
-              variant={isPhone ? 'subtitle1' : 'h5'}
-              gutterBottom
-              color="primary"
-            >
-              {'Real-Time dB Chart'}
-            </Typography>
-            <div
-              className={classNames(
-                classes.wrapper,
-                isPhone ? classes.wrapperPhone : null
-              )}
-            >
-              <Line
-                data={lineChartData}
-                options={lineChartOptions}
-                className={classes.line}
-                redraw={shouldRedraw}
+            <div />
+            <div style={{ flexGrow: 2, padding: 20 }}>
+              <Typography
+                className={classes.title}
+                variant={isPhone ? 'subtitle1' : 'h5'}
+                gutterBottom
+                color="primary"
+              >
+                {'Real-Time dB Chart'}
+              </Typography>
+              <div
+                className={classNames(
+                  classes.wrapper,
+                  isPhone ? classes.wrapperPhone : null
+                )}
+              >
+                <Line
+                  data={lineChartData}
+                  options={lineChartOptions}
+                  className={classes.line}
+                  redraw={shouldRedraw}
+                />
+              </div>
+              <ProjectionToggle
+                isListen={isListen}
+                isFinish={isFinish}
+                avgDecibels={avgDecibels}
+                handleClick={this.handleClick}
+                handleClose={this.handleClose}
+                isPhone={isPhone}
               />
             </div>
-            <ProjectionToggle
-              isListen={isListen}
-              isFinish={isFinish}
-              avgDecibels={avgDecibels}
-              handleClick={this.handleClick}
-              handleClose={this.handleClose}
-              isPhone={isPhone}
-            />
+            <div>
+              <IconButton>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
           </CardContent>
         </Card>
+        <Description
+          open={descriptionOpen}
+          onClose={this.handleDescriptionClose}
+          viewTitle={views.projection.TITLE}
+        />
       </div>
     );
   }
