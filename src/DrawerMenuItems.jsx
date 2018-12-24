@@ -15,7 +15,9 @@ import {
   TrendingUp,
   Replay5
 } from '@material-ui/icons';
+import classNames from 'classnames';
 import { views, LOGO } from './Constants';
+// import './DrawerMenuItems.css';
 
 const styles = () => ({
   logoDiv: {
@@ -25,7 +27,8 @@ const styles = () => ({
   },
   logoText: {
     padding: '0 24px',
-    fontWeight: 1000
+    fontWeight: 1000,
+    color: 'white'
   },
   logo: {
     width: '50px',
@@ -42,6 +45,7 @@ const styles = () => ({
   item: {
     padding: '0 24px',
     fontWeight: 500,
+    color: 'white',
     '& svg': {
       fontSize: 20
     }
@@ -64,7 +68,10 @@ class DrawerMenuItems extends React.Component {
               <ListItemIcon className={classes.itemIcon}>
                 <img src={LOGO} alt="logo" className={classes.logo} />
               </ListItemIcon>
-              <Typography className={classes.logoText} variant="h6">
+              <Typography
+                className={classNames(classes.logoText, 'drawerText')}
+                variant="h6"
+              >
                 JECT
               </Typography>
             </div>
@@ -101,7 +108,7 @@ class DrawerMenuItems extends React.Component {
                     )}
                   </ListItemIcon>
                   <ListItemText
-                    className={classes.item}
+                    className={classNames(classes.item, 'drawerText')}
                     primary={views[key].TITLE}
                   />
                 </div>
