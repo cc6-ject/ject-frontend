@@ -1,51 +1,47 @@
-.primaryChartWrapper {
+.weeklyChartWrapper {
   position: relative;
 }
 
-.primaryChartWrapper > canvas {
+.weeklyChartWrapper > canvas {
   position: absolute;
   left: 0;
   top: 0;
   pointer-events: none;
 }
 
-.primaryChartAreaWrapper {
-  width: 200%;
-  height: 300px;
+.weeklyChartAreaWrapper {
+  width: 100%;
   overflow-x: scroll;
 }
 
-.secondaryChartWrapper {
+.dailyChartWrapper {
   position: relative;
 }
 
-.secondaryChartWrapper > canvas {
+.dailyChartWrapper > canvas {
   position: absolute;
   left: 0;
   top: 0;
   pointer-events: none;
 }
-.secondaryChartAreaWrapper {
+
+.dailyChartAreaWrapper {
   width: 200%;
-  height: 300px;
   overflow-x: scroll;
 }
 
-.thirdlyChartWrapper {
+.sessionChartWrapper {
   position: relative;
 }
 
-.thirdlyChartWrapper > canvas {
+.sessionChartWrapper > canvas {
   position: absolute;
   left: 0;
   top: 0;
   pointer-events: none;
 }
-.thirdlyChartAreaWrapper {
+
+.sessionChartAreaWrapper {
   width: 200%;
-  height: 300px;
   overflow-x: scroll;
-}
-.title {
-  text-align: center;
 }

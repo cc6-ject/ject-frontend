@@ -25,12 +25,13 @@ class ProjectionToggle extends React.Component {
       isListen,
       avgDecibels,
       handleClick,
-      handleClose
+      handleClose,
+      isPhone
     } = this.props;
     return (
       <div className="ProjectionToggle">
         {isFinish ? (
-          <Typography variant="h5" gutterBottom>
+          <Typography variant={isPhone ? 'subtitle1' : 'h5'} gutterBottom>
             AVG dB {avgDecibels[avgDecibels.length - 1]}
           </Typography>
         ) : (
