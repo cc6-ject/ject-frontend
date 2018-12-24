@@ -53,12 +53,18 @@ const styles = theme => ({
     justifyContent: 'spaceBetween'
   }
 });
-const SpeechRecognition = window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = 'en-US';
-recognition.maxAlternatives = 1;
-recognition.continous = true;
-recognition.interimResults = true;
+
+const SpeechRecognition =
+  window.webkitSpeechRecognition || window.SpeechRecognition;
+
+let recognition;
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.maxAlternatives = 1;
+  // recognition.continuous = true;
+  recognition.interimResults = true;
+}
 
 let transcript = '';
 
