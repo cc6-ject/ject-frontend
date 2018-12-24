@@ -84,10 +84,11 @@ class TongueTwisterPractice extends Component {
     });
     try {
       const data = await Auth.currentAuthenticatedUser();
-      console.log(data);
-      await this.setState({
-        username: data.username
-      });
+      if (data.id) {
+        await this.setState({ username: data.id });
+      } else if (data.username) {
+        await this.setState({ username: data.username });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -121,7 +122,7 @@ class TongueTwisterPractice extends Component {
           .map(result => result.transcript)
           .join('');
         const temp = processScript.slice(startIndex, updateLength);
-        console.log('ON RESULT', temp);
+        // console.log('ON RESULT', temp);
 
         if (processScript.length > updateLength + 8) {
           if (temp !== target) {
@@ -130,9 +131,9 @@ class TongueTwisterPractice extends Component {
             this.toggleError = true;
             this.setState({ endMessage: 'FAIL WORD = ' });
             this.failAnalysis(target, temp);
-            console.log('FAIL');
+            // console.log('FAIL');
           } else if (temp === target) {
-            console.log('check slice', temp, ' vs ', target);
+            // console.log('check slice', temp, ' vs ', target);
             correct++;
             this.setState({ coverage: correct });
             if (correct >= 10) {
@@ -265,7 +266,7 @@ class TongueTwisterPractice extends Component {
                 <Select
                   value={currentTwister}
                   onChange={this.handleChange}
-                  input={<OutlinedInput />}
+                  input={<OutlinedInput labelWidth={0} />}
                 >
                   <MenuItem value="she sells seashells by the seashore">
                     she sells seashells by the seashore
