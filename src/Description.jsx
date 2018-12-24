@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 
 const Description = ({ open, onClose }) => (
-  <Dialog open={open} scroll="paper">
+  <Dialog open={open} scroll="paper" fullWidth>
     <DialogTitle>Title</DialogTitle>
     <DialogContent>Some description.</DialogContent>
     <DialogActions>
