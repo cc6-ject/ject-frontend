@@ -47,7 +47,8 @@ class AudioTool {
         this.stream = stream;
         this.audioContextAPI = new AudioContext();
         // TODO: do something lower version's browser
-        const SpeechRecognition = window.webkitSpeechRecognition;
+        const SpeechRecognition =
+          window.webkitSpeechRecognition || window.SpeechRecognition;
         this.speechRecognitionAPI = new SpeechRecognition();
         // TODO: language setting
         this.speechRecognitionAPI.lang = 'en-US';
