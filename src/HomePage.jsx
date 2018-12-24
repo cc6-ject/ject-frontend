@@ -19,7 +19,6 @@ const styles = () => ({
   p0: {
     padding: 0
   },
-  gridListTile: {},
   gridTileBar: {
     backgroundColor: '#000000d0',
     transition: 'background-color 1s ease'

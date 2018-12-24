@@ -63,7 +63,7 @@ const color = {
     light: '#4A6572',
     main: '#344955',
     dark: '#344955',
-    contrastText: '#fff'
+    contrastText: '#ffffff'
   },
   secondary: {
     main: '#F9AA33',

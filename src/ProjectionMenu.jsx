@@ -1,9 +1,11 @@
 import React from 'react';
 import { Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { Card, CardContent, IconButton } from '@material-ui/core';
+import { Card, CardContent, IconButton, Typography } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
+import classNames from 'classnames';
+
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
@@ -39,7 +41,26 @@ const styles = {
   cardContent: {
     display: 'flex',
     padding: 20,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    height: '100%'
+  },
+  card: {
+    textAlign: 'center',
+    margin: 5,
+    height: window.innerHeight * 0.8
+  },
+  cardPhone: {
+    height: window.innerHeight * 0.6
+  },
+  wrapper: {
+    width: '100%',
+    height: '70%'
+  },
+  wrapperPhone: {
+    height: '60%'
+  },
+  title: {
+    padding: 10
   }
 };
 
@@ -59,6 +80,8 @@ class ProjectionMenu extends React.Component {
       avgDecibels: [],
       username: '',
       startTime: 0,
+      isPhone: false,
+      shouldRedraw: false,
       lineChartData: {
         labels: [...INIT_CHART_LABEL],
         datasets: [
@@ -82,18 +105,18 @@ class ProjectionMenu extends React.Component {
               gridLines: {
                 display: false
               },
-              ticks: { beginAtZero: true },
-              scaleLabel: { display: true, labelString: 'dB', fontSize: 18 }
+              ticks: {
+                beginAtZero: true,
+                fontSize: 18
+              }
             }
           ],
           xAxes: [
             {
-              barPercentage: 0.7,
               stacked: false,
               gridLines: {
                 display: false
               },
-              barThickness: 15,
               ticks: {
                 callback(value) {
                   return Number.isInteger(value) ? value : '';
@@ -112,16 +135,32 @@ class ProjectionMenu extends React.Component {
   }
 
   async componentDidMount() {
+    window.addEventListener('resize', this.handleWindowResize);
+    this.handleWindowResize();
+
     try {
       const data = await Auth.currentAuthenticatedUser();
-      await this.setState({ username: data.id });
+      if (data.id) {
+        await this.setState({ username: data.id });
+      } else if (data.username) {
+        await this.setState({ username: data.username });
+      }
     } catch (error) {
       console.log(error);
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { isPhone } = this.state;
+    if (isPhone !== prevState.isPhone) {
+      this.handleChartSize();
+    }
+  }
+
   componentWillUnmount() {
-    if (audioContext) this.handleClose();
+    if (audioContext.state !== 'closed') {
+      this.handleClose();
+    }
   }
 
   handleDescriptionOpen = () => {
@@ -134,6 +173,77 @@ class ProjectionMenu extends React.Component {
     this.setState({
       descriptionOpen: false
     });
+  };
+
+  handleWindowResize = () => {
+    const isPhone = window.innerWidth < 768;
+    this.setState({ isPhone });
+  };
+
+  handleChartSize = async () => {
+    const { isPhone } = this.state;
+    const fontSize = isPhone ? 10 : 30;
+    const maxTicksLimit = isPhone ? 10 : 30;
+
+    const lineChartData = {
+      labels: [...INIT_CHART_LABEL],
+      datasets: [
+        {
+          backgroundColor: 'rgba(249, 170, 51, 0)',
+          borderColor: 'rgba(249, 170, 51, 0.8)',
+          data: [...INIT_CHART_DATA]
+        }
+      ]
+    };
+
+    const option = {
+      responsive: true,
+      maintainAspectRatio: false,
+      tooltips: {
+        enabled: true
+      },
+      scales: {
+        yAxes: [
+          {
+            stacked: false,
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              beginAtZero: true,
+              fontSize
+            }
+          }
+        ],
+        xAxes: [
+          {
+            stacked: false,
+            gridLines: {
+              display: false
+            },
+            ticks: {
+              callback(value) {
+                return Number.isInteger(value) ? value : '';
+              },
+              fontSize,
+              autoSkip: true,
+              maxTicksLimit,
+              maxRotation: 0,
+              minRotation: 0
+            },
+            delay: 3000
+          }
+        ]
+      },
+      legend: { display: false },
+      annotation: annotationConfig
+    };
+    this.setState({ shouldRedraw: true });
+    await this.setState({
+      lineChartOptions: option,
+      lineChartData
+    });
+    await this.setState({ shouldRedraw: false });
   };
 
   handleClick = () => {
@@ -250,15 +360,16 @@ class ProjectionMenu extends React.Component {
     };
     recognition.onend = () => {
       const { isListen } = this.state;
-      if (isListen) {
+      if (isListen && audioContext.state !== 'closed') {
         recognition.start();
       }
     };
   };
 
-  handleClose = async () => {
+  handleClose = () => {
     audioContext.close();
     recognition.stop();
+
     const { decibels, startTime, transcripts } = this.state;
 
     const sum = decibels.reduce((total, val) => total + val, 0);
@@ -272,7 +383,7 @@ class ProjectionMenu extends React.Component {
     const { isAuthenticated } = this.props;
     if (isAuthenticated && decibels.length > 1) {
       try {
-        await this.saveToAWS(decibels, avgDecibel, duration, transcripts);
+        this.saveToAWS(decibels, avgDecibel, duration, transcripts);
       } catch (e) {
         console.log(e.message);
       }
@@ -339,23 +450,50 @@ class ProjectionMenu extends React.Component {
       avgDecibels,
       lineChartData,
       lineChartOptions,
-      descriptionOpen
+      descriptionOpen,
+      isPhone,
+      shouldRedraw
     } = this.state;
     const { classes } = this.props;
-
     return (
       <div className={classes.root}>
-        <Card className={classes.center}>
+        <Card
+          className={classNames(
+            classes.card,
+            isPhone ? classes.cardPhone : null
+          )}
+        >
           <CardContent className={classes.cardContent}>
             <div />
             <div style={{ flexGrow: 2, padding: 20 }}>
-              <Line data={lineChartData} options={lineChartOptions} />
+              <Typography
+                className={classes.title}
+                variant={isPhone ? 'subtitle1' : 'h5'}
+                gutterBottom
+                color="primary"
+              >
+                {'Real-Time dB Chart'}
+              </Typography>
+              <div
+                className={classNames(
+                  classes.wrapper,
+                  isPhone ? classes.wrapperPhone : null
+                )}
+              >
+                <Line
+                  data={lineChartData}
+                  options={lineChartOptions}
+                  className={classes.line}
+                  redraw={shouldRedraw}
+                />
+              </div>
               <ProjectionToggle
                 isListen={isListen}
                 isFinish={isFinish}
                 avgDecibels={avgDecibels}
                 handleClick={this.handleClick}
                 handleClose={this.handleClose}
+                isPhone={isPhone}
               />
             </div>
             <div>
