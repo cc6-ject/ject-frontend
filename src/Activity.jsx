@@ -94,8 +94,7 @@ class Activity extends React.Component {
   handleActivityClose = async event => {
     const menuItem = event.currentTarget.textContent;
     if (!menuItem) return;
-    await this.setState({ activity: menuItem });
-    await this.setState({ activityAnchorEl: null });
+    await this.setState({ activity: menuItem, activityAnchorEl: null });
   };
 
   onHandleDate = (selectedYear, selectedMonth, selectedDate) => {
