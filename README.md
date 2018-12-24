@@ -14,10 +14,9 @@ JECT is a web application for public speaking training.
 - [Features](#Features)
 - [Demo Page](#Demo-Page)
 - [Setup](#Setup)
-  - [Get some API keys](#Get-some-API-keys)
-  - [Installation](#Installation)
 - [How it works](#How-it-works)
 - [Links](#links)
+- [Team JECT](#Team-JECT)
 
 ## Features
 
@@ -103,9 +102,9 @@ yarn start
 - [MATERIAL-UI](https://material-ui.com/)
 - [MDN](https://developer.mozilla.org/en-US/)
 
-### Created by Team JECT
+## Team JECT
 
-##### Follow us on Github:
+### Follow us on Github:
 
 - [daenamkim](https://github.com/daenamkim)
 - [egurinko](https://github.com/egurinko)
