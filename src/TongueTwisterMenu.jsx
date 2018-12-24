@@ -6,16 +6,21 @@ import {
   Paper,
   Fab,
   Card,
+  CardContent,
   FormControl,
   MenuItem,
   Select,
-  OutlinedInput
+  OutlinedInput,
+  IconButton
 } from '@material-ui/core';
+import { Info } from '@material-ui/icons';
 import {
   randomTongueTwister,
   targetLength,
   checkFailure
 } from './TongueTwisterFiles';
+import Description from './Description';
+import { views } from './Constants';
 
 const styles = theme => ({
   root: {
@@ -42,9 +47,10 @@ const styles = theme => ({
     color: theme.palette.text.secondary,
     width: 200
   },
-  card: {
-    paddingTop: 50,
-    height: 400
+  cardContent: {
+    display: 'flex',
+    padding: 20,
+    justifyContent: 'spaceBetween'
   }
 });
 const SpeechRecognition = window.webkitSpeechRecognition;
@@ -67,7 +73,8 @@ class TongueTwisterPractice extends Component {
       failWord: '',
       username: null,
       endMessage: '',
-      openMenu: false
+      openMenu: false,
+      descriptionOpen: true
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
@@ -97,6 +104,18 @@ class TongueTwisterPractice extends Component {
   componentWillUnmount() {
     this.handleClose();
   }
+
+  handleDescriptionOpen = () => {
+    this.setState({
+      descriptionOpen: true
+    });
+  };
+
+  handleDescriptionClose = () => {
+    this.setState({
+      descriptionOpen: false
+    });
+  };
 
   handleChange = event => {
     this.setState({ currentTwister: event.target.value });
@@ -248,84 +267,95 @@ class TongueTwisterPractice extends Component {
       currentTwister,
       coverage,
       endMessage,
-      failWord
-      // listening
+      failWord,
+      descriptionOpen
     } = this.state;
     return (
       <div className={classes.root}>
         <Card className={classes.card}>
-          <Grid
-            container
-            direction="column"
-            justify="center"
-            alignItems="center"
-            spacing={24}
-          >
-            <Grid item xs>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <Select
-                  value={currentTwister}
-                  onChange={this.handleChange}
-                  input={<OutlinedInput labelWidth={0} />}
+          <CardContent className={classes.cardContent}>
+            <div />
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              spacing={24}
+            >
+              <Grid item xs>
+                <FormControl variant="outlined" className={classes.formControl}>
+                  <Select
+                    value={currentTwister}
+                    onChange={this.handleChange}
+                    input={<OutlinedInput labelWidth={0} />}
+                  >
+                    <MenuItem value="she sells seashells by the seashore">
+                      she sells seashells by the seashore
+                    </MenuItem>
+                    <MenuItem value="red lorry yellow lorry">
+                      red lorry yellow lorry
+                    </MenuItem>
+                    <MenuItem value="unique New York">unique New York</MenuItem>
+                    <MenuItem value="mixed biscuits">mixed biscuits</MenuItem>
+                    <MenuItem value="a proper copper coffee pot">
+                      a proper copper coffee pot
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              {!this.listening ? (
+                <Fab
+                  color="secondary"
+                  className={classes.fab}
+                  onClick={
+                    statusMessage === 'Start' || statusMessage === 'End'
+                      ? this.toggleListen
+                      : this.handleClose
+                  }
                 >
-                  <MenuItem value="she sells seashells by the seashore">
-                    she sells seashells by the seashore
-                  </MenuItem>
-                  <MenuItem value="red lorry yellow lorry">
-                    red lorry yellow lorry
-                  </MenuItem>
-                  <MenuItem value="unique New York">unique New York</MenuItem>
-                  <MenuItem value="mixed biscuits">mixed biscuits</MenuItem>
-                  <MenuItem value="a proper copper coffee pot">
-                    a proper copper coffee pot
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {!this.listening ? (
-              <Fab
-                color="secondary"
-                className={classes.fab}
-                onClick={
-                  statusMessage === 'Start' || statusMessage === 'End'
-                    ? this.toggleListen
-                    : this.handleClose
-                }
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                  <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
-                </svg>
-              </Fab>
-            ) : (
-              <Fab color="secondary" className={classes.fab}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
-                </svg>
-              </Fab>
-            )}
-            <p>{statusMessage}</p>
-            <Grid item xs>
-              <Paper className={classes.paper}>
-                {coverage === 0 ? 0 : coverage < 10 ? coverage : 10}
-                {this.outOf}
-              </Paper>
-            </Grid>
-            <Grid item xs>
-              {this.toggleError ? (
+                  <svg width="24" height="24" viewBox="0 0 24 24">
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
+                  </svg>
+                </Fab>
+              ) : (
+                <Fab color="secondary" className={classes.fab}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8 0-1.85.63-3.55 1.69-4.9L16.9 18.31C15.55 19.37 13.85 20 12 20zm6.31-3.1L7.1 5.69C8.45 4.63 10.15 4 12 4c4.42 0 8 3.58 8 8 0 1.85-.63 3.55-1.69 4.9z" />
+                  </svg>
+                </Fab>
+              )}
+              <p>{statusMessage}</p>
+              <Grid item xs>
                 <Paper className={classes.paper}>
-                  {this.toggleError ? endMessage + failWord : null}
+                  {coverage === 0 ? 0 : coverage < 10 ? coverage : 10}
+                  {this.outOf}
                 </Paper>
-              ) : null}
+              </Grid>
+              <Grid item xs>
+                {this.toggleError ? (
+                  <Paper className={classes.paper}>
+                    {this.toggleError ? endMessage + failWord : null}
+                  </Paper>
+                ) : null}
+              </Grid>
             </Grid>
-          </Grid>
+            <div>
+              <IconButton>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
+          </CardContent>
         </Card>
-        {/* </Fab> */}
+        <Description
+          open={descriptionOpen}
+          onClose={this.handleDescriptionClose}
+          viewTitle={views.tongueTwister.TITLE}
+        />
       </div>
     );
   }
