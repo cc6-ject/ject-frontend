@@ -45,7 +45,7 @@ const styles = {
   },
   flexCenter: {
     display: 'flex',
-    justifyContent: 'space-between'
+    justifyContent: 'center'
   },
   mt50: {
     marginTop: 50
@@ -62,7 +62,7 @@ const styles = {
   cardContent: {
     height: 700,
     padding: 20,
-    justifyContent: 'spaceBetween'
+    justifyContent: 'space-between'
   },
   talkingImage: {
     borderRadius: 10

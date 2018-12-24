@@ -1,11 +1,13 @@
 import React from 'react';
+import { Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { Card, CardContent } from '@material-ui/core';
+import { Card, CardContent, IconButton } from '@material-ui/core';
 import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
 import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
+import Description from './Description';
 
 let audioContext;
 let analyser;
@@ -33,6 +35,11 @@ const styles = {
   },
   center: {
     textAlign: 'center'
+  },
+  cardContent: {
+    display: 'flex',
+    padding: 20,
+    justifyContent: 'space-between'
   }
 };
 
@@ -40,6 +47,7 @@ class ProjectionMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      descriptionOpen: false,
       isListen: false,
       isFinish: false,
       intervalAudioId: null,
@@ -115,6 +123,18 @@ class ProjectionMenu extends React.Component {
   componentWillUnmount() {
     if (audioContext) this.handleClose();
   }
+
+  handleDescriptionOpen = () => {
+    this.setState({
+      descriptionOpen: true
+    });
+  };
+
+  handleDescriptionClose = () => {
+    this.setState({
+      descriptionOpen: false
+    });
+  };
 
   handleClick = () => {
     const startTime = performance.now();
@@ -318,24 +338,37 @@ class ProjectionMenu extends React.Component {
       isListen,
       avgDecibels,
       lineChartData,
-      lineChartOptions
+      lineChartOptions,
+      descriptionOpen
     } = this.state;
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <Card className={classes.center}>
-          <CardContent>
-            <Line data={lineChartData} options={lineChartOptions} />
-            <ProjectionToggle
-              isListen={isListen}
-              isFinish={isFinish}
-              avgDecibels={avgDecibels}
-              handleClick={this.handleClick}
-              handleClose={this.handleClose}
-            />
+          <CardContent className={classes.cardContent}>
+            <div />
+            <div style={{ flexGrow: 2, padding: 20 }}>
+              <Line data={lineChartData} options={lineChartOptions} />
+              <ProjectionToggle
+                isListen={isListen}
+                isFinish={isFinish}
+                avgDecibels={avgDecibels}
+                handleClick={this.handleClick}
+                handleClose={this.handleClose}
+              />
+            </div>
+            <div>
+              <IconButton>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
           </CardContent>
         </Card>
+        <Description
+          open={descriptionOpen}
+          onClose={this.handleDescriptionClose}
+        />
       </div>
     );
   }
