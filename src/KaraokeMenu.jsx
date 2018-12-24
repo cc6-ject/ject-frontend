@@ -72,12 +72,6 @@ const styles = {
   }
 };
 
-const SpeechRecognition = window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = 'en-US';
-// recognition.continuous = true;
-recognition.interimResults = true;
-
 class KaraokeMenu extends Component {
   constructor(props) {
     super(props);
@@ -108,9 +102,14 @@ class KaraokeMenu extends Component {
       console.log(error);
     }
 
-    this.audioTool.openAudio(() => {
-      console.log('Audio was opened.');
-    });
+    this.audioTool.openAudio(
+      () => {
+        console.log('Audio was opened.');
+      },
+      () => {
+        console.log('Audio was not opened.');
+      }
+    );
     await this.initialize();
   }
 
