@@ -59,9 +59,9 @@ export const descriptions = {
     CONTENTS: [
       projectionStill,
       'Improve your projection skill!',
-      '1. Click MIC button',
-      "2. Say something while looking dB level. Once you projection's dB is over Proper Level, try to keep it up.",
-      "* Ject doesn't record any of your saying."
+      '1. Click MIC button.',
+      '2. Practice speaking while looking at the dB level. Once your voice is over the Proper Level, try to keep it up.',
+      "* Ject doesn't record any of your speech."
     ]
   },
   'Tongue Twister': {
@@ -69,11 +69,11 @@ export const descriptions = {
     CONTENTS: [
       tongueTwisterStill,
       'Your tongue will work better ever!',
-      '1. Select an item you want to practice from the list',
-      '2. Click MIC button then status will be changed to Listening!',
+      '1. Select an item you want to practice from the list.',
+      '2. Click MIC button then the status will change to Listening!',
       '3. Say it CLEARLY as much as you can.',
-      '4. You can see your coverage like 0 out of 10',
-      "* Ject doesn't record any of your saying."
+      '4. You can see your coverage like 0 out of 10.',
+      "* Ject doesn't record any of your speech."
     ]
   },
   Karaoke: {
@@ -81,12 +81,12 @@ export const descriptions = {
     CONTENTS: [
       karaokeStill,
       'Beyond the normal public speaker!',
-      'With a random topic and 5 images, you should keep talking whatever you think because you just have a few minute only.',
+      'With a random topic and 5 images, think on your feet and keep talking for a few minutes.',
       '1. Click START',
-      '2. Wait for a few seconds',
-      '3. See a random topic and remember that',
-      '4. Start to say something until time is up',
-      "* Ject doesn't record any of your saying."
+      '2. Wait for a few seconds.',
+      '3. See a random topic and remember it.',
+      '4. Keep talking about the topic until the time is up.',
+      "* Ject doesn't record any of your speech."
     ]
   }
 };
