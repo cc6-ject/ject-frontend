@@ -1,5 +1,12 @@
 import React, { Component } from 'react';
-import { Typography } from '@material-ui/core';
+import {
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button
+} from '@material-ui/core';
 import { Auth } from 'aws-amplify';
 import Navbar from './Navbar';
 import HomePage from './HomePage';
@@ -19,7 +26,9 @@ class App extends Component {
     this.state = {
       currentView: views.home.TITLE,
       isAuthenticated: false,
-      isAuthenticating: false
+      isAuthenticating: false,
+      disableAll: !(window.webkitSpeechRecognition || window.SpeechRecognition),
+      dialogOpen: !(window.webkitSpeechRecognition || window.SpeechRecognition)
     };
   }
 
@@ -54,13 +63,26 @@ class App extends Component {
     });
   };
 
+  handleDialogClose = () => {
+    this.setState({
+      dialogOpen: false
+    });
+  };
+
   render() {
-    const { currentView, isAuthenticated, isAuthenticating } = this.state;
+    const {
+      currentView,
+      isAuthenticated,
+      isAuthenticating,
+      disableAll,
+      dialogOpen
+    } = this.state;
 
     return (
       <div className="app">
         <div className="app--header">
           <Navbar
+            disabled={disableAll}
             switchView={this.handleViewSwitch}
             currentView={currentView}
             isAuthenticated={isAuthenticated}
@@ -71,7 +93,10 @@ class App extends Component {
         <div className="app--content">
           {/* TODO: React Router DOM */}
           {currentView === views.home.TITLE ? (
-            <HomePage switchView={this.handleViewSwitch} />
+            <HomePage
+              disabled={disableAll}
+              switchView={this.handleViewSwitch}
+            />
           ) : currentView === views.projection.TITLE ? (
             <ProjectionMenu
               isAuthenticated={isAuthenticated}
@@ -123,6 +148,20 @@ class App extends Component {
             </Typography>
           </div>
         </div>
+        <Dialog
+          open={dialogOpen}
+          scroll="paper"
+          fullWidth
+          onClick={this.handleDialogClose}
+        >
+          <DialogTitle>Does Not Support This Browser</DialogTitle>
+          <DialogContent>Please use the latest Chrome browser.</DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDialogClose} color="primary">
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }
