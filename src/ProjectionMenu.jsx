@@ -68,7 +68,7 @@ class ProjectionMenu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      descriptionOpen: false,
+      descriptionOpen: true,
       isListen: false,
       isFinish: false,
       intervalAudioId: null,
