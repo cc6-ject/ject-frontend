@@ -21,6 +21,9 @@ const styles = () => ({
   },
   card: {
     margin: 20
+  },
+  title: {
+    textAlign: 'center'
   }
 });
 
@@ -269,7 +272,10 @@ class ActivityWeek extends React.Component {
         month = sun.month + 1;
         date = sun.date + _index - NUM_OF_DAYS[sun.month];
       }
+    } else {
+      date = sun.date + _index;
     }
+
     onHandleDate(year, month, date);
   };
 

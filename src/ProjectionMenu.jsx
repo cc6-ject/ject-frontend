@@ -149,7 +149,9 @@ class ProjectionMenu extends React.Component {
   }
 
   componentWillUnmount() {
-    if (audioContext) this.handleClose();
+    if (audioContext.state !== 'closed') {
+      this.handleClose();
+    }
   }
 
   handleWindowResize = () => {
@@ -337,15 +339,16 @@ class ProjectionMenu extends React.Component {
     };
     recognition.onend = () => {
       const { isListen } = this.state;
-      if (isListen) {
+      if (isListen && audioContext.state !== 'closed') {
         recognition.start();
       }
     };
   };
 
-  handleClose = async () => {
+  handleClose = () => {
     audioContext.close();
     recognition.stop();
+
     const { decibels, startTime, transcripts } = this.state;
 
     const sum = decibels.reduce((total, val) => total + val, 0);
@@ -359,7 +362,7 @@ class ProjectionMenu extends React.Component {
     const { isAuthenticated } = this.props;
     if (isAuthenticated && decibels.length > 1) {
       try {
-        await this.saveToAWS(decibels, avgDecibel, duration, transcripts);
+        this.saveToAWS(decibels, avgDecibel, duration, transcripts);
       } catch (e) {
         console.log(e.message);
       }
