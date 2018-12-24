@@ -10,6 +10,7 @@ import getAverageVolume from './lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
 import { getAnnotationConfig } from './lib/chartConfig';
 import Description from './Description';
+import { views } from './Constants';
 
 let audioContext;
 let analyser;
@@ -507,6 +508,7 @@ class ProjectionMenu extends React.Component {
         <Description
           open={descriptionOpen}
           onClose={this.handleDescriptionClose}
+          viewTitle={views.projection.TITLE}
         />
       </div>
     );

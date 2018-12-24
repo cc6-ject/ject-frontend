@@ -53,6 +53,44 @@ export const views = {
   }
 };
 
+export const descriptions = {
+  Projection: {
+    TITLE: 'Projection',
+    CONTENTS: [
+      projectionStill,
+      'Improve your projection skill!',
+      '1. Click MIC button',
+      "2. Say something while looking dB level. Once you projection's dB is over Proper Level, try to keep it up.",
+      "* Ject doesn't record any of your saying."
+    ]
+  },
+  'Tongue Twister': {
+    TITLE: 'Tongue Twister',
+    CONTENTS: [
+      tongueTwisterStill,
+      'Your tongue will work better ever!',
+      '1. Select an item you want to practice from the list',
+      '2. Click MIC button then status will be changed to Listening!',
+      '3. Say it CLEARLY as much as you can.',
+      '4. You can see your coverage like 0 out of 10',
+      "* Ject doesn't record any of your saying."
+    ]
+  },
+  Karaoke: {
+    TITLE: 'Karaoke',
+    CONTENTS: [
+      karaokeStill,
+      'Beyond the normal public speaker!',
+      'With a random topic and 5 images, you should keep talking whatever you think because you just have a few minute only.',
+      '1. Click START',
+      '2. Wait for a few seconds',
+      '3. See a random topic and remember that',
+      '4. Start to say something until time is up',
+      "* Ject doesn't record any of your saying."
+    ]
+  }
+};
+
 const randomCompliments = [
   'Yay! You did a good job!',
   'You are awesome!',

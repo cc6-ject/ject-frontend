@@ -458,6 +458,7 @@ class KaraokeMenu extends Component {
         <Description
           open={descriptionOpen}
           onClose={this.handleDescriptionClose}
+          viewTitle={views.karaoke.TITLE}
         />
       </div>
     );

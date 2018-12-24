@@ -84,10 +84,11 @@ class HomePage extends Component {
     const { imagePlays } = this.state;
 
     return (
-      <div className={classes.root} style={{ style: '100%' }}>
+      <div className={classes.root}>
         {tileData.map((tile, index) => (
-          <Grid xs={12} md={6}>
-            <GridListTile key={index}>
+          <Grid xs={12} md={6} key={index}>
+            {/* TODO: Resolve warning. */}
+            <GridListTile>
               <Button
                 className={classNames(classes.p0, classes.w100)}
                 onClick={() => {

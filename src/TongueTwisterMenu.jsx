@@ -20,6 +20,7 @@ import {
   checkFailure
 } from './TongueTwisterFiles';
 import Description from './Description';
+import { views } from './Constants';
 
 const styles = theme => ({
   root: {
@@ -339,6 +340,7 @@ class TongueTwisterPractice extends Component {
         <Description
           open={descriptionOpen}
           onClose={this.handleDescriptionClose}
+          viewTitle={views.tongueTwister.TITLE}
         />
       </div>
     );
