@@ -71,6 +71,7 @@ class TongueTwisterPractice extends Component {
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
     this.repCount = 0;
     this.wrongResult = '';
     this.toggleError = false;
@@ -83,13 +84,18 @@ class TongueTwisterPractice extends Component {
     });
     try {
       const data = await Auth.currentAuthenticatedUser();
-      console.log(data);
-      await this.setState({
-        username: data.username
-      });
+      if (data.id) {
+        await this.setState({ username: data.id });
+      } else if (data.username) {
+        await this.setState({ username: data.username });
+      }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  componentWillUnmount() {
+    this.handleClose();
   }
 
   handleChange = event => {
@@ -116,7 +122,7 @@ class TongueTwisterPractice extends Component {
           .map(result => result.transcript)
           .join('');
         const temp = processScript.slice(startIndex, updateLength);
-        console.log('ON RESULT', temp);
+        // console.log('ON RESULT', temp);
 
         if (processScript.length > updateLength + 8) {
           if (temp !== target) {
@@ -125,9 +131,9 @@ class TongueTwisterPractice extends Component {
             this.toggleError = true;
             this.setState({ endMessage: 'FAIL WORD = ' });
             this.failAnalysis(target, temp);
-            console.log('FAIL');
+            // console.log('FAIL');
           } else if (temp === target) {
-            console.log('check slice', temp, ' vs ', target);
+            // console.log('check slice', temp, ' vs ', target);
             correct++;
             this.setState({ coverage: correct });
             if (correct >= 10) {
@@ -184,10 +190,11 @@ class TongueTwisterPractice extends Component {
   finishedPractice() {
     console.log('finishedPractice');
     const { currentTwister, coverage, failWord, username } = this.state;
+    const percentage = coverage * 10;
     API.post('ject', '/tongueTwister', {
       body: {
         name: currentTwister,
-        coverage,
+        percentage,
         failWords: JSON.stringify(failWord)
       },
       requestContext: {
@@ -224,9 +231,13 @@ class TongueTwisterPractice extends Component {
     this.toggleError = false;
     this.setState(
       {
-        listening: !listening
+        listening: true
       },
-      this.handleListen
+      () => {
+        if (listening) {
+          this.handleListen();
+        }
+      }
     );
   }
 
@@ -238,6 +249,7 @@ class TongueTwisterPractice extends Component {
       coverage,
       endMessage,
       failWord
+      // listening
     } = this.state;
     return (
       <div className={classes.root}>
@@ -254,7 +266,7 @@ class TongueTwisterPractice extends Component {
                 <Select
                   value={currentTwister}
                   onChange={this.handleChange}
-                  input={<OutlinedInput />}
+                  input={<OutlinedInput labelWidth={0} />}
                 >
                   <MenuItem value="she sells seashells by the seashore">
                     she sells seashells by the seashore
@@ -275,7 +287,11 @@ class TongueTwisterPractice extends Component {
               <Fab
                 color="secondary"
                 className={classes.fab}
-                onClick={this.toggleListen}
+                onClick={
+                  statusMessage === 'Start' || statusMessage === 'End'
+                    ? this.toggleListen
+                    : this.handleClose
+                }
               >
                 <svg width="24" height="24" viewBox="0 0 24 24">
                   <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z" />
