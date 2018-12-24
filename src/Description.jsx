@@ -3,17 +3,27 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  // DialogContentText,
   DialogTitle,
   Button,
   Typography,
   Slide
 } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 import { descriptions } from './Constants';
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
+
+const styles = {
+  br10: {
+    borderRadius: 10
+  },
+  w100: {
+    width: '100%'
+  }
+};
 
 class Description extends Component {
   constructor(props) {
@@ -36,7 +46,7 @@ class Description extends Component {
   };
 
   render() {
-    const { open, onClose, viewTitle } = this.props;
+    const { open, onClose, viewTitle, classes } = this.props;
     const { isPhone } = this.state;
 
     return (
@@ -58,26 +68,20 @@ class Description extends Component {
                   : index === descriptions[viewTitle].CONTENTS.length - 1
                   ? 'overline'
                   : 'subtitle1';
-
-              if (index < 1) {
-                return (
-                  <div style={{ width: '100%' }}>
+              return (
+                <div className={classes.w100} key={index}>
+                  {index < 1 ? (
                     <img
                       src={item}
                       alt={viewTitle}
-                      style={{
-                        width: '100%',
-                        borderRadius: 10,
-                        textAling: 'center'
-                      }}
+                      className={classNames(classes.br10, classes.w100)}
                     />
-                  </div>
-                );
-              }
-              return (
-                <Typography variant={variant} gutterBottom>
-                  {item}
-                </Typography>
+                  ) : (
+                    <Typography variant={variant} gutterBottom>
+                      {item}
+                    </Typography>
+                  )}
+                </div>
               );
             })}
           </DialogContent>
@@ -92,4 +96,4 @@ class Description extends Component {
   }
 }
 
-export default Description;
+export default withStyles(styles)(Description);
