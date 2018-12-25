@@ -36,32 +36,45 @@ const styles = {
   root: {
     padding: '100px 5% 5px 5%'
   },
-  center: {
-    textAlign: 'center'
+  card: {
+    margin: 5,
+    height: window.innerHeight * 0.85
+  },
+  cardPhone: {
+    height: window.innerHeight * 0.7
   },
   cardContent: {
     display: 'flex',
-    padding: 20,
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    padding: 30,
+    justifyContent: 'center',
     height: '100%'
   },
-  card: {
-    textAlign: 'center',
-    margin: 5,
-    height: window.innerHeight * 0.8
+  cardContentPhone: {
+    padding: 5
   },
-  cardPhone: {
-    height: window.innerHeight * 0.6
+  titleDiv: {
+    flexGrow: 1,
+    display: 'flex',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    width: '100%',
+    height: '10%',
+    justifyContent: 'center'
+  },
+  title: {
+    padding: 10
   },
   wrapper: {
+    flexGrow: 3,
     width: '100%',
     height: '70%'
   },
   wrapperPhone: {
     height: '60%'
   },
-  title: {
-    padding: 10
+  microphone: {
+    height: '20%'
   }
 };
 
@@ -465,9 +478,13 @@ class ProjectionMenu extends React.Component {
             isPhone ? classes.cardPhone : null
           )}
         >
-          <CardContent className={classes.cardContent}>
-            <div />
-            <div style={{ flexGrow: 2, padding: 20 }}>
+          <CardContent
+            className={classNames(
+              classes.cardContent,
+              isPhone ? classes.cardContentPhone : null
+            )}
+          >
+            <div className={classes.titleDiv}>
               <Typography
                 className={classes.title}
                 variant={isPhone ? 'subtitle1' : 'h5'}
@@ -476,19 +493,24 @@ class ProjectionMenu extends React.Component {
               >
                 {'Real-Time dB Chart'}
               </Typography>
-              <div
-                className={classNames(
-                  classes.wrapper,
-                  isPhone ? classes.wrapperPhone : null
-                )}
-              >
-                <Line
-                  data={lineChartData}
-                  options={lineChartOptions}
-                  className={classes.line}
-                  redraw={shouldRedraw}
-                />
-              </div>
+              <IconButton style={{ position: 'absolute', right: '7%' }}>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
+            <div
+              className={classNames(
+                classes.wrapper,
+                isPhone ? classes.wrapperPhone : null
+              )}
+            >
+              <Line
+                data={lineChartData}
+                options={lineChartOptions}
+                className={classes.line}
+                redraw={shouldRedraw}
+              />
+            </div>
+            <div className={classes.microphone}>
               <ProjectionToggle
                 isListen={isListen}
                 isFinish={isFinish}
@@ -498,11 +520,7 @@ class ProjectionMenu extends React.Component {
                 isPhone={isPhone}
               />
             </div>
-            <div>
-              <IconButton>
-                <Info onClick={this.handleDescriptionOpen} />
-              </IconButton>
-            </div>
+            <div />
           </CardContent>
         </Card>
         <Description

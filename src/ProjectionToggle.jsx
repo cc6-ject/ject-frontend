@@ -4,6 +4,13 @@ import { Fab } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    flexDirection: 'column'
+  },
   fab: {
     margin: theme.spacing.unit
   },
@@ -29,7 +36,7 @@ class ProjectionToggle extends React.Component {
       isPhone
     } = this.props;
     return (
-      <div className="ProjectionToggle">
+      <div className={classes.buttonContainer}>
         {isFinish ? (
           <Typography variant={isPhone ? 'subtitle1' : 'h5'} gutterBottom>
             AVG dB {avgDecibels[avgDecibels.length - 1]}
