@@ -8,7 +8,7 @@ export default function getAverageVolume(array) {
       values = array[i];
     }
   }
-  result = 22 * Math.log10(values);
+  result = 20 * (Math.log10(values) / Math.log10(7));
   result = Math.floor(result * 100) / 100;
   return result === -Infinity ? 0 : result;
 }
