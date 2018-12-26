@@ -80,7 +80,7 @@ class HomePage extends Component {
   };
 
   render() {
-    const { classes, switchView } = this.props;
+    const { classes, switchView, disabled } = this.props;
     const { imagePlays } = this.state;
 
     return (
@@ -90,6 +90,7 @@ class HomePage extends Component {
             {/* TODO: Resolve warning. */}
             <GridListTile>
               <Button
+                disabled={disabled}
                 className={classNames(classes.p0, classes.w100)}
                 onClick={() => {
                   switchView(tile.title);

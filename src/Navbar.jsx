@@ -79,7 +79,8 @@ class Navbar extends React.Component {
       switchView,
       currentView,
       isAuthenticated,
-      onLogout
+      onLogout,
+      disabled
     } = this.props;
     const { drawerOpen, titleHide } = this.state;
 
@@ -88,6 +89,7 @@ class Navbar extends React.Component {
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar>
             <IconButton
+              disabled={disabled}
               className={classes.menuButton}
               color="inherit"
               onClick={() => {
@@ -100,6 +102,7 @@ class Navbar extends React.Component {
               <Fragment>
                 <img src={LOGO} alt="Logo" style={{ height: 40 }} />
                 <Button
+                  disabled={disabled}
                   color="inherit"
                   onClick={() => switchView(views.home.TITLE)}
                 >
@@ -119,23 +122,25 @@ class Navbar extends React.Component {
             {isAuthenticated ? (
               <Fragment>
                 {!titleHide ? (
-                  <IconButton color="inherit">
+                  <IconButton disabled={disabled} color="inherit">
                     <AccountCircle />
                   </IconButton>
                 ) : null}
-                <Button color="inherit" onClick={onLogout}>
+                <Button disabled={disabled} color="inherit" onClick={onLogout}>
                   LOGOUT
                 </Button>
               </Fragment>
             ) : (
               <Fragment>
                 <Button
+                  disabled={disabled}
                   color="inherit"
                   onClick={() => switchView(views.signUp.TITLE)}
                 >
                   SIGN UP
                 </Button>
                 <Button
+                  disabled={disabled}
                   color="inherit"
                   onClick={() => switchView(views.login.TITLE)}
                 >

@@ -16,11 +16,17 @@ let audioContext;
 let analyser;
 let average = 0;
 
-const SpeechRecognition = window.webkitSpeechRecognition;
-const recognition = new SpeechRecognition();
-recognition.lang = 'en-US';
-// recognition.continuous = true;
-recognition.interimResults = true;
+const SpeechRecognition =
+  window.webkitSpeechRecognition || window.SpeechRecognition;
+
+let recognition;
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  // recognition.continuous = true;
+  recognition.interimResults = true;
+}
+
 let [transcript, processScript] = ['', ''];
 
 const INIT_CHART_DATA = [];
