@@ -23,12 +23,15 @@ import './App.css';
 class App extends Component {
   constructor(props) {
     super(props);
+    const browserError = !(
+      window.webkitSpeechRecognition || window.SpeechRecognition
+    );
     this.state = {
       currentView: views.home.TITLE,
       isAuthenticated: false,
       isAuthenticating: false,
-      disableAll: !(window.webkitSpeechRecognition || window.SpeechRecognition),
-      dialogOpen: !(window.webkitSpeechRecognition || window.SpeechRecognition)
+      disableAll: browserError,
+      dialogOpen: browserError
     };
   }
 
