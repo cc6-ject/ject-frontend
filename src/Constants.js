@@ -68,7 +68,7 @@ export const descriptions = {
     TITLE: 'Tongue Twister',
     CONTENTS: [
       tongueTwisterStill,
-      'Your tongue will work better ever!',
+      'Your tongue will work better than ever!',
       '1. Select an item you want to practice from the list.',
       '2. Click MIC button then the status will change to Listening!',
       '3. Say it CLEARLY as much as you can.',

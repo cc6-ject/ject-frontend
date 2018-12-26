@@ -48,9 +48,16 @@ const styles = theme => ({
     width: 200
   },
   cardContent: {
+    flexFlow: 'column',
     display: 'flex',
     padding: 20,
     justifyContent: 'spaceBetween'
+  },
+  select: {
+    whiteSpace: 'normal'
+  },
+  ar: {
+    textAlign: 'right'
   }
 });
 
@@ -280,7 +287,11 @@ class TongueTwisterPractice extends Component {
       <div className={classes.root}>
         <Card className={classes.card}>
           <CardContent className={classes.cardContent}>
-            <div />
+            <div className={classes.ar}>
+              <IconButton>
+                <Info onClick={this.handleDescriptionOpen} />
+              </IconButton>
+            </div>
             <Grid
               container
               direction="column"
@@ -291,6 +302,7 @@ class TongueTwisterPractice extends Component {
               <Grid item xs>
                 <FormControl variant="outlined" className={classes.formControl}>
                   <Select
+                    className={classes.select}
                     value={currentTwister}
                     onChange={this.handleChange}
                     input={<OutlinedInput labelWidth={0} />}
@@ -350,11 +362,6 @@ class TongueTwisterPractice extends Component {
                 ) : null}
               </Grid>
             </Grid>
-            <div>
-              <IconButton>
-                <Info onClick={this.handleDescriptionOpen} />
-              </IconButton>
-            </div>
           </CardContent>
         </Card>
         <Description

@@ -27,17 +27,22 @@ const KARAOKE_STATE = {
 };
 
 const IS_PRODUCTION = config.state === 'prod';
-const TALKING_COUNT_DOWN = IS_PRODUCTION ? 300 : 50;
-const TIMER_DELAY = 1000;
-const STARTING_COUNT_DOWN = IS_PRODUCTION ? 5 : 3;
+const TALKING_COUNT_DOWN = 300;
+const TIMER_DELAY = IS_PRODUCTION ? 1000 : 200; // 5-min : 1-min
+const STARTING_COUNT_DOWN = 5;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
-const STEP_MAX = IS_PRODUCTION ? 7 : 5;
+const STEP_MAX = 7;
 
 const styles = {
   startingCountDown: {
-    fontSize: 500,
     fontWeight: 'bold'
+  },
+  fs400: {
+    fontSize: 400
+  },
+  fs250: {
+    fontSize: 250
   },
   flexColumn: {
     display: 'flex',
@@ -54,21 +59,35 @@ const styles = {
     marginTop: 200
   },
   startButton: {
-    width: 300,
-    height: 150,
-    fontSize: 50,
+    padding: 20,
     color: '#fff'
   },
   cardContent: {
-    height: 700,
     padding: 20,
-    justifyContent: 'space-between'
+    display: 'flex',
+    flexFlow: 'column'
   },
   talkingImage: {
     borderRadius: 10
   },
   root: {
     padding: '100px 5% 5px 5%'
+  },
+  w100p: {
+    width: '100%'
+  },
+  w60p: {
+    width: '60%'
+  },
+  ar: {
+    textAlign: 'right'
+  },
+  ac: {
+    textAlign: 'center'
+  },
+  mbt10p: {
+    marginTop: '10%',
+    marginBottom: '10%'
   }
 };
 
@@ -86,7 +105,8 @@ class KaraokeMenu extends Component {
       karaokeState: KARAOKE_STATE.IDLE,
       isLoading: false,
       compliment: '',
-      descriptionOpen: true
+      descriptionOpen: true,
+      isPhone: false
     };
 
     this.stepIndex = 0;
@@ -94,6 +114,9 @@ class KaraokeMenu extends Component {
   }
 
   async componentDidMount() {
+    window.addEventListener('resize', this.handleWindowResize);
+    this.handleWindowResize();
+
     try {
       // TODO: be passed from component.
       const data = await Auth.currentAuthenticatedUser();
@@ -281,7 +304,6 @@ class KaraokeMenu extends Component {
       default:
     }
 
-    console.log(karaokeState);
     this.setState({
       karaokeState,
       startingCountDown,
@@ -315,20 +337,29 @@ class KaraokeMenu extends Component {
     });
   };
 
+  handleWindowResize = () => {
+    const isPhone = window.innerWidth < 768;
+    this.setState({ isPhone });
+  };
+
   renderIdle() {
-    const { isLoading } = this.state;
+    const { isLoading, isPhone } = this.state;
     const { classes } = this.props;
 
     return (
       <div>
         <Button
-          className={classNames(classes.startButton, classes.mt200)}
-          disabled={isLoading}
           color="secondary"
+          disabled={isLoading}
           variant="contained"
           onClick={() => this.updateKaraokeState(KARAOKE_STATE.STARTING)}
         >
-          {isLoading ? 'Loading...' : 'Start'}
+          <Typography
+            variant={isPhone ? 'h4' : 'h2'}
+            className={classNames(classes.startButton)}
+          >
+            {isLoading ? 'Loading...' : 'Start'}
+          </Typography>
         </Button>
       </div>
     );
@@ -336,14 +367,15 @@ class KaraokeMenu extends Component {
 
   renderStarting() {
     const { classes } = this.props;
-    const { startingCountDown } = this.state;
+    const { startingCountDown, isPhone } = this.state;
 
     return (
       <div>
         <Typography
-          component="h1"
-          variant="h1"
-          className={classNames(classes.startingCountDown)}
+          className={classNames(
+            classes.startingCountDown,
+            isPhone ? classes.fs250 : classes.fs400
+          )}
         >
           {startingCountDown}
         </Typography>
@@ -352,26 +384,32 @@ class KaraokeMenu extends Component {
   }
 
   renderTalking() {
-    const { talkingCountDown, steps } = this.state;
+    const { talkingCountDown, steps, isPhone } = this.state;
     const { classes } = this.props;
 
     return (
       <div>
         <div className={classes.flexCenter}>
-          <Typography variant="h4">
+          <Typography variant={isPhone ? 'h6' : 'h4'}>
             {`0${Math.floor(talkingCountDown / 60)} : ${
               talkingCountDown % 60 < 10 ? `0` : ``
             }${talkingCountDown % 60}`}
           </Typography>
         </div>
         {this.stepIndex === 0 || this.stepIndex === STEP_MAX - 2 ? (
-          <Typography variant="h4" className={classes.mt200}>
+          <Typography
+            variant={isPhone ? 'h6' : 'h4'}
+            className={classes.mbt10p}
+          >
             {steps[this.stepIndex].data}
           </Typography>
         ) : (
           <div>
             <img
-              className={classes.talkingImage}
+              className={classNames(
+                classes.talkingImage,
+                isPhone ? classes.w100p : classes.w60p
+              )}
               src={`data:image/jpeg;base64,${steps[this.stepIndex].data}`}
               alt="Random Topic"
             />
@@ -383,45 +421,54 @@ class KaraokeMenu extends Component {
 
   renderComplete() {
     const { classes, switchView } = this.props;
-    const { compliment } = this.state;
+    const { compliment, isPhone } = this.state;
     let avgDb = this.audioTool.getAvgDecibel();
     avgDb = Number.isNaN(avgDb) ? 0 : Math.round(avgDb);
-    // TODO: this part will be reverted soon.
-    // let avgWpm = this.audioTool.getWordsPerEachMinute();
-    // const length = avgWpm.length;
-    // console.log(length);
-    // avgWpm = avgWpm.reduce((acc, wpm) => acc + wpm, 0) / length;
-    // avgWpm = Number.isNaN(avgWpm) ? 0 : Math.round(avgWpm);
+    const wordsPerEachMinute = this.audioTool.getWordsPerEachMinute();
+    let avgWpm =
+      wordsPerEachMinute.reduce((acc, wpm) => acc + wpm, 0) /
+      wordsPerEachMinute.length;
+    avgWpm = Number.isNaN(avgWpm) ? 0 : Math.round(avgWpm);
 
     return (
       <div className={classes.flexColumn}>
         <div className={classes.flexCenter}>
-          <Typography variant="h4">{compliment}</Typography>
+          <Typography variant={isPhone ? 'h6' : 'h4'}>{compliment}</Typography>
         </div>
         <div className={classNames(classes.flexCenter, classes.mt50)}>
           <Button
-            className={classes.startButton}
             color="secondary"
             variant="contained"
             onClick={() => this.updateKaraokeState(KARAOKE_STATE.IDLE)}
           >
-            OK
+            <Typography
+              variant={isPhone ? 'h4' : 'h2'}
+              className={classNames(classes.startButton)}
+            >
+              OK
+            </Typography>
           </Button>
         </div>
         <div className={classNames(classes.flexCenter, classes.mt50)}>
           <List>
             <ListItem button>
-              <Typography variant="h4">AVG dB {avgDb}</Typography>
+              <Typography variant={isPhone ? 'h6' : 'h4'}>
+                AVG dB: {avgDb}
+              </Typography>
             </ListItem>
-            {/* <ListItem button>
-              <Typography variant="h4">AVG WPM {avgWpm}</Typography>
-            </ListItem> */}
+            <ListItem button>
+              <Typography variant={isPhone ? 'h6' : 'h4'}>
+                AVG WPM: {avgWpm}
+              </Typography>
+            </ListItem>
             <ListItem>
               <Button
                 variant="contained"
                 onClick={() => switchView(views.activity.TITLE)}
               >
-                <Typography variant="h4">Go to Activity</Typography>
+                <Typography variant={isPhone ? 'h6' : 'h4'}>
+                  Go to Activity
+                </Typography>
               </Button>
             </ListItem>
           </List>
@@ -440,20 +487,21 @@ class KaraokeMenu extends Component {
           <CardContent
             className={classNames(classes.flexCenter, classes.cardContent)}
           >
-            <div />
-            {karaokeState === KARAOKE_STATE.IDLE
-              ? this.renderIdle()
-              : karaokeState === KARAOKE_STATE.STARTING
-              ? this.renderStarting()
-              : karaokeState === KARAOKE_STATE.TALKING
-              ? this.renderTalking()
-              : karaokeState === KARAOKE_STATE.COMPLETE
-              ? this.renderComplete()
-              : null}
-            <div>
-              <IconButton>
+            <div className={classes.ar}>
+              <IconButton style={{ padding: 0 }}>
                 <Info onClick={this.handleDescriptionOpen} />
               </IconButton>
+            </div>
+            <div className={classes.ac}>
+              {karaokeState === KARAOKE_STATE.IDLE
+                ? this.renderIdle()
+                : karaokeState === KARAOKE_STATE.STARTING
+                ? this.renderStarting()
+                : karaokeState === KARAOKE_STATE.TALKING
+                ? this.renderTalking()
+                : karaokeState === KARAOKE_STATE.COMPLETE
+                ? this.renderComplete()
+                : null}
             </div>
           </CardContent>
         </Card>
