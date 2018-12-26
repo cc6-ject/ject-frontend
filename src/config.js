@@ -20,8 +20,6 @@ const dev = {
     }
   },
   randomImage: {
-    // Because of CORS in local CORS proxy was set.
-    // URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
     URL: 'https://picsum.photos/800/600/?random'
   }
 };
@@ -49,7 +47,6 @@ const prod = {
     }
   },
   randomImage: {
-    // URL: 'https://cors-anywhere.herokuapp.com/https://lorempixel.com/800/600/'
     URL: 'https://picsum.photos/800/600/?random'
   }
 };
@@ -57,6 +54,7 @@ const prod = {
 // Default to dev if not set
 const config = process.env.FRONTEND_STAGE === 'prod' ? prod : dev;
 const stage = process.env.FRONTEND_STAGE;
+console.log(stage);
 
 const color = {
   primary: {

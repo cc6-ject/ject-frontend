@@ -25,7 +25,6 @@ class AudioTool {
     this.decibel = 0;
     this.decibels = [];
     this.avgDecibel = 0;
-    this.transcripts = [];
     this.wordsPerEachMinute = [];
     this.fillerWords = {};
     this.wordCounts = {};
@@ -156,7 +155,6 @@ class AudioTool {
     this.decibel = 0;
     this.decibels = [];
     this.avgDecibel = 0;
-    this.transcripts = [];
     this.wordsPerEachMinute = [];
     this.fillerWords = {};
     this.wordCounts = {};

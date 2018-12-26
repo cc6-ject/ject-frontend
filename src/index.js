@@ -40,6 +40,17 @@ const theme = createMuiTheme({
           color: 'rgba(255, 255, 255, 1)'
         }
       }
+    },
+    MuiSelect: {
+      selectMenu: {
+        width: 'auto',
+        height: 'auto',
+        overflow: 'hidden',
+        minHeight: '1.1875em',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word'
+      }
     }
   }
 });
