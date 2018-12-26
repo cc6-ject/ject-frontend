@@ -23,7 +23,6 @@ let recognition;
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
   recognition.lang = 'en-US';
-  recognition.maxAlternatives = 1;
   // recognition.continuous = true;
   recognition.interimResults = true;
 }

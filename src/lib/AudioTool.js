@@ -46,17 +46,20 @@ class AudioTool {
       stream => {
         this.stream = stream;
         this.audioContextAPI = new AudioContext();
-        // TODO: do something lower version's browser
         const SpeechRecognition =
           window.webkitSpeechRecognition || window.SpeechRecognition;
-        this.speechRecognitionAPI = new SpeechRecognition();
-        // TODO: language setting
-        this.speechRecognitionAPI.lang = 'en-US';
-        this.speechRecognitionAPI.interimResults = true;
-        // speechRecognitionAPI.continuous = true;
+        if (SpeechRecognition) {
+          this.speechRecognitionAPI = new SpeechRecognition();
+          // TODO: language setting
+          this.speechRecognitionAPI.lang = 'en-US';
+          this.speechRecognitionAPI.interimResults = true;
+          // speechRecognitionAPI.continuous = true;
 
-        if (successCallback instanceof Function) {
-          successCallback(stream);
+          if (successCallback instanceof Function) {
+            successCallback(stream);
+          }
+        } else if (errorCallback instanceof Function) {
+          errorCallback("This browser doesn't support SpeechRecognition.");
         }
       },
       error => {
