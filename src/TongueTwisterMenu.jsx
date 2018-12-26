@@ -223,18 +223,22 @@ class TongueTwisterPractice extends Component {
     console.log('finishedPractice');
     const { currentTwister, coverage, failWord, username } = this.state;
     const percentage = coverage * 10;
-    API.post('ject', '/tongueTwister', {
-      body: {
-        name: currentTwister,
-        percentage,
-        failWords: JSON.stringify(failWord)
-      },
-      requestContext: {
-        identity: {
-          cognitoIdentityId: username
+
+    const { isAuthenticated } = this.props;
+    if (isAuthenticated) {
+      API.post('ject', '/tongueTwister', {
+        body: {
+          name: currentTwister,
+          coverage: percentage,
+          failWords: JSON.stringify(failWord)
+        },
+        requestContext: {
+          identity: {
+            cognitoIdentityId: username
+          }
         }
-      }
-    });
+      });
+    }
   }
 
   async handleClose() {
