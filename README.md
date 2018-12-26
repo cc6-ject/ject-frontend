@@ -4,7 +4,7 @@
 
 # JECT
 
-This was created during our time as a student at Code Chrysalis!<br>
+This was created during our time as students at Code Chrysalis!<br>
 JECT is a web application for public speaking training.
 
 [![JECT UI](https://user-images.githubusercontent.com/23233648/50395178-bccc1380-07a5-11e9-8b00-ead2f3fe7da6.png)](https://ject.netlify.com/)
@@ -22,33 +22,33 @@ JECT is a web application for public speaking training.
 
 JECT provides four features,
 
-1. Projection Practice for a good voice
-   - Judge if your voice of public speaking is loud enough for audience.
-   - Please try a public speaking rehearsal and you can get real-time decibel information.
+1. Projection Practice to build a strong voice
+   - Judge if your public speaking voice is loud enough for the audience.
+   - Get real-time decibel information while rehearsing public speaking.
      <br>
      <br>
      <img src="https://user-images.githubusercontent.com/23233648/50395465-7d9ec200-07a7-11e9-9792-e76ec8951c0c.png" height="60%" width="60%">
      <br>
      <br>
-2. Tongue Twister Practice for a good pronunciation
-   - Judge if your pronunciation is good for audience
-   - Plase try one tongue twister 10 times. You can get immediate result.
+2. Tongue Twister Practice for good pronunciation
+   - Judge if your pronunciation can be understood by the audience
+   - Please practice tongue twisters 10 times. You can get immediate results.
      <br>
      <br>
      <img src="https://user-images.githubusercontent.com/23233648/50395656-cefb8100-07a8-11e9-97ab-3231dc61d21f.png" height="40%" width="40%">
      <br>
      <br>
-3. Karaoke Mode for getting a confidence
-   - Get confidence and keep talking! <br>Even if you prepare well, some trouble happens. Don't be upset.
-   - First you get one topic and get five random continuously. What you should do is keep talking for five minutes while you follow the topic.
+3. Karaoke Mode for building confidence
+   - Learn to think on your feet and keep talking! <br>Even if you prepare well, sometimes things go wrong. Don't be upset.
+   - First you get a random topic and then be shown five random pictures continuously. You should keep talking for five minutes while you follow the topic.
      <br>
      <br>
      <img src="https://user-images.githubusercontent.com/23233648/50395687-0702c400-07a9-11e9-9c72-be07fcd96658.png" height="60%" width="60%">
      <br>
      <br>
 4. Statistics
-   - Analyze and improve yourself more.
-   - You can check each session, daily average.
+   - Analyze data to see where you can improve.
+   - You can check each session or daily average.
      <br>
      <br>
      <img src="https://user-images.githubusercontent.com/23233648/50395723-3adde980-07a9-11e9-823f-95d88f96b890.png" height="80%" width="80%">
@@ -57,11 +57,11 @@ JECT provides four features,
 
 ## Demo Page
 
-[Demo Page](https://ject.netlify.com/) is here ! You can practice public speaking app !
+[Demo Page](https://ject.netlify.com/) is here! You can practice public speaking!
 
 ## Setup
 
-If you want to try JECT on your local machine, follow this instruction.
+If you want to try JECT on your local machine, follow the instructions below.
 
 1. Clone this repo
 
