@@ -109,7 +109,6 @@ class TongueTwisterPractice extends Component {
       } else if (data.username) {
         await this.setState({ username: data.username });
       }
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
