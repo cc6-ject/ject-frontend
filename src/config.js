@@ -54,7 +54,6 @@ const prod = {
 // Default to dev if not set
 const config = process.env.FRONTEND_STAGE === 'prod' ? prod : dev;
 const stage = process.env.FRONTEND_STAGE;
-console.log(stage);
 
 const color = {
   primary: {
