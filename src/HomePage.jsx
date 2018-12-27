@@ -25,9 +25,6 @@ const styles = () => ({
   },
   w100: {
     width: '100%'
-  },
-  w110: {
-    width: '110%'
   }
 });
 
@@ -99,7 +96,7 @@ class HomePage extends Component {
                 onMouseLeave={() => this.handleImagePlay(index, false)}
               >
                 <img
-                  className={classes.w110}
+                  className={classes.w100}
                   src={imagePlays[index] ? tile.gif : tile.still}
                   alt={tile.title}
                 />
