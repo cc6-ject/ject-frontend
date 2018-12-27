@@ -28,8 +28,9 @@ const KARAOKE_STATE = {
 
 const IS_PRODUCTION = config.state === 'prod';
 const TALKING_COUNT_DOWN = 300;
-const TIMER_DELAY = IS_PRODUCTION ? 1000 : 200; // 5-min : 1-min
+const TALKING_COUNT_DOWN_DELAY = IS_PRODUCTION ? 1000 : 200; // 5-min : 1-min
 const STARTING_COUNT_DOWN = 5;
+const STARTING_COUNT_DOWN_DELAY = 1000;
 const STEP_TYPE_TEXT = 'stepText';
 const STEP_TYPE_IMAGE = 'stepImage';
 const STEP_MAX = 7;
@@ -111,9 +112,13 @@ class KaraokeMenu extends Component {
 
     this.stepIndex = 0;
     this.audioTool = new AudioTool();
+    this.timerId = null;
   }
 
   async componentDidMount() {
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+
     window.addEventListener('resize', this.handleWindowResize);
     this.handleWindowResize();
 
@@ -137,6 +142,7 @@ class KaraokeMenu extends Component {
   }
 
   componentWillUnmount() {
+    clearTimeout(this.timerId);
     this.audioTool.closeAudio(() => {
       console.log('Audio was closed.');
     });
@@ -236,7 +242,7 @@ class KaraokeMenu extends Component {
         if (startingCountDown < 1) {
           this.updateKaraokeState(KARAOKE_STATE.TALKING);
         } else {
-          setTimeout(this.countDown, TIMER_DELAY);
+          this.timerId = setTimeout(this.countDown, STARTING_COUNT_DOWN_DELAY);
         }
         break;
       case KARAOKE_STATE.TALKING:
@@ -246,7 +252,7 @@ class KaraokeMenu extends Component {
           this.updateKaraokeState(KARAOKE_STATE.COMPLETE);
         } else {
           this.updateStep(talkingCountDown);
-          setTimeout(this.countDown, TIMER_DELAY);
+          this.timerId = setTimeout(this.countDown, TALKING_COUNT_DOWN_DELAY);
         }
         break;
       default:
@@ -269,12 +275,12 @@ class KaraokeMenu extends Component {
         break;
       case KARAOKE_STATE.STARTING:
         startingCountDown = STARTING_COUNT_DOWN;
-        setTimeout(this.countDown, TIMER_DELAY);
+        this.timerId = setTimeout(this.countDown, STARTING_COUNT_DOWN_DELAY);
         break;
       case KARAOKE_STATE.TALKING:
         talkingCountDown = TALKING_COUNT_DOWN;
         this.audioTool.startListening();
-        setTimeout(this.countDown, TIMER_DELAY);
+        this.timerId = setTimeout(this.countDown, TALKING_COUNT_DOWN_DELAY);
         break;
       case KARAOKE_STATE.COMPLETE:
         this.audioTool.stopListening(async () => {

@@ -258,6 +258,10 @@ class AudioTool {
     };
 
     this.speechRecognitionAPI.onend = () => {
+      if (!this.isListening) {
+        return;
+      }
+
       this.speechRecognitionAPI.start();
     };
   };
