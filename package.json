@@ -7,7 +7,7 @@
     "@material-ui/icons": "^3.0.1",
     "aws-amplify": "^1.1.12",
     "axios": "^0.18.1",
-    "chart.js": "^2.7.3",
+    "chart.js": "^2.8.0",
     "chartjs-plugin-annotation": "^0.5.7",
     "classnames": "^2.2.6",
     "fillers": "^1.1.2",
