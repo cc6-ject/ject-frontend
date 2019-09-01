@@ -4458,10 +4458,10 @@ fill-range@^4.0.0:
     repeat-string "^1.6.1"
     to-regex-range "^2.1.0"
 
-fillers@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/fillers/-/fillers-1.1.2.tgz#f57387731e716c3e9f37027952574d211955406a"
-  integrity sha512-Vl9tvLxgdA4pWvuAU5N9T7ZLesyOgdIQFzfwZyutSY1UQNit78HQQi4Mzkx53/Jx+wa8WyDQqv6Lsj8GN9d9rQ==
+fillers@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/fillers/-/fillers-1.1.3.tgz#31a91fa7998ab517ce5ec13584cf6016b02ad133"
+  integrity sha512-yzNiVnHOp8gYx82J5JLFQzgdvEokxsZXX6wBSrsscExk0h+MHcOosYiIb8Nc0/aJyTPnPhfe7nmspfz7x46AKA==
 
 finalhandler@1.1.1:
   version "1.1.1"
