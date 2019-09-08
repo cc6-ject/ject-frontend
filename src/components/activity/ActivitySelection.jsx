@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Menu, MenuItem } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 
-import './Activity.css';
+import '../../assets/Activity.css';
 
 const styles = () => ({
   button: {

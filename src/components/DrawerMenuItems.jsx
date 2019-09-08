@@ -16,7 +16,7 @@ import {
   Replay5
 } from '@material-ui/icons';
 import classNames from 'classnames';
-import { views, LOGO } from './Constants';
+import { views, LOGO } from '../Constants';
 // import './DrawerMenuItems.css';
 
 const styles = () => ({

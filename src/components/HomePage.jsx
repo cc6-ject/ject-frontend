@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Button, Grid, GridListTile, GridListTileBar } from '@material-ui/core';
 import classNames from 'classnames';
-import { views } from './Constants';
+import { views } from '../Constants';
 
 const styles = () => ({
   root: {
@@ -83,7 +83,7 @@ class HomePage extends Component {
     return (
       <div className={classes.root}>
         {tileData.map((tile, index) => (
-          <Grid xs={12} md={6} key={index}>
+          <Grid item xs={12} md={6} key={index}>
             {/* TODO: Resolve warning. */}
             <GridListTile>
               <Button

@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import { descriptions } from './Constants';
+import { descriptions } from '../Constants';
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;

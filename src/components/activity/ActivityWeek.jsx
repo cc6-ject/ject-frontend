@@ -7,10 +7,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Chart from 'chart.js';
 import 'chartjs-plugin-annotation';
 
-import { getAnnotationConfig } from './lib/chartConfig';
-import { makeWeekScale } from './lib/chartTool';
-import { NUM_OF_DAYS, NAME_OF_MONTH } from './Constants';
-import './Activity.css';
+import { getAnnotationConfig } from '../../lib/chartConfig';
+import { makeWeekScale } from '../../lib/chartTool';
+import { NUM_OF_DAYS, NAME_OF_MONTH } from '../../Constants';
+import '../../assets/Activity.css';
 
 const styles = () => ({
   date: {

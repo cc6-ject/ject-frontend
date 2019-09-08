@@ -13,11 +13,15 @@ import { Info } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { API, Auth } from 'aws-amplify';
-import config from './config';
-import { play as playSound, APPLAUSE, TICK } from './lib/sound';
-import { getRandomCompliment, randomKaraokeTitle, views } from './Constants';
-import Description from './Description';
-import AudioTool from './lib/AudioTool';
+import config from '../../config';
+import { play as playSound, APPLAUSE, TICK } from '../../lib/sound';
+import {
+  getRandomCompliment,
+  randomKaraokeTitle,
+  views
+} from '../../Constants';
+import Description from '../Description';
+import AudioTool from '../../lib/AudioTool';
 
 const KARAOKE_STATE = {
   IDLE: 'idle',

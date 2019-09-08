@@ -8,17 +8,17 @@ import {
   Button
 } from '@material-ui/core';
 import { Auth } from 'aws-amplify';
-import Navbar from './Navbar';
-import HomePage from './HomePage';
-import TongueTwisterMenu from './TongueTwisterMenu';
-import ProjectionMenu from './ProjectionMenu';
-import ChallengeMenu from './ChallengeMenu';
-import KaraokeMenu from './KaraokeMenu';
-import Activity from './Activity';
-import Login from './Login';
-import SignUp from './SignUp';
+import Navbar from './components/Navbar';
+import HomePage from './components/HomePage';
+import TongueTwisterMenu from './components/toungueTwister/TongueTwisterMenu';
+import ProjectionMenu from './components/projection/ProjectionMenu';
+import ChallengeMenu from './components/ChallengeMenu';
+import KaraokeMenu from './components/karaoke/KaraokeMenu';
+import Activity from './components/activity/Activity';
+import Login from './components/auth/Login';
+import SignUp from './components/auth/SignUp';
 import { views } from './Constants';
-import './App.css';
+import './assets/App.css';
 
 class App extends Component {
   constructor(props) {

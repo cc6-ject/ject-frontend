@@ -18,9 +18,9 @@ import {
   randomTongueTwister,
   targetLength,
   checkFailure
-} from './TongueTwisterFiles';
-import Description from './Description';
-import { views } from './Constants';
+} from '../../lib/TongueTwisterFiles';
+import Description from '../Description';
+import { views } from '../../Constants';
 
 const styles = theme => ({
   root: {

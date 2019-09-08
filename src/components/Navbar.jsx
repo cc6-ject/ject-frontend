@@ -11,7 +11,7 @@ import {
 import { AccountCircle, Menu as MenuIcon } from '@material-ui/icons';
 import classNames from 'classnames';
 import DrawerMenuItems from './DrawerMenuItems';
-import { LOGO, views } from './Constants';
+import { LOGO, views } from '../Constants';
 
 const drawerWidth = 200;
 const styles = theme => ({

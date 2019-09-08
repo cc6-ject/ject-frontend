@@ -5,7 +5,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import config from './config';
-import './index.css';
+import './assets/index.css';
 
 const theme = createMuiTheme({
   // only primary and secondary will be applied.

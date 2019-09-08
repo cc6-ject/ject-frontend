@@ -6,11 +6,11 @@ import { API, Auth } from 'aws-amplify';
 import { Line } from 'react-chartjs-2';
 import classNames from 'classnames';
 
-import getAverageVolume from './lib/getAverageVolume';
+import getAverageVolume from '../../lib/getAverageVolume';
 import ProjectionToggle from './ProjectionToggle';
-import { getAnnotationConfig } from './lib/chartConfig';
-import Description from './Description';
-import { views } from './Constants';
+import { getAnnotationConfig } from '../../lib/chartConfig';
+import Description from '../Description';
+import { views } from '../../Constants';
 
 let audioContext;
 let analyser;

@@ -8,9 +8,9 @@ import ActivityWeek from './ActivityWeek';
 import ActivityDay from './ActivityDay';
 import ActivitySelection from './ActivitySelection';
 
-import { NUM_OF_DAYS } from './Constants';
-import arrangeData from './lib/arrangeData';
-import './Activity.css';
+import { NUM_OF_DAYS } from '../../Constants';
+import arrangeData from '../../lib/arrangeData';
+import '../../assets/Activity.css';
 
 const styles = theme => ({
   root: {
