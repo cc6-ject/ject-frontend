@@ -16,7 +16,7 @@
     "react-chartjs-2": "^2.9.0",
     "react-dates": "^20.2.5",
     "react-dom": "^16.6.1",
-    "react-scripts": "2.1.1",
+    "react-scripts": "3.4.1",
     "sinon": "^9.0.0",
     "typeface-roboto": "^0.0.75"
   },
