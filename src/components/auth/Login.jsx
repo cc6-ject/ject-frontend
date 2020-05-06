@@ -6,32 +6,32 @@ import {
   TextField,
   Card,
   CardContent,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import LoaderButton from './LoaderButton';
 import FacebookButton from './FacebookButton';
 
-const styles = theme => ({
+const styles = (theme) => ({
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 240
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
+    width: 240,
   },
   dense: {
-    marginTop: 19
+    marginTop: 19,
   },
   menu: {
-    width: 240
+    width: 240,
   },
   center: {
-    margin: '0 auto'
+    margin: '0 auto',
   },
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: '100px 5% 5px 5%'
-  }
+    padding: '100px 5% 5px 5%',
+  },
 });
 
 class Login extends Component {
@@ -41,11 +41,11 @@ class Login extends Component {
       email: '',
       password: '',
       isLoading: false,
-      errorMessage: ''
+      errorMessage: '',
     };
   }
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { id, value } = e.target;
     this.setState({ [id]: value });
   };
@@ -55,7 +55,7 @@ class Login extends Component {
     return email.length > 0 && password.length > 0;
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     this.setState({ isLoading: true });
 
@@ -68,7 +68,7 @@ class Login extends Component {
     } catch (error) {
       this.setState({
         isLoading: false,
-        errorMessage: error.message
+        errorMessage: error.message,
       });
     }
   };

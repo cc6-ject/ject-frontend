@@ -11,54 +11,54 @@ import {
   MenuItem,
   Select,
   OutlinedInput,
-  IconButton
+  IconButton,
 } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
 import {
   randomTongueTwister,
   targetLength,
-  checkFailure
+  checkFailure,
 } from '../../lib/TongueTwisterFiles';
 import Description from '../Description';
 import { views } from '../../Constants';
 
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
     flexGrow: 1,
-    padding: '100px 5% 5px 5%'
+    padding: '100px 5% 5px 5%',
   },
   center: {
-    textAlign: 'center'
+    textAlign: 'center',
   },
   button: {
-    margin: theme.spacing.unit
+    margin: theme.spacing(),
   },
   formControl: {
     textAlign: 'center',
-    margin: theme.spacing.unit,
-    minWidth: 220
+    margin: theme.spacing(),
+    minWidth: 220,
   },
   input: {
-    display: 'Select Tongue Twister'
+    display: 'Select Tongue Twister',
   },
   paper: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    width: 200
+    width: 200,
   },
   cardContent: {
     flexFlow: 'column',
     display: 'flex',
     padding: 20,
-    justifyContent: 'spaceBetween'
+    justifyContent: 'spaceBetween',
   },
   select: {
-    whiteSpace: 'normal'
+    whiteSpace: 'normal',
   },
   ar: {
-    textAlign: 'right'
-  }
+    textAlign: 'right',
+  },
 });
 
 const SpeechRecognition =
@@ -87,7 +87,7 @@ class TongueTwisterPractice extends Component {
       username: null,
       endMessage: '',
       openMenu: false,
-      descriptionOpen: true
+      descriptionOpen: true,
     };
     this.toggleListen = this.toggleListen.bind(this);
     this.handleListen = this.handleListen.bind(this);
@@ -103,7 +103,7 @@ class TongueTwisterPractice extends Component {
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
 
     this.setState({
-      currentTwister: randomTongueTwister(this.lastTongueTwister)
+      currentTwister: randomTongueTwister(this.lastTongueTwister),
     });
     try {
       const data = await Auth.currentAuthenticatedUser();
@@ -123,17 +123,17 @@ class TongueTwisterPractice extends Component {
 
   handleDescriptionOpen = () => {
     this.setState({
-      descriptionOpen: true
+      descriptionOpen: true,
     });
   };
 
   handleDescriptionClose = () => {
     this.setState({
-      descriptionOpen: false
+      descriptionOpen: false,
     });
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     this.setState({ currentTwister: event.target.value });
   };
 
@@ -148,13 +148,13 @@ class TongueTwisterPractice extends Component {
     let correct = 0;
     recognition.onstart = () => {
       this.setState({
-        statusMessage: 'Listening!'
+        statusMessage: 'Listening!',
       });
-      recognition.onresult = event => {
+      recognition.onresult = (event) => {
         const target = currentTwister;
         const processScript = Array.from(event.results)
-          .map(result => result[0])
-          .map(result => result.transcript)
+          .map((result) => result[0])
+          .map((result) => result.transcript)
           .join('');
         const temp = processScript.slice(startIndex, updateLength);
         // console.log('ON RESULT', temp);
@@ -174,7 +174,7 @@ class TongueTwisterPractice extends Component {
             if (correct >= 10) {
               this.toggleError = true;
               this.setState({
-                endMessage: 'Congratulations you got them all correct'
+                endMessage: 'Congratulations you got them all correct',
               });
               this.finishedPractice();
               transcript = '';
@@ -200,11 +200,11 @@ class TongueTwisterPractice extends Component {
         this.toggleError = true;
         this.setState({
           listening: false,
-          statusMessage: 'End'
+          statusMessage: 'End',
         });
         if (failWord.length < 1) {
           this.setState({
-            endMessage: 'Timed out'
+            endMessage: 'Timed out',
           });
         }
         this.finishedPractice();
@@ -233,13 +233,13 @@ class TongueTwisterPractice extends Component {
         body: {
           name: currentTwister,
           coverage: percentage,
-          failWords: JSON.stringify(failWord)
+          failWords: JSON.stringify(failWord),
         },
         requestContext: {
           identity: {
-            cognitoIdentityId: username
-          }
-        }
+            cognitoIdentityId: username,
+          },
+        },
       });
     }
   }
@@ -254,14 +254,14 @@ class TongueTwisterPractice extends Component {
   updateTwister() {
     const newTT = randomTongueTwister(this.lastTongueTwister);
     this.setState({
-      currentTwister: newTT
+      currentTwister: newTT,
     });
   }
 
   handleMenu() {
     const { openMenu } = this.state;
     this.setState({
-      openMenu: !openMenu
+      openMenu: !openMenu,
     });
   }
 
@@ -270,7 +270,7 @@ class TongueTwisterPractice extends Component {
     this.toggleError = false;
     this.setState(
       {
-        listening: true
+        listening: true,
       },
       () => {
         if (listening) {
@@ -288,7 +288,7 @@ class TongueTwisterPractice extends Component {
       coverage,
       endMessage,
       failWord,
-      descriptionOpen
+      descriptionOpen,
     } = this.state;
     return (
       <div className={classes.root}>

@@ -3,20 +3,20 @@ import { withStyles } from '@material-ui/core/styles';
 import { Fab } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 
-const styles = theme => ({
+const styles = (theme) => ({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   fab: {
-    margin: theme.spacing.unit
+    margin: theme.spacing(),
   },
   extendedIcon: {
-    marginRight: theme.spacing.unit
-  }
+    marginRight: theme.spacing(),
+  },
 });
 
 class ProjectionToggle extends React.Component {
@@ -33,7 +33,7 @@ class ProjectionToggle extends React.Component {
       avgDecibels,
       handleClick,
       handleClose,
-      isPhone
+      isPhone,
     } = this.props;
     return (
       <div className={classes.buttonContainer}>

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import {
   AppBar,
@@ -6,7 +6,7 @@ import {
   Typography,
   Button,
   IconButton,
-  Drawer
+  Drawer,
 } from '@material-ui/core';
 import { AccountCircle, Menu as MenuIcon } from '@material-ui/icons';
 import classNames from 'classnames';
@@ -14,35 +14,35 @@ import DrawerMenuItems from './DrawerMenuItems';
 import { LOGO, views } from '../Constants';
 
 const drawerWidth = 200;
-const styles = theme => ({
+const styles = (theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   grow: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   menuButton: {
     marginLeft: -12,
-    marginRight: 20
+    marginRight: 20,
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing.unit * 3
+    padding: theme.spacing(3),
   },
   toolbar: theme.mixins.toolbar,
   appBar: {
-    padding: '5px 5%'
+    padding: '5px 5%',
   },
   center: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
 class Navbar extends React.Component {
@@ -51,7 +51,7 @@ class Navbar extends React.Component {
 
     this.state = {
       drawerOpen: false,
-      titleHide: false
+      titleHide: false,
     };
   }
 
@@ -62,14 +62,14 @@ class Navbar extends React.Component {
     this.handleWindowResize();
   }
 
-  handleDrawerToggle = open => {
+  handleDrawerToggle = (open) => {
     this.setState({ drawerOpen: open });
   };
 
   handleWindowResize = () => {
     // for md
     this.setState({
-      titleHide: window.innerWidth < 768
+      titleHide: window.innerWidth < 768,
     });
   };
 
@@ -80,7 +80,7 @@ class Navbar extends React.Component {
       currentView,
       isAuthenticated,
       onLogout,
-      disabled
+      disabled,
     } = this.props;
     const { drawerOpen, titleHide } = this.state;
 
@@ -99,7 +99,7 @@ class Navbar extends React.Component {
               <MenuIcon />
             </IconButton>
             {!titleHide ? (
-              <Fragment>
+              <>
                 <img src={LOGO} alt="Logo" style={{ height: 40 }} />
                 <Button
                   disabled={disabled}
@@ -110,7 +110,7 @@ class Navbar extends React.Component {
                     Ject
                   </Typography>
                 </Button>
-              </Fragment>
+              </>
             ) : null}
             <Typography
               variant="h6"
@@ -120,7 +120,7 @@ class Navbar extends React.Component {
               {currentView}
             </Typography>
             {isAuthenticated ? (
-              <Fragment>
+              <>
                 {!titleHide ? (
                   <IconButton disabled={disabled} color="inherit">
                     <AccountCircle />
@@ -129,9 +129,9 @@ class Navbar extends React.Component {
                 <Button disabled={disabled} color="inherit" onClick={onLogout}>
                   LOGOUT
                 </Button>
-              </Fragment>
+              </>
             ) : (
-              <Fragment>
+              <>
                 <Button
                   disabled={disabled}
                   color="inherit"
@@ -146,7 +146,7 @@ class Navbar extends React.Component {
                 >
                   LOGIN
                 </Button>
-              </Fragment>
+              </>
             )}
           </Toolbar>
         </AppBar>

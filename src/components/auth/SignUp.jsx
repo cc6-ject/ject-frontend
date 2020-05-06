@@ -6,32 +6,32 @@ import {
   TextField,
   Card,
   CardContent,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import LoaderButton from './LoaderButton';
 import FacebookButton from './FacebookButton';
 
-const styles = theme => ({
+const styles = (theme) => ({
   textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit,
-    width: 240
+    marginLeft: theme.spacing(),
+    marginRight: theme.spacing(),
+    width: 240,
   },
   dense: {
-    marginTop: 19
+    marginTop: 19,
   },
   menu: {
-    width: 240
+    width: 240,
   },
   center: {
-    margin: '0 auto'
+    margin: '0 auto',
   },
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    padding: '100px 5% 5px 5%'
-  }
+    padding: '100px 5% 5px 5%',
+  },
 });
 
 class SignUp extends Component {
@@ -44,7 +44,7 @@ class SignUp extends Component {
       confirmPassword: '',
       confirmationCode: '',
       completeFirstStep: false,
-      errorMessage: ''
+      errorMessage: '',
     };
   }
 
@@ -60,12 +60,12 @@ class SignUp extends Component {
     return confirmationCode.length > 0;
   };
 
-  handleChange = event => {
+  handleChange = (event) => {
     const { id, value } = event.target;
     this.setState({ [id]: value });
   };
 
-  handleSubmit = async event => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     this.setState({ isLoading: true, errorMessage: '' });
 
@@ -86,12 +86,12 @@ class SignUp extends Component {
 
       this.setState({
         isLoading: false,
-        errorMessage: error.message
+        errorMessage: error.message,
       });
     }
   };
 
-  handleConfirmationSubmit = async event => {
+  handleConfirmationSubmit = async (event) => {
     event.preventDefault();
     this.setState({ isLoading: true });
 
@@ -105,7 +105,7 @@ class SignUp extends Component {
     } catch (error) {
       this.setState({
         isLoading: false,
-        errorMessage: error.message
+        errorMessage: error.message,
       });
     }
   };
@@ -123,7 +123,7 @@ class SignUp extends Component {
       password,
       confirmPassword,
       isLoading,
-      errorMessage
+      errorMessage,
     } = this.state;
 
     return (
