@@ -11,7 +11,7 @@
     "chartjs-plugin-annotation": "^0.5.7",
     "classnames": "^2.2.6",
     "fillers": "^1.1.4",
-    "moment": "^2.25.3",
+    "moment": "^2.26.0",
     "react": "^16.13.1",
     "react-chartjs-2": "^2.9.0",
     "react-dates": "^21.8.0",
