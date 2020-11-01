@@ -18,7 +18,7 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.3",
     "sinon": "^9.0.3",
-    "typeface-roboto": "^0.0.75"
+    "typeface-roboto": "^1.1.13"
   },
   "scripts": {
     "start": "HTTPS=true react-scripts start",
